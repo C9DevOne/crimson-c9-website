@@ -2,9 +2,9 @@
 
 import DecryptedText from "@/components/ui/decrypted_text";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-theme(spacing.14)-113px)]">
+    <div className="flex flex-1 flex-col items-center justify-center">
       <h1 className="text-6xl font-bold tracking-tighter">
         <DecryptedText
           text="CrimsonC9"
@@ -13,8 +13,9 @@ export default function Home() {
           sequential={true}
           animateOn="hover"
           revealDirection="center"
-          className="text-white"
+          className="text-brand-crimson"
           encryptedClassName="text-white/20"
+          useRandomColors={true}
         />
       </h1>
     </div>

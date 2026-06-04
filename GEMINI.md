@@ -16,9 +16,9 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 
 - `app/`: Next.js App Router pages and layouts.
 - `components/`:
-    - `layout/`: Shared structural components (Header, Footer, Navigation).
-    - `ui/`: Reusable UI primitives.
-    - `animations/`: Components or wrappers dedicated to GSAP/R3F animations.
+  - `layout/`: Shared structural components (Header, Footer, Navigation).
+  - `ui/`: Reusable UI primitives.
+  - `animations/`: Components or wrappers dedicated to GSAP/R3F animations.
 - `hooks/`: Custom React hooks.
 - `lib/`: Utility functions and shared library configurations.
 - `public/`: Static assets.
@@ -26,10 +26,12 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 ## Development Guidelines
 
 ### Core Principles
+
 - **Discover, Connect, Have Fun:** Every feature should align with these pillars.
 - **Aesthetic:** Dark theme (`#0a0a0a`), Crimson accents (`#DC143C`), mystical, organic, and nature-inspired with 2D/3D geometric designs.
 
 ### Conventions
+
 - **App Router Only:** Never use the Pages Router.
 - **TypeScript Everywhere:** No plain `.js` or `.jsx` files.
 - **Surgical Styling:** Use Tailwind utilities and CSS variables for brand tokens.
@@ -44,5 +46,6 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - `npm run lint`: Runs ESLint for code quality checks.
 
 ## Documentation References
+
 - [AI_CONTEXT.md](./AI_CONTEXT.md): Detailed project background, design language, and site sections.
 - [AGENTS.md](./AGENTS.md): Important notice regarding Next.js 16+ breaking changes.

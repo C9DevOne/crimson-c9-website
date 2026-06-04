@@ -16,9 +16,21 @@ interface DecryptedTextProps extends HTMLMotionProps<"span"> {
   encryptedClassName?: string;
   animateOn?: "view" | "hover" | "inViewHover" | "click";
   clickMode?: "once" | "toggle";
+  useRandomColors?: boolean;
+  loop?: boolean;
+  loopInterval?: number;
 }
 
 const DEFAULT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+";
+const SCRAMBLE_COLORS = [
+  "text-brand-crimson",
+  "text-red-500",
+  "text-orange-500",
+  "text-amber-500",
+  "text-rose-500",
+  "text-fuchsia-600",
+  "text-purple-600",
+];
 
 function getShuffledText(
   originalText: string,
@@ -50,6 +62,7 @@ function getShuffledText(
  * @param encryptedClassName - Classes for scrambled characters
  * @param animateOn - Trigger for the animation (default: "hover")
  * @param clickMode - Behavior when animateOn is "click" (default: "once")
+ * @param useRandomColors - Whether to use random colors for scrambled characters (default: false)
  */
 export default function DecryptedText({
   text,
@@ -64,6 +77,9 @@ export default function DecryptedText({
   encryptedClassName = "",
   animateOn = "hover",
   clickMode = "once",
+  useRandomColors = false,
+  loop = false,
+  loopInterval = 3000,
   ...props
 }: DecryptedTextProps) {
   const availableChars = useMemo(() => {
@@ -151,16 +167,15 @@ export default function DecryptedText({
   }, []);
 
   const triggerDecrypt = useCallback(() => {
+    setRevealedIndices(new Set());
+    setDirection("forward");
+    setIsAnimating(true);
+    setDisplayText(getShuffledText(text, new Set(), availableChars));
     if (sequential) {
       orderRef.current = computeOrder(text.length);
       pointerRef.current = 0;
-      setRevealedIndices(new Set());
-    } else {
-      setRevealedIndices(new Set());
     }
-    setDirection("forward");
-    setIsAnimating(true);
-  }, [sequential, computeOrder, text.length]);
+  }, [sequential, computeOrder, text, availableChars]);
 
   const triggerReverse = useCallback(() => {
     const allIndices = fillAllIndices();
@@ -319,10 +334,10 @@ export default function DecryptedText({
     if (isAnimating) return;
     setRevealedIndices(new Set());
     setIsDecrypted(false);
-    setDisplayText(text);
+    setDisplayText(getShuffledText(text, new Set(), availableChars));
     setDirection("forward");
     setIsAnimating(true);
-  }, [isAnimating, text]);
+  }, [isAnimating, text, availableChars]);
 
   const resetToPlainText = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -334,7 +349,7 @@ export default function DecryptedText({
   }, [text]);
 
   useEffect(() => {
-    if (animateOn !== "view" && animateOn !== "inViewHover") return;
+    if (animateOn !== "view" && animateOn !== "inViewHover" && animateOn !== "hover") return;
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
@@ -364,6 +379,16 @@ export default function DecryptedText({
     };
   }, [animateOn, hasAnimated, triggerDecrypt]);
 
+  useEffect(() => {
+    if (!loop || isAnimating) return;
+
+    const timeout = setTimeout(() => {
+      triggerDecrypt();
+    }, loopInterval);
+
+    return () => clearTimeout(timeout);
+  }, [loop, isAnimating, triggerDecrypt, loopInterval]);
+
   const animateProps =
     animateOn === "hover" || animateOn === "inViewHover"
       ? {
@@ -389,8 +414,19 @@ export default function DecryptedText({
         {displayText.split("").map((char, index) => {
           const isRevealedOrDone = revealedIndices.has(index) || (!isAnimating && isDecrypted);
 
+          let charClassName = isRevealedOrDone ? className : encryptedClassName;
+          if (useRandomColors && !isRevealedOrDone) {
+            const colorIndex = (index + char.charCodeAt(0)) % SCRAMBLE_COLORS.length;
+            const randomColor = SCRAMBLE_COLORS[colorIndex];
+            const baseWithoutColor = encryptedClassName
+              .split(" ")
+              .filter((c) => !c.startsWith("text-"))
+              .join(" ");
+            charClassName = `${baseWithoutColor} ${randomColor}`.trim();
+          }
+
           return (
-            <span key={index} className={isRevealedOrDone ? className : encryptedClassName}>
+            <span key={index} className={charClassName}>
               {char}
             </span>
           );
@@ -399,4 +435,3 @@ export default function DecryptedText({
     </motion.span>
   );
 }
-
