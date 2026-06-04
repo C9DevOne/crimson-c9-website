@@ -12,7 +12,7 @@ export function Header() {
       <div className="container mx-auto flex h-14 items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-2 w-2 rounded-full bg-[#DC143C] group-hover:scale-125 transition-transform" />
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/90">
+          <span className="text-xs font-bold tracking-[0.2em] uppercase text-white">
             CRIMSONC9
           </span>
         </Link>
@@ -22,7 +22,7 @@ export function Header() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-[10px] font-bold uppercase tracking-widest text-white/40 transition-colors hover:text-[#DC143C]"
+              className="text-[10px] font-bold uppercase tracking-widest text-white transition-colors hover:text-[#DC143C]"
             >
               {link.name}
             </Link>
