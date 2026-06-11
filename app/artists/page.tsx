@@ -2,16 +2,32 @@
 
 import CircularGallery from "@/components/ui/circular-gallery";
 import DecryptedText from "@/components/ui/decrypted_text";
-
+// move to backend later
 const ARTISTS = [
-  { image: "https://picsum.photos/seed/techno1/800/600?grayscale", text: "KRYPTON" },
-  { image: "https://picsum.photos/seed/techno2/800/600?grayscale", text: "VESTA" },
-  { image: "https://picsum.photos/seed/techno3/800/600?grayscale", text: "SOLIS" },
-  { image: "https://picsum.photos/seed/techno4/800/600?grayscale", text: "AETHER" },
-  { image: "https://picsum.photos/seed/techno5/800/600?grayscale", text: "CHRONOS" },
-  { image: "https://picsum.photos/seed/techno6/800/600?grayscale", text: "NOVA" },
-  { image: "https://picsum.photos/seed/techno7/800/600?grayscale", text: "ZEPHYR" },
-  { image: "https://picsum.photos/seed/techno8/800/600?grayscale", text: "LYRA" },
+  {
+    image: "https://picsum.photos/seed/techno3/800/600?grayscale",
+    text: "SOLIS",
+    subtitle: "Co-Founder / Live Act",
+    description: "Fast-paced synth melodies and raw hardware drums made for dark warehouses.",
+    instagram: "https://instagram.com",
+    soundcloud: "https://soundcloud.com",
+  },
+  {
+    image: "https://picsum.photos/seed/techno7/800/600?grayscale",
+    text: "ZEPHYR",
+    subtitle: "Guest DJ",
+    description: "Acid basslines and uplifting vocal chops for early-morning dancers.",
+    instagram: "https://instagram.com",
+    soundcloud: "https://soundcloud.com",
+  },
+  {
+    image: "https://picsum.photos/seed/techno8/800/600?grayscale",
+    text: "LYRA",
+    subtitle: "Guest DJ",
+    description: "Psychedelic progressions and high-tempo ambient techno sets.",
+    instagram: "https://instagram.com",
+    soundcloud: "https://soundcloud.com",
+  },
 ];
 
 export default function ArtistsPage() {
@@ -27,9 +43,6 @@ export default function ArtistsPage() {
             revealDirection="center"
           />
         </h1>
-        <p className="mx-auto max-w-lg text-sm tracking-wider text-neutral-400 uppercase">
-          Residents and guests shaping the sound of Aachen, Cologne, and Berlin.
-        </p>
       </div>
 
       {/* Gallery Container */}

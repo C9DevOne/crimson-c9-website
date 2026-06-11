@@ -10,249 +10,26 @@ import {
   Texture,
   Transform,
 } from "ogl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Link, Music } from "lucide-react";
 
-function debounce<Args extends unknown[]>(
-  func: (...args: Args) => void,
-  wait: number,
-): (...args: Args) => void {
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-  return function (...args: Args) {
-    if (timeout) clearTimeout(timeout);
+const debounce = <Args extends unknown[]>(func: (...args: Args) => void, wait: number) => {
+  let timeout: ReturnType<typeof setTimeout>;
+  return (...args: Args) => {
+    clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
-}
+};
 
-function lerp(p1: number, p2: number, t: number): number {
-  return p1 + (p2 - p1) * t;
-}
+const lerp = (p1: number, p2: number, t: number) => p1 + (p2 - p1) * t;
 
-function autoBind<T extends object>(instance: T): void {
-  const proto = Object.getPrototypeOf(instance);
-  if (!proto) return;
-  const obj = instance as unknown as Record<string, unknown>;
-  Object.getOwnPropertyNames(proto).forEach((key) => {
-    if (key !== "constructor" && typeof obj[key] === "function") {
-      const func = obj[key] as (...args: unknown[]) => unknown;
-      obj[key] = func.bind(instance);
-    }
-  });
-}
-
-const DEFAULT_FONT = "bold 30px Figtree";
-const DEFAULT_FONT_URL =
-  "https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap";
-
-function deriveFontFamilyFromUrl(url: string): string {
-  const fileName = (url.split("/").pop() || "custom-font").split("?")[0];
-  const base = fileName.replace(/\.(woff2?|ttf|otf|eot)$/i, "");
-  return base.replace(/[^a-zA-Z0-9-_ ]/g, "").trim() || "CircularGalleryFont";
-}
-
-async function loadFontFromStylesheet(url: string): Promise<string> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch font stylesheet (${response.status})`);
-  const cssText = await response.text();
-  const faceBlocks = cssText.match(/@font-face\s*{[^}]*}/g) || [];
-  let family: string | null = null;
-  const fontFaces: FontFace[] = [];
-
-  for (const block of faceBlocks) {
-    const familyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?/);
-    const urlMatch = block.match(/url\(\s*['"]?([^'")]+)['"]?\s*\)/);
-    if (!familyMatch || !urlMatch) continue;
-    family = familyMatch[1].trim();
-    const descriptors: FontFaceDescriptors = {};
-    const weightMatch = block.match(/font-weight:\s*([^;]+);/);
-    const styleMatch = block.match(/font-style:\s*([^;]+);/);
-    const rangeMatch = block.match(/unicode-range:\s*([^;]+);/);
-    if (weightMatch) descriptors.weight = weightMatch[1].trim();
-    if (styleMatch) descriptors.style = styleMatch[1].trim();
-    if (rangeMatch) descriptors.unicodeRange = rangeMatch[1].trim();
-
-    if (typeof FontFace !== "undefined") {
-      fontFaces.push(new FontFace(family, `url(${urlMatch[1]})`, descriptors));
-    }
-  }
-
-  if (!family) throw new Error("No @font-face rule found in the stylesheet");
-
-  if (typeof FontFace !== "undefined" && typeof document !== "undefined") {
-    await Promise.allSettled(
-      fontFaces.map(async (face) => {
-        await face.load();
-        document.fonts.add(face);
-      }),
-    );
-  }
-
-  return family;
-}
-
-async function loadFontFromFile(url: string): Promise<string> {
-  const family = deriveFontFamilyFromUrl(url);
-  if (typeof FontFace !== "undefined" && typeof document !== "undefined") {
-    const fontFace = new FontFace(family, `url(${url})`);
-    await fontFace.load();
-    document.fonts.add(fontFace);
-  }
-  return family;
-}
-
-async function loadCustomFont(fontUrl: string): Promise<string> {
-  const isStylesheet = fontUrl.includes("fonts.googleapis.com") || /\.css(\?.*)?$/i.test(fontUrl);
-  return isStylesheet ? loadFontFromStylesheet(fontUrl) : loadFontFromFile(fontUrl);
-}
-
-async function resolveFont(font: string, fontUrl?: string): Promise<string> {
-  const effectiveUrl = fontUrl || (font === DEFAULT_FONT ? DEFAULT_FONT_URL : null);
-  if (!effectiveUrl) {
-    if (typeof document !== "undefined" && document.fonts && document.fonts.load) {
-      try {
-        await document.fonts.load(font);
-        await document.fonts.ready;
-      } catch {
-        // Ignore
-      }
-    }
-    return font;
-  }
-  try {
-    const family = await loadCustomFont(effectiveUrl);
-    const sizeMatch = font.match(/^\s*(.*?\d+px)/);
-    const prefix = sizeMatch ? sizeMatch[1].trim() : "bold 30px";
-    const resolved = `${prefix} "${family}"`;
-    if (typeof document !== "undefined" && document.fonts && document.fonts.load) {
-      try {
-        await document.fonts.load(resolved);
-      } catch {
-        // Ignore
-      }
-    }
-    return resolved;
-  } catch (error) {
-    console.error("CircularGallery: unable to load font from", fontUrl, error);
-    return font;
-  }
-}
-
-function getFontSize(font: string): number {
-  const match = font.match(/(\d+)px/);
-  return match ? parseInt(match[1], 10) : 30;
-}
-
-interface TextTextureResult {
-  texture: Texture;
-  width: number;
-  height: number;
-}
-
-function createTextTexture(
-  gl: OGLRenderingContext,
-  text: string,
-  font = "bold 30px monospace",
-  color = "black",
-): TextTextureResult {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    const texture = new Texture(gl, { generateMipmaps: false });
-    return { texture, width: 100, height: 100 };
-  }
-  context.font = font;
-  const metrics = context.measureText(text);
-  const textWidth = Math.ceil(metrics.width);
-  const textHeight = Math.ceil(getFontSize(font) * 1.2);
-  canvas.width = textWidth + 20;
-  canvas.height = textHeight + 20;
-  context.font = font;
-  context.fillStyle = color;
-  context.textBaseline = "middle";
-  context.textAlign = "center";
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
-  const texture = new Texture(gl, { generateMipmaps: false });
-  texture.image = canvas;
-  return { texture, width: canvas.width, height: canvas.height };
-}
-
-interface TitleParams {
-  gl: OGLRenderingContext;
-  plane: Mesh;
-  renderer: Renderer;
+export interface GalleryItem {
+  image: string;
   text: string;
-  textColor?: string;
-  font?: string;
-}
-
-class Title {
-  gl: OGLRenderingContext;
-  plane: Mesh;
-  renderer: Renderer;
-  text: string;
-  textColor: string;
-  font: string;
-  mesh!: Mesh;
-
-  constructor({
-    gl,
-    plane,
-    renderer,
-    text,
-    textColor = "#545050",
-    font = "30px sans-serif",
-  }: TitleParams) {
-    autoBind(this);
-    this.gl = gl;
-    this.plane = plane;
-    this.renderer = renderer;
-    this.text = text;
-    this.textColor = textColor;
-    this.font = font;
-    this.createMesh();
-  }
-
-  createMesh() {
-    const { texture, width, height } = createTextTexture(
-      this.gl,
-      this.text,
-      this.font,
-      this.textColor,
-    );
-    const geometry = new Plane(this.gl);
-    const program = new Program(this.gl, {
-      vertex: `
-        attribute vec3 position;
-        attribute vec2 uv;
-        uniform mat4 modelViewMatrix;
-        uniform mat4 projectionMatrix;
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragment: `
-        precision highp float;
-        uniform sampler2D tMap;
-        varying vec2 vUv;
-        void main() {
-          vec4 color = texture2D(tMap, vUv);
-          if (color.a < 0.1) discard;
-          gl_FragColor = color;
-        }
-      `,
-      uniforms: { tMap: { value: texture } },
-      transparent: true,
-    });
-    this.mesh = new Mesh(this.gl, { geometry, program });
-    const aspect = width / height;
-    const textHeight = this.plane.scale.y * 0.15;
-    const textWidth = textHeight * aspect;
-    this.mesh.scale.set(textWidth, textHeight, 1);
-    this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
-    this.mesh.setParent(this.plane);
-  }
+  subtitle?: string;
+  description?: string;
+  instagram?: string;
+  soundcloud?: string;
 }
 
 interface MediaParams {
@@ -269,30 +46,10 @@ interface MediaParams {
   bend: number;
   textColor: string;
   borderRadius?: number;
-  font: string;
 }
 
 class Media {
   extra = 0;
-  geometry: Plane;
-  gl: OGLRenderingContext;
-  image: string;
-  index: number;
-  length: number;
-  renderer: Renderer;
-  scene: Transform;
-  screen: { width: number; height: number };
-  text: string;
-  viewport: { width: number; height: number };
-  bend: number;
-  textColor: string;
-  borderRadius: number;
-  font: string;
-
-  program!: Program;
-  plane!: Mesh;
-  title!: Title;
-
   scale = 1;
   padding = 2;
   width = 0;
@@ -301,48 +58,43 @@ class Media {
   speed = 0;
   isBefore = false;
   isAfter = false;
+  plane!: Mesh;
+  program!: Program;
 
-  constructor({
-    geometry,
-    gl,
-    image,
-    index,
-    length,
-    renderer,
-    scene,
-    screen,
-    text,
-    viewport,
-    bend,
-    textColor,
-    borderRadius = 0,
-    font,
-  }: MediaParams) {
-    this.geometry = geometry;
-    this.gl = gl;
-    this.image = image;
-    this.index = index;
-    this.length = length;
-    this.renderer = renderer;
-    this.scene = scene;
-    this.screen = screen;
-    this.text = text;
-    this.viewport = viewport;
-    this.bend = bend;
-    this.textColor = textColor;
-    this.borderRadius = borderRadius;
-    this.font = font;
+  geometry: Plane;
+  gl: OGLRenderingContext;
+  image: string;
+  index: number;
+  length: number;
+  scene: Transform;
+  screen: { width: number; height: number };
+  text: string;
+  viewport: { width: number; height: number };
+  bend: number;
+  textColor: string;
+  borderRadius: number;
+
+  constructor(p: MediaParams) {
+    this.geometry = p.geometry;
+    this.gl = p.gl;
+    this.image = p.image;
+    this.index = p.index;
+    this.length = p.length;
+    this.scene = p.scene;
+    this.screen = p.screen;
+    this.text = p.text;
+    this.viewport = p.viewport;
+    this.bend = p.bend;
+    this.textColor = p.textColor;
+    this.borderRadius = p.borderRadius ?? 0;
 
     this.createShader();
     this.createMesh();
-    this.createTitle();
     this.onResize();
   }
 
   createShader() {
-    const texture = new Texture(this.gl, {
-      generateMipmaps: true,
-    });
+    const texture = new Texture(this.gl, { generateMipmaps: true });
     this.program = new Program(this.gl, {
       depthTest: false,
       depthWrite: false,
@@ -358,7 +110,7 @@ class Media {
         void main() {
           vUv = uv;
           vec3 p = position;
-          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
+          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (abs(uSpeed) * 0.5);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }
       `,
@@ -369,29 +121,19 @@ class Media {
         uniform sampler2D tMap;
         uniform float uBorderRadius;
         varying vec2 vUv;
-        
         float roundedBoxSDF(vec2 p, vec2 b, float r) {
           vec2 d = abs(p) - b;
           return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
         }
-        
         void main() {
           vec2 ratio = vec2(
             min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
             min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
           );
-          vec2 uv = vec2(
-            vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-            vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
-          );
+          vec2 uv = vUv * ratio + (1.0 - ratio) * 0.5;
           vec4 color = texture2D(tMap, uv);
-          
           float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
-          
-          // Smooth antialiasing for edges
-          float edgeSmooth = 0.002;
-          float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
-          
+          float alpha = 1.0 - smoothstep(-0.002, 0.002, d);
           gl_FragColor = vec4(color.rgb, alpha);
         }
       `,
@@ -418,27 +160,12 @@ class Media {
   }
 
   createMesh() {
-    this.plane = new Mesh(this.gl, {
-      geometry: this.geometry,
-      program: this.program,
-    });
+    this.plane = new Mesh(this.gl, { geometry: this.geometry, program: this.program });
     this.plane.setParent(this.scene);
-  }
-
-  createTitle() {
-    this.title = new Title({
-      gl: this.gl,
-      plane: this.plane,
-      renderer: this.renderer,
-      text: this.text,
-      textColor: this.textColor,
-      font: this.font,
-    });
   }
 
   update(scroll: { current: number; last: number }, direction: "left" | "right") {
     this.plane.position.x = this.x - scroll.current - this.extra;
-
     const x = this.plane.position.x;
     const H = this.viewport.width / 2;
 
@@ -449,15 +176,10 @@ class Media {
       const B_abs = Math.abs(this.bend);
       const R = (H * H + B_abs * B_abs) / (2 * B_abs);
       const effectiveX = Math.min(Math.abs(x), H);
-
       const arc = R - Math.sqrt(R * R - effectiveX * effectiveX);
-      if (this.bend > 0) {
-        this.plane.position.y = -arc;
-        this.plane.rotation.z = -Math.sign(x) * Math.asin(effectiveX / R);
-      } else {
-        this.plane.position.y = arc;
-        this.plane.rotation.z = Math.sign(x) * Math.asin(effectiveX / R);
-      }
+      const angle = Math.sign(x) * Math.asin(effectiveX / R);
+      this.plane.position.y = this.bend > 0 ? -arc : arc;
+      this.plane.rotation.z = this.bend > 0 ? -angle : angle;
     }
 
     this.speed = scroll.current - scroll.last;
@@ -495,12 +217,11 @@ class Media {
         }
       }
     }
-
     this.scale = this.screen.height / 1500;
-    this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
+    this.plane.scale.y = (this.viewport.height * (1300 * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (1100 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 2;
+    this.padding = 3.0;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
@@ -508,13 +229,13 @@ class Media {
 }
 
 interface AppOptions {
-  items?: { image: string; text: string }[];
+  items: GalleryItem[];
   bend: number;
   textColor?: string;
   borderRadius?: number;
-  font: string;
   scrollSpeed?: number;
   scrollEase?: number;
+  onActiveIndexChange?: (index: number) => void;
 }
 
 class App {
@@ -522,59 +243,38 @@ class App {
   scrollSpeed: number;
   scroll: { ease: number; current: number; target: number; last: number; position?: number };
   onCheckDebounce: (...args: unknown[]) => void;
-
-  renderer!: Renderer;
-  gl!: OGLRenderingContext;
-  camera!: Camera;
-  scene!: Transform;
-  planeGeometry!: Plane;
-
-  mediasImages!: { image: string; text: string }[];
+  renderer: Renderer;
+  gl: OGLRenderingContext;
+  camera: Camera;
+  scene: Transform;
+  planeGeometry: Plane;
+  mediasImages!: GalleryItem[];
   medias!: Media[];
-
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
-
   isDown = false;
   start = 0;
   raf = 0;
+  lastActiveIndex = -1;
+  onActiveIndexChange?: (index: number) => void;
 
   boundOnResize!: () => void;
   boundOnWheel!: (e: WheelEvent & { wheelDelta?: number }) => void;
   boundOnTouchDown!: (e: TouchEvent | MouseEvent) => void;
   boundOnTouchMove!: (e: TouchEvent | MouseEvent) => void;
   boundOnTouchUp!: () => void;
+  boundOnKeyDown!: (e: KeyboardEvent) => void;
 
-  constructor(
-    container: HTMLElement,
-    {
-      items,
-      bend,
-      textColor = "#ffffff",
-      borderRadius = 0,
-      font = "bold 30px Figtree",
-      scrollSpeed = 2,
-      scrollEase = 0.05,
-    }: AppOptions,
-  ) {
+  constructor(container: HTMLElement, opts: AppOptions) {
     if (typeof document !== "undefined") {
       document.documentElement.classList.remove("no-js");
     }
     this.container = container;
-    this.scrollSpeed = scrollSpeed;
-    this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
+    this.scrollSpeed = opts.scrollSpeed ?? 2;
+    this.scroll = { ease: opts.scrollEase ?? 0.05, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck.bind(this), 200);
-    this.createRenderer();
-    this.createCamera();
-    this.createScene();
-    this.onResize();
-    this.createGeometry();
-    this.createMedias(items, bend, textColor, borderRadius, font);
-    this.update();
-    this.addEventListeners();
-  }
+    this.onActiveIndexChange = opts.onActiveIndexChange;
 
-  createRenderer() {
     this.renderer = new Renderer({
       alpha: true,
       antialias: true,
@@ -583,66 +283,40 @@ class App {
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
     this.container.appendChild(this.gl.canvas);
-  }
 
-  createCamera() {
     this.camera = new Camera(this.gl);
     this.camera.fov = 45;
     this.camera.position.z = 20;
-  }
 
-  createScene() {
     this.scene = new Transform();
+    this.onResize();
+
+    this.planeGeometry = new Plane(this.gl, { heightSegments: 50, widthSegments: 100 });
+    this.createMedias(opts.items, opts.bend, opts.textColor ?? "#ffffff", opts.borderRadius ?? 0);
+    this.update();
+    this.addEventListeners();
   }
 
-  createGeometry() {
-    this.planeGeometry = new Plane(this.gl, {
-      heightSegments: 50,
-      widthSegments: 100,
-    });
-  }
-
-  createMedias(
-    items: { image: string; text: string }[] | undefined,
-    bend = 1,
-    textColor: string,
-    borderRadius: number,
-    font: string,
-  ) {
-    const defaultItems = [
-      { image: `https://picsum.photos/seed/1/800/600?grayscale`, text: "Bridge" },
-      { image: `https://picsum.photos/seed/2/800/600?grayscale`, text: "Desk Setup" },
-      { image: `https://picsum.photos/seed/3/800/600?grayscale`, text: "Waterfall" },
-      { image: `https://picsum.photos/seed/4/800/600?grayscale`, text: "Strawberries" },
-      { image: `https://picsum.photos/seed/5/800/600?grayscale`, text: "Deep Diving" },
-      { image: `https://picsum.photos/seed/16/800/600?grayscale`, text: "Train Track" },
-      { image: `https://picsum.photos/seed/17/800/600?grayscale`, text: "Santorini" },
-      { image: `https://picsum.photos/seed/8/800/600?grayscale`, text: "Blurry Lights" },
-      { image: `https://picsum.photos/seed/9/800/600?grayscale`, text: "New York" },
-      { image: `https://picsum.photos/seed/10/800/600?grayscale`, text: "Good Boy" },
-      { image: `https://picsum.photos/seed/21/800/600?grayscale`, text: "Coastline" },
-      { image: `https://picsum.photos/seed/12/800/600?grayscale`, text: "Palm Trees" },
-    ];
-    const galleryItems = items && items.length ? items : defaultItems;
-    this.mediasImages = galleryItems.concat(galleryItems);
-    this.medias = this.mediasImages.map((data, index) => {
-      return new Media({
-        geometry: this.planeGeometry,
-        gl: this.gl,
-        image: data.image,
-        index,
-        length: this.mediasImages.length,
-        renderer: this.renderer,
-        scene: this.scene,
-        screen: this.screen,
-        text: data.text,
-        viewport: this.viewport,
-        bend,
-        textColor,
-        borderRadius,
-        font,
-      });
-    });
+  createMedias(items: GalleryItem[], bend = 1, textColor: string, borderRadius: number) {
+    this.mediasImages = items.concat(items);
+    this.medias = this.mediasImages.map(
+      (data, index) =>
+        new Media({
+          geometry: this.planeGeometry,
+          gl: this.gl,
+          image: data.image,
+          index,
+          length: this.mediasImages.length,
+          renderer: this.renderer,
+          scene: this.scene,
+          screen: this.screen,
+          text: data.text || "",
+          viewport: this.viewport,
+          bend,
+          textColor,
+          borderRadius,
+        }),
+    );
   }
 
   onTouchDown(e: TouchEvent | MouseEvent) {
@@ -663,6 +337,13 @@ class App {
     this.onCheck();
   }
 
+  step(direction: number) {
+    if (!this.medias?.[0]) return;
+    const width = this.medias[0].width;
+    const currentSnapped = Math.round(this.scroll.target / width) * width;
+    this.scroll.target = currentSnapped + direction * width;
+  }
+
   onWheel(e: WheelEvent & { wheelDelta?: number }) {
     const delta = e.deltaY || e.wheelDelta || e.detail || 0;
     this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2;
@@ -670,27 +351,36 @@ class App {
   }
 
   onCheck() {
-    if (!this.medias || !this.medias[0]) return;
+    if (!this.medias?.[0]) return;
     const width = this.medias[0].width;
     const itemIndex = Math.round(Math.abs(this.scroll.target) / width);
     const item = width * itemIndex;
     this.scroll.target = this.scroll.target < 0 ? -item : item;
   }
 
+  getActiveIndex() {
+    if (!this.medias || this.medias.length === 0) return 0;
+    let minDistance = Infinity;
+    let activeIndex = 0;
+    this.medias.forEach((media) => {
+      const distance = Math.abs(media.plane.position.x);
+      if (distance < minDistance) {
+        minDistance = distance;
+        activeIndex = media.index;
+      }
+    });
+    const originalLength = this.mediasImages.length / 2;
+    return activeIndex % originalLength;
+  }
+
   onResize() {
     if (!this.container) return;
-    this.screen = {
-      width: this.container.clientWidth,
-      height: this.container.clientHeight,
-    };
+    this.screen = { width: this.container.clientWidth, height: this.container.clientHeight };
     this.renderer.setSize(this.screen.width, this.screen.height);
-    this.camera.perspective({
-      aspect: this.screen.width / this.screen.height,
-    });
+    this.camera.perspective({ aspect: this.screen.width / this.screen.height });
     const fov = (this.camera.fov * Math.PI) / 180;
     const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
-    const width = height * this.camera.aspect;
-    this.viewport = { width, height };
+    this.viewport = { width: height * this.camera.aspect, height };
     if (this.medias) {
       this.medias.forEach((media) =>
         media.onResize({ screen: this.screen, viewport: this.viewport }),
@@ -705,6 +395,13 @@ class App {
       this.medias.forEach((media) => media.update(this.scroll, direction));
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
+
+    const activeIndex = this.getActiveIndex();
+    if (activeIndex !== this.lastActiveIndex) {
+      this.lastActiveIndex = activeIndex;
+      this.onActiveIndexChange?.(activeIndex);
+    }
+
     this.scroll.last = this.scroll.current;
     this.raf = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -715,6 +412,13 @@ class App {
     this.boundOnTouchDown = this.onTouchDown.bind(this);
     this.boundOnTouchMove = this.onTouchMove.bind(this);
     this.boundOnTouchUp = this.onTouchUp.bind(this);
+    this.boundOnKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        this.step(1);
+      } else if (e.key === "ArrowLeft") {
+        this.step(-1);
+      }
+    };
 
     if (typeof window !== "undefined") {
       window.addEventListener("resize", this.boundOnResize);
@@ -729,6 +433,7 @@ class App {
         passive: true,
       });
       window.addEventListener("touchend", this.boundOnTouchUp);
+      window.addEventListener("keydown", this.boundOnKeyDown);
     }
   }
 
@@ -743,25 +448,19 @@ class App {
       window.removeEventListener("touchstart", this.boundOnTouchDown as EventListener);
       window.removeEventListener("touchmove", this.boundOnTouchMove as EventListener);
       window.removeEventListener("touchend", this.boundOnTouchUp);
+      window.removeEventListener("keydown", this.boundOnKeyDown);
     }
-    if (
-      this.renderer &&
-      this.renderer.gl &&
-      this.renderer.gl.canvas &&
-      this.renderer.gl.canvas.parentNode
-    ) {
+    if (this.renderer?.gl?.canvas?.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }
   }
 }
 
 interface CircularGalleryProps {
-  items?: { image: string; text: string }[];
+  items: GalleryItem[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;
-  font?: string;
-  fontUrl?: string;
   scrollSpeed?: number;
   scrollEase?: number;
 }
@@ -771,41 +470,111 @@ export default function CircularGallery({
   bend = 3,
   textColor = "#ffffff",
   borderRadius = 0.05,
-  font = "bold 30px Figtree",
-  fontUrl,
   scrollSpeed = 2,
   scrollEase = 0.05,
 }: CircularGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<App | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
-    let app: App | undefined;
-    let isMounted = true;
 
-    resolveFont(font, fontUrl).then((resolvedFont) => {
-      if (!isMounted || !containerRef.current) return;
-      app = new App(containerRef.current, {
-        items,
-        bend,
-        textColor,
-        borderRadius,
-        font: resolvedFont,
-        scrollSpeed,
-        scrollEase,
-      });
+    const app = new App(containerRef.current, {
+      items,
+      bend,
+      textColor,
+      borderRadius,
+      scrollSpeed,
+      scrollEase,
+      onActiveIndexChange: (idx) => {
+        setActiveIndex(idx);
+      },
     });
 
+    appRef.current = app;
+
     return () => {
-      isMounted = false;
-      if (app) app.destroy();
+      app.destroy();
+      appRef.current = null;
     };
-  }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase]);
+  }, [items, bend, textColor, borderRadius, scrollSpeed, scrollEase]);
+
+  const activeItem = items[activeIndex];
 
   return (
-    <div
-      className="h-full w-full cursor-grab overflow-hidden active:cursor-grabbing"
-      ref={containerRef}
-    />
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
+      <div className="relative w-full flex-1">
+        <div
+          className="h-full w-full cursor-grab overflow-hidden active:cursor-grabbing"
+          ref={containerRef}
+        />
+        <button
+          onClick={() => appRef.current?.step(-1)}
+          className="absolute top-1/2 left-4 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/60 active:scale-95"
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          onClick={() => appRef.current?.step(1)}
+          className="absolute top-1/2 right-4 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/60 active:scale-95"
+          aria-label="Next image"
+        >
+          <ChevronRight size={24} />
+        </button>
+      </div>
+      {activeItem && <ActiveItemInfo activeItem={activeItem} />}
+    </div>
+  );
+}
+
+interface ActiveItemInfoProps {
+  activeItem: GalleryItem;
+}
+
+export function ActiveItemInfo({ activeItem }: ActiveItemInfoProps) {
+  return (
+    <div className="w-full flex-shrink-0 border-t border-white/10 bg-black/40 py-6 backdrop-blur-md transition-all duration-500">
+      <div className="mx-auto max-w-md px-6 text-center">
+        <h2 className="text-xl font-bold tracking-widest text-white uppercase md:text-2xl">
+          {activeItem.text}
+        </h2>
+        {activeItem.subtitle && (
+          <p className="mt-1 text-xs font-bold tracking-widest text-red-500 uppercase">
+            {activeItem.subtitle}
+          </p>
+        )}
+        {activeItem.description && (
+          <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-neutral-400">
+            {activeItem.description}
+          </p>
+        )}
+        {(activeItem.instagram || activeItem.soundcloud) && (
+          <div className="mt-3 flex justify-center gap-3">
+            {activeItem.instagram && (
+              <a
+                href={activeItem.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-400 transition-colors hover:text-white"
+              >
+                <Link size={14} />
+              </a>
+            )}
+            {activeItem.soundcloud && (
+              <a
+                href={activeItem.soundcloud}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-400 transition-colors hover:text-white"
+              >
+                <Music size={14} />
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
