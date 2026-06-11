@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Music, Calendar, Users, Home, Heart, BookOpen } from "lucide-react";
+import { DragonLogo } from "@/components/ui/dragon-logo";
 
 import {
   Sidebar,
@@ -32,9 +33,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/" className="group flex items-center gap-2">
-                <div className="flex flex-col gap-0.5 leading-none">
+            <SidebarMenuButton size="lg" asChild tooltip="CrimsonC9">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <DragonLogo className="size-7" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                   <span className="text-xs font-bold tracking-widest uppercase">CrimsonC9</span>
                   <span className="text-[8px] tracking-widest text-zinc-500 uppercase">
                     Change Through Music

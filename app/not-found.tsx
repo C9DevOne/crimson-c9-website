@@ -24,7 +24,7 @@ export default function NotFound() {
             encryptedClassName="text-white/20"
             useRandomColors={true}
             loop={true}
-            loopInterval={1000}
+            loopInterval={900}
           />
         </h1>
         <h2 className="text-foreground text-3xl font-semibold">Lost in the Rhythm</h2>
