@@ -503,26 +503,31 @@ export default function CircularGallery({
   const activeItem = items[activeIndex];
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      {/* Navigation Controls */}
+      <div className="flex justify-center gap-4 pb-4">
+        <button
+          onClick={() => appRef.current?.step(-1)}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 active:scale-95"
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button
+          onClick={() => appRef.current?.step(1)}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 active:scale-95"
+          aria-label="Next image"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
+
+      {/* Gallery Canvas */}
       <div className="relative w-full flex-1">
         <div
           className="h-full w-full cursor-grab overflow-hidden active:cursor-grabbing"
           ref={containerRef}
         />
-        <button
-          onClick={() => appRef.current?.step(-1)}
-          className="absolute top-1/2 left-4 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/60 active:scale-95"
-          aria-label="Previous image"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
-          onClick={() => appRef.current?.step(1)}
-          className="absolute top-1/2 right-4 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/60 active:scale-95"
-          aria-label="Next image"
-        >
-          <ChevronRight size={24} />
-        </button>
       </div>
       {activeItem && <ActiveItemInfo activeItem={activeItem} />}
     </div>

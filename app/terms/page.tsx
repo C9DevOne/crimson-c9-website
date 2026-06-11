@@ -7,11 +7,14 @@ export default function Page() {
       <h1 className="mb-4 text-4xl font-bold tracking-tighter">
         <DecryptedText
           text="TERMS"
-          animateOn="view"
+          speed={100}
+          maxIterations={20}
+          sequential={true}
+          animateOn="hover"
           revealDirection="center"
-          useRandomColors={true}
           className="text-brand-crimson"
           encryptedClassName="text-white/20"
+          useRandomColors={true}
         />
       </h1>
       <p className="max-w-md text-sm leading-relaxed tracking-widest text-zinc-500 uppercase">

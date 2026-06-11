@@ -11,7 +11,7 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-white/5 py-12">
       <div className="container mx-auto flex flex-col items-center gap-8 px-6">
-        <div className="flex gap-8">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {links.map((link) => (
             <Link
               key={link.name}
@@ -21,9 +21,9 @@ export function Footer() {
               {link.name}
             </Link>
           ))}
-        </div>
-        <div className="text-[10px] font-bold tracking-[0.3em] text-white/20 uppercase">
-          CrimsonC9 © {new Date().getFullYear()}
+          <span className="cursor-default text-[10px] font-bold tracking-[0.3em] text-white/30 uppercase select-none">
+            Crimson C9 © {new Date().getFullYear()}
+          </span>
         </div>
       </div>
     </footer>
