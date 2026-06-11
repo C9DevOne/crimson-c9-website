@@ -15,7 +15,7 @@ export default function NotFound() {
         <h1 className="text-9xl leading-none font-bold tracking-tighter">
           <DecryptedText
             text="404"
-            speed={300}
+            speed={200}
             maxIterations={20}
             sequential={true}
             animateOn="view"
@@ -24,7 +24,7 @@ export default function NotFound() {
             encryptedClassName="text-white/20"
             useRandomColors={true}
             loop={true}
-            loopInterval={900}
+            loopInterval={600}
           />
         </h1>
         <h2 className="text-foreground text-3xl font-semibold">Lost in the Rhythm</h2>
