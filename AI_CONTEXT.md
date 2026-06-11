@@ -430,7 +430,6 @@ Then verify `package.json` — key versions that must not be downgraded:
 - Vercel connected and deploying
 
 ### Phase 2 — Design System
-- Confirm UI font as DM Sans — load Cinzel Decorative, Philosopher and DM Sans via next/font in layout.tsx
 - Confirm orange/fire accent colour values and add to CSS tokens
 - Set up Cinzel Decorative + Philosopher font loading in layout.tsx
 - Build a simple design token reference page (`/dev/tokens`) to visually verify all colours and fonts render correctly
