@@ -2,6 +2,7 @@ import { Cinzel_Decorative, Philosopher, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -43,9 +44,7 @@ export default function RootLayout({
           <SidebarProvider>
             <AppSidebar />
             <div className="flex flex-1 flex-col overflow-y-auto">
-              <header className="flex h-12 shrink-0 items-center px-4">
-                <SidebarTrigger className="-ml-1" />
-              </header>
+              <Navbar />
               <main className="flex flex-1 flex-col">{children}</main>
               <Footer />
             </div>

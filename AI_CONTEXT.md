@@ -122,28 +122,13 @@ Clean · Organic · Geometric · Minimal · Elegant
 ```css
 --background: #0a0a0a; /* near-black, primary background */
 --foreground: #f5f5f5; /* off-white, primary text */
---brand-crimson: #990000; /* confirmed primary accent — deep crimson red */
+--brand-crimson: #510606; /* confirmed primary accent — deep crimson/burgundy red */
 --secondary: #1a1a1a; /* surface colour */
 --muted-foreground: #a1a1aa; /* subdued text */
+--brand-accent: #cc5500; /* fire accent — ember orange, confirmed */
 ```
 
-**Exploratory / not yet confirmed as tokens:**
-
-- White and near-white for contrast elements
-- Orange/amber hues for fiery accent moments — direction is "fire and warmth" but specific values TBD
-- Complementary deep teal (#009999) may appear as a rare accent — not a primary colour
-
 Do not hardcode any colour values. Always reference CSS variables. If a colour isn't yet tokenised, flag it and ask rather than inventing a value.
-
-### Typography
-
-| Role                        | Font              | Notes                                                                               |
-| --------------------------- | ----------------- | ----------------------------------------------------------------------------------- |
-| Artistic / Display headings | Cinzel Decorative | For titles, hero text, brand moments                                                |
-| Body / Reading              | Philosopher       | Organic, elegant serif for readable content                                         |
-| UI / Supporting             | TBD               | To be confirmed before building components — do not default to Geist without asking |
-
-Font CSS variables to be set up as: `--font-display`, `--font-body`, `--font-ui`
 
 ### Logo Behaviour
 
@@ -435,34 +420,9 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 ---
 
-## 13. AI-Assisted Development Workflow
-
-### Session Start (every session)
-
-1. Open project in Windsurf at `H:\Crimson\Code\website`
-2. Tell Cascade: _"Read AI_CONTEXT.md — this is the project context. Familiarise yourself with the stack, conventions, and folder structure before we start."_
-3. Verify it understood by asking: _"What CSS variable should I use for the primary brand colour?"_ → correct answer is `var(--brand-crimson)`
-
-### During a Session
-
-- Use **Plan Mode** before any multi-file task — review what Cascade intends to touch before it executes
-- Read every diff before accepting — this is how you learn and catch mistakes before they compound
-- Ask for one component at a time — don't chain multiple features in one prompt
-- Ask Cascade to explain what it just did if anything is unclear
-- Be specific in prompts — reference exact design details, not vague descriptions
-- Mention stack explicitly when relevant: _"using GSAP + Next.js App Router"_
-
-### After Each Working Feature
-
-- Test in browser
-- Commit with a descriptive Conventional Commit message
-- Frequent commits = easy rollback if something breaks later
-
----
-
 ## 14. Development Phases
 
-### Phase 1 — Foundation ✅
+### Phase 1 — Foundation (DONE)
 
 - Next.js 15 scaffolded with TypeScript, Tailwind v4, Turbopack
 - Core dependencies installed
@@ -471,20 +431,19 @@ Then verify `package.json` — key versions that must not be downgraded:
 - Repo live at github.com/C9DevOne/crimson-c9-website
 - Vercel connected and deploying
 
-### Phase 2 — Design System
+### Phase 2 — Design System (DONE)
 
-- Confirm orange/fire accent colour values and add to CSS tokens
-- Set up Cinzel Decorative + Philosopher font loading in layout.tsx
-- Build a simple design token reference page (`/dev/tokens`) to visually verify all colours and fonts render correctly
-- Confirm GSAP vs Framer Motion usage rule
-- Design token reference page (/dev/tokens) to verify colours,
-  fonts, spacing, radius, and motion defaults render correctly
+- ✅ Confirm orange/fire accent colour values (#cc5500) and add to CSS tokens
+- ✅ Set up Cinzel Decorative + Philosopher + DM Sans font loading in layout.tsx
+- ✅ Build design token reference page (`/dev/tokens`) to verify colours, fonts, spacing, radius, motion
+- ✅ Confirm GSAP vs Framer Motion usage rule — Framer Motion for UI/component animations
 
-### Phase 3 — Core Pages
+### Phase 3 — Core Pages (IN PROGRESS)
 
 Build in this order, one component at a time:
 
-1. Navbar — dragon logo centrepiece, universal menu concept
+1. ✅ Dagon logo centrepiece (sticky, centered, hover scale animation)
+   1.2 Universal Hovering Hamburger Menu with navigation links
 2. Homepage — hero, scroll journey, three pillars (Discover / Connect / Fun)
 3. Artists / Roster page — animated roster, bio overlays, individual artist template
 4. Events page — entry screen, upcoming events, archive structure
