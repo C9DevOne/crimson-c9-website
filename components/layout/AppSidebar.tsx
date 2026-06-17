@@ -16,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 const navItems = [
@@ -28,19 +29,27 @@ const navItems = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip="CrimsonC9">
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-1.5" onClick={handleLinkClick}>
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <DragonLogo className="size-7" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                   <span className="text-xs font-bold tracking-widest uppercase">CrimsonC9</span>
-                  <span className="text-[8px] tracking-widest text-zinc-500 uppercase">
+                  <span className="text-[8px] tracking-wider text-zinc-500 uppercase">
                     Change Through Music
                   </span>
                 </div>
@@ -59,7 +68,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild tooltip={item.name}>
-                    <Link href={item.href} className="flex items-center gap-3">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-3"
+                      onClick={handleLinkClick}
+                    >
                       <item.icon className="size-4" />
                       <span className="text-[10px] font-bold tracking-widest uppercase">
                         {item.name}

@@ -18,8 +18,8 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - `components/`:
   - `layout/`: Shared structural components (Header, Footer, Navigation).
   - `ui/`: Reusable UI primitives.
+    - `hooks/`: Custom React hooks.
   - `animations/`: Components or wrappers dedicated to GSAP/R3F animations.
-- `hooks/`: Custom React hooks.
 - `lib/`: Utility functions and shared library configurations.
 - `public/`: Static assets.
 
@@ -37,13 +37,14 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - **Surgical Styling:** Use Tailwind utilities and CSS variables for brand tokens.
 - **Animation Logic:** Keep GSAP animations in dedicated hooks or utility components to maintain readability in main UI files.
 - **Minimal Dependencies:** Avoid external UI component libraries unless strictly necessary for complex functionality.
+- **No Build Commands:** Do NOT run build commands (such as `npm run build` or `next build`) in this environment.
 
 ### Key Commands
 
 - `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run start`: Starts the production server.
 - `npm run lint`: Runs ESLint for code quality checks.
+- You do not need to mention that you ran these two commands
+- _Note: Do NOT run `npm run build`._
 
 ## Documentation References
 

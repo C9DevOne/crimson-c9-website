@@ -14,7 +14,7 @@ export default function Page() {
           animateOn="hover"
           revealDirection="center"
           className="text-brand-crimson"
-          encryptedClassName="text-white/20"
+          encryptedClassName="text-foreground/20"
           useRandomColors={true}
         />
       </h1>

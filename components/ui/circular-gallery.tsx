@@ -217,11 +217,34 @@ class Media {
         }
       }
     }
-    this.scale = this.screen.height / 1500;
-    this.plane.scale.y = (this.viewport.height * (1300 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (1100 * this.scale)) / this.screen.width;
+
+    const isPortrait = this.screen.width < this.screen.height || this.screen.width < 768;
+
+    if (isPortrait) {
+      // On mobile/portrait, keep cards visible and balanced.
+      // Set width to 50% of the viewport width.
+      this.plane.scale.x = this.viewport.width * 0.5;
+      // Maintain 4:3 landscape aspect ratio (width / height = 4 / 3)
+      this.plane.scale.y = this.plane.scale.x * (3 / 4);
+
+      // Cap the height so it doesn't exceed 25% of the viewport height.
+      const maxMobileHeight = this.viewport.height * 0.25;
+      if (this.plane.scale.y > maxMobileHeight) {
+        this.plane.scale.y = maxMobileHeight;
+        this.plane.scale.x = this.plane.scale.y * (4 / 3);
+      }
+      this.padding = 0.6; // tighter padding to fit more cards along the arc
+    } else {
+      // On desktop, maintain 4:3 landscape aspect ratio
+      this.scale = this.screen.height / 1500;
+      // Set height proportional to screen height
+      this.plane.scale.y = (this.viewport.height * (720 * this.scale)) / this.screen.height;
+      // Set width to be exactly 4/3 of the height
+      this.plane.scale.x = this.plane.scale.y * (4 / 3);
+      this.padding = 2.0;
+    }
+
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 3.0;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
@@ -540,7 +563,7 @@ interface ActiveItemInfoProps {
 
 export function ActiveItemInfo({ activeItem }: ActiveItemInfoProps) {
   return (
-    <div className="w-full flex-shrink-0 border-t border-white/10 bg-black/40 py-6 backdrop-blur-md transition-all duration-500">
+    <div className="w-full flex-shrink-0 border-t border-white/10 bg-black/40 py-4 backdrop-blur-md transition-all duration-500 md:py-6">
       <div className="mx-auto max-w-md px-6 text-center">
         <h2 className="text-xl font-bold tracking-widest text-white uppercase md:text-2xl">
           {activeItem.text}

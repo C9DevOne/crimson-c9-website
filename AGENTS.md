@@ -6,6 +6,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # run 'npm install' when first starting
 
-# lint and format after every change that is made
+# lint and format after every change that is made you do not need to tell that you have run them
+
+# DO NOT run build commands (e.g., do NOT run 'npm run build' or 'next build')
 
 <!-- END:nextjs-agent-rules -->

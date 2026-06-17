@@ -425,9 +425,18 @@ export default function DecryptedText({
             charClassName = `${baseWithoutColor} ${randomColor}`.trim();
           }
 
+          if (isRevealedOrDone || text[index] === " ") {
+            return (
+              <span key={index} className={charClassName}>
+                {char}
+              </span>
+            );
+          }
+
           return (
-            <span key={index} className={charClassName}>
-              {char}
+            <span key={index} className="relative inline-block">
+              <span className={`invisible ${className}`}>{text[index]}</span>
+              <span className={`absolute top-0 left-0 ${charClassName}`}>{char}</span>
             </span>
           );
         })}
