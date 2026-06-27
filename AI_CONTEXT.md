@@ -34,10 +34,10 @@ CrimsonC9 is the online home for a young Berlin, Cologne and Aachen based techno
 
 | Person | Role                                         |
 | ------ | -------------------------------------------- |
-| Aaron  | Frontend lead, project driver                |
+| Aaron  | Frontend lead                                |
 | Nick   | Backend developer (Supabase, API routes, DB) |
 
-Aaron has a CS background and is actively learning through the build process. Always explain the _why_ behind technical decisions, not just the what. Reasoning matters more than instructions.
+AI Note: Aaron has a CS background and is actively learning through the build process. Always explain the _why_ behind technical decisions, not just the what. Reasoning matters more than instructions.
 
 ---
 
@@ -76,13 +76,14 @@ Both GSAP and Framer Motion are installed. Use them as follows — **this is a p
 
 ### Component Layer
 
-| Technology               | Purpose                            | Notes                                       |
-| ------------------------ | ---------------------------------- | ------------------------------------------- |
-| Shadcn UI                | Pre-built accessible UI components | Fully owned in codebase, fully customisable |
-| Radix UI                 | Headless component primitives      | Underpins Shadcn                            |
-| class-variance-authority | Component variant management       |                                             |
-| tailwind-merge           | Tailwind class merging utility     |                                             |
-| lucide-react             | Icon library                       |                                             |
+| Technology               | Purpose                            | Notes                                                                                      |
+| ------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| Shadcn UI                | Pre-built accessible UI components | Fully owned in codebase, fully customisable                                                |
+| Radix UI                 | Headless component primitives      | Underpins Shadcn                                                                           |
+| class-variance-authority | Component variant management       |                                                                                            |
+| tailwind-merge           | Tailwind class merging utility     |                                                                                            |
+| lucide-react             | UI icon library                    | Arrows, close, menu, chevrons, UI controls                                                 |
+| react-icons              | Brand/social icon library          | Instagram, SoundCloud, Spotify, YouTube etc — import from react-icons/ri or react-icons/fa |
 
 Do not add new UI component libraries without discussing with Aaron first. Shadcn is the approved choice.
 
@@ -308,6 +309,7 @@ crimson-c9-website/
 - **No hardcoded fonts** — always use CSS variables, e.g. `var(--font-display)`
 - **GSAP animations** — in dedicated hooks or components under `components/animations/`
 - **Component libraries** — Shadcn only; do not add new UI libraries without discussion
+- **Icons** — lucide-react for UI icons (arrows, close, menu etc); react-icons for brand/social icons (Instagram, SoundCloud, Spotify etc). Do not use one where the other is appropriate
 - **Commits** — Conventional Commits format: `feat:`, `fix:`, `style:`, `refactor:`, `docs:`, `init:`
 - **Branching** — always work on a feature branch; merge to `main` only when tested and working
 
@@ -378,7 +380,8 @@ Then verify `package.json` — key versions that must not be downgraded:
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.6.0",
-    "lucide-react": "^1.17.0"
+    "lucide-react": "^1.17.0",
+    "react-icons": "^5.0.0"
   },
   "devDependencies": {
     "typescript": "^5",
@@ -400,16 +403,27 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 ## 11. Infrastructure
 
-| Service   | Purpose               | Notes                                                                                   |
-| --------- | --------------------- | --------------------------------------------------------------------------------------- |
-| Vercel    | Hosting + deployment  | Connected to GitHub — auto-deploys on push to `main`; feature branches get preview URLs |
-| Namecheap | Domain registrar only | crimsonc9.com — DNS not yet pointed to Vercel (happens at launch)                       |
-| Supabase  | Backend               | Managed by Nick; Aaron has owner access                                                 |
-| Zoho Mail | Email                 | hello@crimsonc9.com — must not be disrupted by DNS changes                              |
+| Service      | Purpose               | Notes                                                                                                   |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Vercel       | Hosting + deployment  | Connected to GitHub — auto-deploys on push to `main`; feature branches get preview URLs                 |
+| Namecheap    | Domain registrar only | crimsonc9.com — registration only, no hosting, no DNS                                                   |
+| Cloudflare   | DNS + CDN             | DNS live and pointed at Vercel; also used for Backblaze B2 egress (free via Bandwidth Alliance)         |
+| Backblaze B2 | Media storage         | Self-hosted photos and assets; S3-compatible API; free egress via Cloudflare; bucket: `crimsonc9-media` |
+| Supabase     | Backend               | Managed by Nick; Aaron has owner access                                                                 |
+| Zoho Mail    | Email                 | hello@crimsonc9.com — must not be disrupted by DNS changes                                              |
 
 ---
 
-## 12. Social Links
+## 11.5 Media Storage Strategy
+
+| Content type                                   | Where it lives                          | Notes                                                |
+| ---------------------------------------------- | --------------------------------------- | ---------------------------------------------------- |
+| Static brand assets (logo, fixed visuals)      | `/public` folder in repo                | Served via Vercel CDN automatically                  |
+| Event photos, artist portraits, uploaded media | Backblaze B2 (`crimsonc9-media` bucket) | Free egress via Cloudflare; S3-compatible API        |
+| Public video (event aftermovies, sets)         | YouTube / SoundCloud embed              | Store embed URL in content layer; zero hosting cost  |
+| Exclusive/private video                        | Bunny.net or Cloudflare Stream          | TBD — only needed when self-hosted video is required |
+
+**Key principle:** Never store large media files in Supabase or the codebase. Store the URL in the database, the file in Backblaze B2 or an embed platform.
 
 | Platform           | URL                                |
 | ------------------ | ---------------------------------- |
@@ -442,19 +456,21 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 Build in this order, one component at a time:
 
-1. ✅ Dagon logo centrepiece (sticky, centered, hover scale animation)
+1. ✅ Dragon logo centrepiece (sticky, centered, hover scale animation)
    1.2 Universal Hovering Hamburger Menu with navigation links
-2. Homepage — hero, scroll journey, three pillars (Discover / Connect / Fun)
-3. Artists / Roster page — animated roster, bio overlays, individual artist template
-4. Events page — entry screen, upcoming events, archive structure
-5. Connect page — social links, WhatsApp, collaboration invite, outreach form
-6. About page — history, identity, visual anchoring
+2. ✅ Branded holding page live at crimsonc9.com with Weeztix ticket embed and social links
+3. Homepage — hero, scroll journey, three pillars (Discover / Connect / Fun)
+4. Artists / Roster page — animated roster, bio overlays, individual artist template
+5. Events page — entry screen, upcoming events, archive structure
+6. Connect page — social links, WhatsApp, collaboration invite, outreach form
+7. About page — history, identity, visual anchoring
 
 ### Phase 4 — CMS & Backend
 
-- Sanity CMS schema: events, artist bios, releases
-- Supabase: DB schema, auth setup, file storage
-- Connect Sanity content to Artist and Events pages
+- **CMS decision pending** — options are Sanity CMS (polished admin UI, structured content), Supabase-only (no separate CMS, build admin pages ourselves), or markdown files in repo (simplest, developer-only). Decide before building content-driven pages.
+- Supabase: DB schema, auth setup
+- Backblaze B2: confirm upload flow with Nick via S3-compatible API
+- Connect content layer to Artist and Events pages
 - Environment variables added to Vercel
 
 ### Phase 5 — Secondary Features
@@ -476,10 +492,10 @@ Build in this order, one component at a time:
 - User testing with collective members
 - Cross-browser and device testing
 - Full content population
-- Point crimsonc9.com DNS to Vercel
+- DNS already live on Cloudflare and pointed at Vercel ✅
 - Soft launch — target: before Summer 2026
 
 ---
 
-_Document last updated: June 2026_
-_Maintained by Aaron — update after major decisions, new features, or stack changes_
+_Document last updated: June 27 2026_
+_Please update after major decisions, new features, or stack changes_
