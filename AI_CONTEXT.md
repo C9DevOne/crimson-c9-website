@@ -1,17 +1,21 @@
 # CrimsonC9 — AI Context Document
 
-_Load this file at the start of every Windsurf/Cascade session before writing any code._
-
 ---
 
 ## 1. Project Overview
 
-**Name:** CrimsonC9 (always one word, no space — never "Crimson C9")
+**Name:** CrimsonC9
+
 **Tagline:** "Change Through Music"
-**Type:** Techno music collective + aspiring fashion brand
+
+**Type:** Techno music collective
+
 **Location:** Berlin/Cologne/Aachen Germany
+
 **Website:** crimsonc9.com
+
 **GitHub Org:** github.com/C9DevOne
+
 **Repo:** github.com/C9DevOne/crimson-c9-website
 
 ---
@@ -30,14 +34,9 @@ CrimsonC9 is the online home for a young Berlin, Cologne and Aachen based techno
 
 ---
 
-## 3. Team
+## 3. Team and AI Communication Preferences
 
-| Person | Role                                         |
-| ------ | -------------------------------------------- |
-| Aaron  | Frontend lead                                |
-| Nick   | Backend developer (Supabase, API routes, DB) |
-
-AI Note: Aaron has a CS background and is actively learning through the build process. Always explain the _why_ behind technical decisions, not just the what. Reasoning matters more than instructions.
+Aaron: has a CS background and is actively learning through the build process. Always explain the _why_ behind technical decisions, not just the what. Reasoning matters more than instructions.
 
 ---
 
@@ -45,55 +44,83 @@ AI Note: Aaron has a CS background and is actively learning through the build pr
 
 ### Frontend
 
-| Technology        | Purpose                      | Notes                                             |
+| Technology        | Purpose                      | Notes                                             |
+
 | ----------------- | ---------------------------- | ------------------------------------------------- |
-| Next.js 15        | React framework              | App Router only — never Pages Router              |
-| TypeScript        | Type safety                  | All files must be .tsx/.ts — no plain .js         |
-| Tailwind CSS v4   | Utility-first styling        | CSS variables for all brand tokens                |
-| GSAP 3            | Web animation                | Scroll triggers, timelines, staggered entrances   |
-| Lenis             | Smooth scroll                | Pairs with GSAP ScrollTrigger                     |
-| Three.js          | 3D graphics                  | Browser-based WebGL                               |
-| React Three Fiber | React wrapper for Three.js   | Write 3D scenes as React components               |
-| @react-three/drei | R3F helper library           | Pre-built 3D primitives, cameras, effects         |
-| Framer Motion     | UI animation                 | Component-level transitions and layout animations |
-| tw-animate-css    | Tailwind animation utilities |                                                   |
+
+| Next.js 15        | React framework              | App Router only — never Pages Router              |
+
+| TypeScript        | Type safety                  | All files must be .tsx/.ts — no plain .js         |
+
+| Tailwind CSS v4   | Utility-first styling        | CSS variables for all brand tokens                |
+
+| GSAP 3            | Web animation                | Scroll triggers, timelines, staggered entrances   |
+
+| Lenis             | Smooth scroll                | Pairs with GSAP ScrollTrigger                     |
+
+| Three.js          | 3D graphics                  | Browser-based WebGL                               |
+
+| React Three Fiber | React wrapper for Three.js   | Write 3D scenes as React components               |
+
+| @react-three/drei | R3F helper library           | Pre-built 3D primitives, cameras, effects         |
+
+| Framer Motion     | UI animation                 | Component-level transitions and layout animations |
+
+| tw-animate-css    | Tailwind animation utilities |                                                   |
 
 ### Animation Decision Guide
 
 Both GSAP and Framer Motion are installed. Use them as follows — **this is a pending decision to confirm before building animation-heavy components:**
 
 - **GSAP** is better suited for scroll-driven animations, complex timelines, and staggered sequences (e.g. hero reveals, scroll journeys)
+
 - **Framer Motion** is better suited for component-level transitions, page transitions, and layout animations (e.g. modals opening, list items appearing)
+
 - When in doubt, flag it and ask Aaron rather than picking arbitrarily
 
 ### Backend / Services
 
-| Technology | Purpose                                        |
+| Technology | Purpose                                        |
+
 | ---------- | ---------------------------------------------- |
-| Supabase   | Database, auth, file storage, API              |
+
+| Supabase   | Database, auth, file storage, API              |
+
 | Sanity CMS | Headless CMS for events, releases, artist bios |
-| Stripe     | Payments for shop/merch                        |
+
+| Stripe     | Payments for shop/merch                        |
 
 ### Component Layer
 
-| Technology               | Purpose                            | Notes                                                                                      |
-| ------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------------ |
-| Shadcn UI                | Pre-built accessible UI components | Fully owned in codebase, fully customisable                                                |
-| Radix UI                 | Headless component primitives      | Underpins Shadcn                                                                           |
-| class-variance-authority | Component variant management       |                                                                                            |
-| tailwind-merge           | Tailwind class merging utility     |                                                                                            |
-| lucide-react             | UI icon library                    | Arrows, close, menu, chevrons, UI controls                                                 |
-| react-icons              | Brand/social icon library          | Instagram, SoundCloud, Spotify, YouTube etc — import from react-icons/ri or react-icons/fa |
+| Technology               | Purpose                            | Notes                                       |
 
-Do not add new UI component libraries without discussing with Aaron first. Shadcn is the approved choice.
+| ------------------------ | ---------------------------------- | ------------------------------------------- |
+
+| Shadcn UI                | Pre-built accessible UI components | Fully owned in codebase, fully customisable |
+
+| Radix UI                 | Headless component primitives      | Underpins Shadcn                            |
+
+| class-variance-authority | Component variant management       |                                             |
+
+| tailwind-merge           | Tailwind class merging utility     |                                             |
+
+| lucide-react             | UI icon library                    | Arrows, close, menu, chevrons, UI controls  |
+
+| react-icons              | Brand/social icon library          | Instagram, SoundCloud, Spotify, YouTube etc — import from react-icons/ri or react-icons/fa |
+
+Do not add new UI component libraries without discussing with developer first. Shadcn is the approved choice.
 
 ### Tooling
 
-| Technology                             | Purpose                |
+| Technology                             | Purpose                |
+
 | -------------------------------------- | ---------------------- |
-| ESLint                                 | Linting                |
-| Prettier + prettier-plugin-tailwindcss | Code formatting        |
-| Vercel                                 | Deployment and hosting |
+
+| ESLint                                 | Linting                |
+
+| Prettier + prettier-plugin-tailwindcss | Code formatting        |
+
+| Vercel                                 | Deployment and hosting |
 
 ---
 
@@ -101,11 +128,14 @@ Do not add new UI component libraries without discussing with Aaron first. Shadc
 
 ### Aesthetic & Mood
 
-- Underground Berlin techno with visual artistry
 - Organic and geometric — nature meets structure
+
 - Dragon as central brand element
+
 - "Something is growing here" — growth narrative throughout
+
 - Blend of natural and futuristic elements
+
 - Think: elegant, minimal, surprising, clean, natural
 
 ### Design Keywords
@@ -115,36 +145,44 @@ Clean · Organic · Geometric · Minimal · Elegant
 ### Visual Principles
 
 1. **Visuals first** — images, video, and 3D elements take centre stage. Every section needs a strong visual identity.
+
 2. **Clean UI** — minimal, elegant interfaces. Information is clear and accessible despite the artistic ambition.
+
 3. **Vibe** — easily identifiable structure without needing much explanation. The site should orient visitors intuitively.
 
 ### Colour Palette
 
 ```css
 --background: #0a0a0a; /* near-black, primary background */
+
 --foreground: #f5f5f5; /* off-white, primary text */
+
 --brand-crimson: #510606; /* confirmed primary accent — deep crimson/burgundy red */
+
 --secondary: #1a1a1a; /* surface colour */
+
 --muted-foreground: #a1a1aa; /* subdued text */
+
 --brand-accent: #cc5500; /* fire accent — ember orange, confirmed */
 ```
 
 Do not hardcode any colour values. Always reference CSS variables. If a colour isn't yet tokenised, flag it and ask rather than inventing a value.
 
-### Logo Behaviour
-
-- The C9 dragon logo inverts colours based on background (inspired by leonardoliviero.com)
-- Dark background → light logo; light background → dark logo
-
 ### Reference Sites
 
-| Site                | What to take from it                                                    |
+| Site                | What to take from it                                                    |
+
 | ------------------- | ----------------------------------------------------------------------- |
-| boomland.eu         | Organic geometric visual style, events timeline approach                |
-| hyper-dreams.com    | Artist section interaction — minimal, navigatable booking feel          |
-| insanefestival.com  | Clean UI, clear colour palette, strong section hierarchy                |
-| bemo.studio         | Visuals as primary focus — but less overwhelming than this on CrimsonC9 |
-| leonardoliviero.com | Simplicity, elegance, the inverted logo colour behaviour                |
+
+| boomland.eu         | Organic geometric visual style, events timeline approach                |
+
+| hyper-dreams.com    | Artist section interaction — minimal, navigatable booking feel          |
+
+| insanefestival.com  | Clean UI, clear colour palette, strong section hierarchy                |
+
+| bemo.studio         | Visuals as primary focus — but less overwhelming than this on CrimsonC9 |
+
+| leonardoliviero.com | Simplicity, elegance, the inverted logo colour behaviour                |
 
 ---
 
@@ -152,21 +190,28 @@ Do not hardcode any colour values. Always reference CSS variables. If a colour i
 
 ### Typography System
 
-| Role               | Font              | Usage                                             |
+| Role               | Font              | Usage                                             |
+
 | ------------------ | ----------------- | ------------------------------------------------- |
-| Display / Artistic | Cinzel Decorative | Hero text, section titles, brand moments          |
-| Body / Reading     | Philosopher       | Article text, artist bios, longer content         |
-| UI / Interface     | DM Sans           | Nav items, buttons, labels, captions, form fields |
+
+| Display / Artistic | Cinzel Decorative | Hero text, section titles, brand moments          |
+
+| Body / Reading     | Philosopher       | Article text, artist bios, longer content         |
+
+| UI / Interface     | DM Sans           | Nav items, buttons, labels, captions, form fields |
 
 CSS variables: `--font-display`, `--font-body`, `--font-ui`
 
 All three fonts are available on Google Fonts and should be loaded
+
 via Next.js's next/font system in layout.tsx for performance.
 
 ### Spacing
 
 Direction: generous. Sections breathe, content is not crowded.
+
 Lean toward larger padding and margin values than Tailwind defaults
+
 suggest. When in doubt, add more whitespace rather than less.
 
 ### Border Radius
@@ -174,7 +219,9 @@ suggest. When in doubt, add more whitespace rather than less.
 Primary direction: rounded corners.
 
 - Cards, images, media containers → `rounded-2xl` or `rounded-3xl`
+
 - Buttons and inputs → `rounded-full` or `rounded-xl`
+
 - Sharp/no radius reserved for intentional exceptions only
 
 ### Motion Personality
@@ -182,19 +229,29 @@ Primary direction: rounded corners.
 Smooth, swift, and balanced.
 
 - Animations should feel considered — not slow and cinematic,
-  not snappy and aggressive. Find the middle.
+
+  not snappy and aggressive. Find the middle.
+
 - Default duration range: 400ms–700ms
+
 - Preferred easing: ease-out for entrances, ease-in-out for
-  transitions, never linear
+
+  transitions, never linear
+
 - GSAP default ease: `power2.out`
+
 - No jarring cuts or instant state changes — everything transitions
 
 ### Responsive Strategy
 
 Desktop-first. Mobile layout is a future phase.
+
 Build for desktop viewport widths first. Apply a sensible minimum
+
 width (min-width: 768px or similar) so the site doesn't completely
+
 break on smaller screens before the mobile pass. Do not invest time
+
 in mobile-specific layouts until Phase 6.
 
 ## 6. Site Structure
@@ -206,9 +263,13 @@ in mobile-specific layouts until Phase 6.
 Entry point. Pull visitors in and communicate the vibe immediately.
 
 - Heavy visual focus — "diving into a new world"
+
 - Scroll-based journey introducing who we are
+
 - Introduces the three pillars: Discover, Connect, Fun
+
 - Universal menu button (top-left positioning concept)
+
 - Clear navigation to Artists, Events, Music sections
 
 #### Artists / Roster Page — `/artists`
@@ -216,10 +277,15 @@ Entry point. Pull visitors in and communicate the vibe immediately.
 Showcase residents for bookings and creative expression.
 
 - Main roster overview with all artists
+
 - Individual artist pages at `/artists/[artist-name]`
+
 - Each artist gets a customisable space within a shared framework
+
 - On hover: bio overlay → click through to full individual page
+
 - For bookers: quick browse of styles + contact paths (email + socials)
+
 - Interaction reference: hyper-dreams.com
 
 #### Events Page — `/events`
@@ -227,7 +293,9 @@ Showcase residents for bookings and creative expression.
 Showcase events and build an archive timeline. Three parts:
 
 1. Visually striking entry screen introducing the CrimsonC9 events world
+
 2. Upcoming events with links to ticket sites, Resident Advisor, promo materials
+
 3. Digital archive — each past event gets its own entry with date, venue, photos, video, lineup, recordings
 
 #### Connect Page — `/connect`
@@ -235,9 +303,13 @@ Showcase events and build an archive timeline. Three parts:
 Central access point for community and social channels.
 
 - All social media links (Instagram, YouTube, SoundCloud, Spotify)
+
 - WhatsApp community join link
+
 - Collaboration invite — "let's work together" messaging for other collectives
+
 - Outreach/contact form with considered design (potentially its own dedicated experience)
+
 - Volunteer/contributor invite — people can join and grow with the project
 
 #### About Us — `/about`
@@ -249,24 +321,35 @@ History of CrimsonC9, where we come from, core identity. Text and visual anchori
 #### Music / Label Page — `/music` _(priority TBD)_
 
 - Released tracks and projects
+
 - Spitfire Techno Podcast
+
 - Embedded SoundCloud + Spotify players
+
 - "Listening lounge" concept with cool visuals
+
 - May merge with another section depending on site flow
 
 #### Broadcast / News — `/broadcast` _(planned, not immediate)_
 
 - Blog-style updates and news
+
 - Embedded social feeds (Instagram + YouTube)
+
 - Community announcements
 
 ### Future Vision (Long-term, not in scope now)
 
 - Mobile-optimised layout
+
 - "The Playground" — online forum/community space
+
 - Personal user accounts with profile/portfolio space
+
 - "The Library" — collaborative knowledge base
+
 - Shop — merch purchases
+
 - Own ticketing system
 
 ---
@@ -274,28 +357,51 @@ History of CrimsonC9, where we come from, core identity. Text and visual anchori
 ## 7. Folder Structure
 
 ```
+
 crimson-c9-website/
-├── app/                        # Next.js App Router pages
-│   ├── globals.css             # Global styles + CSS variables
-│   ├── layout.tsx              # Root layout, metadata
-│   ├── page.tsx                # Homepage
-│   ├── artists/
-│   │   ├── page.tsx            # Roster overview
-│   │   └── [slug]/page.tsx     # Individual artist pages
-│   ├── events/page.tsx
-│   ├── connect/page.tsx
-│   └── about/page.tsx
+
+├── app/                        # Next.js App Router pages
+
+│   ├── globals.css             # Global styles + CSS variables
+
+│   ├── layout.tsx              # Root layout, metadata
+
+│   ├── page.tsx                # Homepage
+
+│   ├── artists/
+
+│   │   ├── page.tsx            # Roster overview
+
+│   │   └── [slug]/page.tsx     # Individual artist pages
+
+│   ├── events/page.tsx
+
+│   ├── connect/page.tsx
+
+│   └── about/page.tsx
+
 ├── components/
-│   ├── layout/                 # Navbar, footer, page wrappers
-│   ├── ui/                     # Reusable interface elements
-│   └── animations/             # GSAP wrappers, Three.js scenes
-├── hooks/                      # Custom React hooks
-├── lib/                        # Utility functions, API helpers
+
+│   ├── layout/                 # Navbar, footer, page wrappers
+
+│   ├── ui/                     # Reusable interface elements
+
+│   └── animations/             # GSAP wrappers, Three.js scenes
+
+├── hooks/                      # Custom React hooks
+
+├── lib/                        # Utility functions, API helpers
+
 ├── public/
-│   └── fonts/                  # Local font files
-├── AI_CONTEXT.md               # This file
+
+│   └── fonts/                  # Local font files
+
+├── AI_CONTEXT.md               # This file
+
 ├── package.json
+
 └── next.config.ts
+
 ```
 
 ---
@@ -303,54 +409,67 @@ crimson-c9-website/
 ## 8. Coding Conventions
 
 - **App Router only** — never use the Pages Router
+
 - **TypeScript everywhere** — no plain `.js` files, all files are `.tsx` or `.ts`
+
 - **Styling** — Tailwind utility classes + CSS variables for all brand tokens
+
 - **No hardcoded colours** — always use CSS variables, e.g. `var(--brand-crimson)`
+
 - **No hardcoded fonts** — always use CSS variables, e.g. `var(--font-display)`
+
 - **GSAP animations** — in dedicated hooks or components under `components/animations/`
+
 - **Component libraries** — Shadcn only; do not add new UI libraries without discussion
+
 - **Icons** — lucide-react for UI icons (arrows, close, menu etc); react-icons for brand/social icons (Instagram, SoundCloud, Spotify etc). Do not use one where the other is appropriate
+
 - **Commits** — Conventional Commits format: `feat:`, `fix:`, `style:`, `refactor:`, `docs:`, `init:`
+
 - **Branching** — always work on a feature branch; merge to `main` only when tested and working
 
 ---
 
 ## 9. Development Environment
 
-### Setup
-
-- **OS:** Windows, H:\ external drive
-- **Project path:** `H:\Crimson\Code\website`
-- **Shell:** PowerShell
-- **Editor:** VS Code (daily), Windsurf (AI-assisted sessions)
-- **Node:** v24 LTS
-
 ### Critical PowerShell Gotchas
 
 These have caused real problems before — do not repeat them:
 
-| Issue                   | Wrong                     | Correct                                                            |
+| Issue                   | Wrong                     | Correct                                                            |
+
 | ----------------------- | ------------------------- | ------------------------------------------------------------------ |
-| Creating multiple dirs  | `mkdir -p a b c`          | Run `mkdir a`, `mkdir b`, `mkdir c` separately                     |
-| Creating empty files    | `echo $null > file`       | `New-Item filename`                                                |
-| Path separators         | `/` sometimes fails       | Use `\` backslashes                                                |
-| Deleting node_modules   | Looks stuck/frozen        | It's working — 50k+ files take time, just wait                     |
-| `npm audit fix --force` | **NEVER USE**             | Downgraded Next.js from v15 to v9.3.3 — use `npm audit fix` only   |
-| Git on external drive   | "Dubious ownership" error | `git config --global --add safe.directory H:/Crimson/Code/website` |
+
+| Creating multiple dirs  | `mkdir -p a b c`          | Run `mkdir a`, `mkdir b`, `mkdir c` separately                     |
+
+| Creating empty files    | `echo $null > file`       | `New-Item filename`                                                |
+
+| Path separators         | `/` sometimes fails       | Use `\` backslashes                                                |
+
+| Deleting node_modules   | Looks stuck/frozen        | It's working — 50k+ files take time, just wait                     |
+
+| `npm audit fix --force` | **NEVER USE**             | Downgraded Next.js from v15 to v9.3.3 — use `npm audit fix` only   |
+
+| Git on external drive   | "Dubious ownership" error | `git config --global --add safe.directory H:/Crimson/Code/website` |
 
 ### Dependency Recovery
 
 If dependencies break:
 
 ```powershell
+
 Remove-Item -Recurse -Force node_modules
+
 Remove-Item package-lock.json
+
 npm install
+
 ```
 
 Then verify `package.json` — key versions that must not be downgraded:
 
 - `"next"` → `"^15.3.3"`
+
 - `"eslint-config-next"` → must match Next.js version
 
 ---
@@ -361,39 +480,71 @@ Then verify `package.json` — key versions that must not be downgraded:
 {
   "dependencies": {
     "next": "^15.3.3",
+
     "react": "19.2.4",
+
     "react-dom": "19.2.4",
+
     "gsap": "^3.15.0",
+
     "lenis": "^1.3.23",
+
     "@studio-freight/lenis": "^1.0.42",
+
     "three": "^0.184.0",
+
     "@react-three/fiber": "^9.6.1",
+
     "@react-three/drei": "^10.7.7",
+
     "framer-motion": "^12.40.0",
+
     "tw-animate-css": "^1.4.0",
+
     "shadcn": "^4.10.0",
+
     "radix-ui": "^1.4.3",
+
     "@radix-ui/react-dialog": "^1.1.15",
+
     "@radix-ui/react-slot": "^1.2.4",
+
     "@radix-ui/react-tooltip": "^1.2.8",
+
     "@radix-ui/react-separator": "^1.1.8",
+
     "class-variance-authority": "^0.7.1",
+
     "clsx": "^2.1.1",
+
     "tailwind-merge": "^3.6.0",
+
     "lucide-react": "^1.17.0",
+
     "react-icons": "^5.0.0"
   },
+
   "devDependencies": {
     "typescript": "^5",
+
     "tailwindcss": "^4",
+
     "@tailwindcss/postcss": "^4",
+
     "eslint": "^9",
+
     "eslint-config-next": "^15.3.3",
+
     "prettier": "^3.8.3",
+
     "prettier-plugin-tailwindcss": "^0.8.0",
+
     "@types/node": "^20",
+
     "@types/react": "^19",
+
     "@types/react-dom": "^19",
+
     "@types/three": "^0.184.1"
   }
 }
@@ -403,99 +554,54 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 ## 11. Infrastructure
 
-| Service      | Purpose               | Notes                                                                                                   |
-| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| Vercel       | Hosting + deployment  | Connected to GitHub — auto-deploys on push to `main`; feature branches get preview URLs                 |
-| Namecheap    | Domain registrar only | crimsonc9.com — registration only, no hosting, no DNS                                                   |
-| Cloudflare   | DNS + CDN             | DNS live and pointed at Vercel; also used for Backblaze B2 egress (free via Bandwidth Alliance)         |
-| Backblaze B2 | Media storage         | Self-hosted photos and assets; S3-compatible API; free egress via Cloudflare; bucket: `crimsonc9-media` |
-| Supabase     | Backend               | Managed by Nick; Aaron has owner access                                                                 |
-| Zoho Mail    | Email                 | hello@crimsonc9.com — must not be disrupted by DNS changes                                              |
+| Service        | Purpose               | Notes                                                                                   |
+
+| -------------- | --------------------- | --------------------------------------------------------------------------------------- |
+
+| Vercel         | Hosting + deployment  | Connected to GitHub — auto-deploys on push to `main`; feature branches get preview URLs |
+
+| Namecheap      | Domain registrar only | crimsonc9.com — registration only, no hosting, no DNS                                   |
+
+| Cloudflare     | DNS + CDN             | DNS live and pointed at Vercel; also used for Backblaze B2 egress (free via Bandwidth Alliance) |
+
+| Backblaze B2   | Media storage         | Self-hosted photos and assets; S3-compatible API; free egress via Cloudflare; bucket: `C9-Home-Storage` |
+
+| Supabase       | Backend               |                                         |
+
+| Zoho Mail      | Email                 | hello@crimsonc9.com — must not be disrupted by DNS changes                              |
 
 ---
 
 ## 11.5 Media Storage Strategy
 
-| Content type                                   | Where it lives                          | Notes                                                |
-| ---------------------------------------------- | --------------------------------------- | ---------------------------------------------------- |
-| Static brand assets (logo, fixed visuals)      | `/public` folder in repo                | Served via Vercel CDN automatically                  |
-| Event photos, artist portraits, uploaded media | Backblaze B2 (`crimsonc9-media` bucket) | Free egress via Cloudflare; S3-compatible API        |
-| Public video (event aftermovies, sets)         | YouTube / SoundCloud embed              | Store embed URL in content layer; zero hosting cost  |
-| Exclusive/private video                        | Bunny.net or Cloudflare Stream          | TBD — only needed when self-hosted video is required |
+| Content type | Where it lives | Notes |
+
+|-------------|---------------|-------|
+
+| Static brand assets (logo, fixed visuals) | `/public` folder in repo | Served via Vercel CDN automatically |
+
+| Event photos, artist portraits, uploaded media | Backblaze B2 (`C9-Home-Storage` bucket) | Free egress via Cloudflare; S3-compatible API |
+
+| Public video (event aftermovies, sets) | YouTube / SoundCloud embed | Store embed URL in content layer; zero hosting cost |
+
+| Exclusive/private video | Bunny.net or Cloudflare Stream | TBD — only needed when self-hosted video is required |
 
 **Key principle:** Never store large media files in Supabase or the codebase. Store the URL in the database, the file in Backblaze B2 or an embed platform.
 
-| Platform           | URL                                |
+| Platform           | URL                                |
+
 | ------------------ | ---------------------------------- |
-| Instagram          | instagram.com/crimsonc9            |
-| SoundCloud         | soundcloud.com/crimsonc9           |
-| WhatsApp Community | TBD                                |
-| YouTube            | https://www.youtube.com/@CrimsonC9 |
 
----
+| Instagram          | instagram.com/crimsonc9            |
 
-## 14. Development Phases
+| SoundCloud         | soundcloud.com/crimsonc9           |
 
-### Phase 1 — Foundation (DONE)
+| WhatsApp Community | https://chat.whatsapp.com/LhsIlkJzr0r1jH4oloBnuL  |
 
-- Next.js 15 scaffolded with TypeScript, Tailwind v4, Turbopack
-- Core dependencies installed
-- Folder structure created
-- Brand CSS variables set in globals.css
-- Repo live at github.com/C9DevOne/crimson-c9-website
-- Vercel connected and deploying
-
-### Phase 2 — Design System (DONE)
-
-- ✅ Confirm orange/fire accent colour values (#cc5500) and add to CSS tokens
-- ✅ Set up Cinzel Decorative + Philosopher + DM Sans font loading in layout.tsx
-- ✅ Build design token reference page (`/dev/tokens`) to verify colours, fonts, spacing, radius, motion
-- ✅ Confirm GSAP vs Framer Motion usage rule — Framer Motion for UI/component animations
-
-### Phase 3 — Core Pages (IN PROGRESS)
-
-Build in this order, one component at a time:
-
-1. ✅ Dragon logo centrepiece (sticky, centered, hover scale animation)
-   1.2 Universal Hovering Hamburger Menu with navigation links
-2. ✅ Branded holding page live at crimsonc9.com with Weeztix ticket embed and social links
-3. Homepage — hero, scroll journey, three pillars (Discover / Connect / Fun)
-4. Artists / Roster page — animated roster, bio overlays, individual artist template
-5. Events page — entry screen, upcoming events, archive structure
-6. Connect page — social links, WhatsApp, collaboration invite, outreach form
-7. About page — history, identity, visual anchoring
-
-### Phase 4 — CMS & Backend
-
-- **CMS decision pending** — options are Sanity CMS (polished admin UI, structured content), Supabase-only (no separate CMS, build admin pages ourselves), or markdown files in repo (simplest, developer-only). Decide before building content-driven pages.
-- Supabase: DB schema, auth setup
-- Backblaze B2: confirm upload flow with Nick via S3-compatible API
-- Connect content layer to Artist and Events pages
-- Environment variables added to Vercel
-
-### Phase 5 — Secondary Features
-
-- Music / Label page with embedded players
-- Broadcast / News page with social feed embeds
-- Stripe integration scaffolding (shop groundwork)
-
-### Phase 6 — Polish & 3D
-
-- GSAP scroll animations and page transitions
-- Three.js / R3F integrations (3D elements, easter eggs)
-- Lenis smooth scroll tuning
-- Mobile optimisation throughout
-- Performance audit
-
-### Phase 7 — Testing & Launch
-
-- User testing with collective members
-- Cross-browser and device testing
-- Full content population
-- DNS already live on Cloudflare and pointed at Vercel ✅
-- Soft launch — target: before Summer 2026
+| YouTube            | https://www.youtube.com/@CrimsonC9 |
 
 ---
 
 _Document last updated: June 27 2026_
+
 _Please update after major decisions, new features, or stack changes_
