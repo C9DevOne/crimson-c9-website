@@ -76,7 +76,7 @@ Both GSAP and Framer Motion are installed. Use them as follows — **this is a p
 
 - **Framer Motion** is better suited for component-level transitions, page transitions, and layout animations (e.g. modals opening, list items appearing)
 
-- When in doubt, flag it and ask Aaron rather than picking arbitrarily
+- When in doubt, flag it and ask developer rather than picking arbitrarily
 
 ### Backend / Services
 
@@ -86,7 +86,7 @@ Both GSAP and Framer Motion are installed. Use them as follows — **this is a p
 
 | Supabase   | Database, auth, file storage, API              |
 
-| Sanity CMS | Headless CMS for events, releases, artist bios |
+| Payload CMS | Headless CMS for events, releases, artist bios | Installed as a Next.js plugin — lives in the same repo and deployment. Nick has prior experience. Artists upload media via Payload UI; an afterChange hook pushes files to Backblaze B2. Scoped access control: artists can only edit their own records. |
 
 | Stripe     | Payments for shop/merch                        |
 
@@ -271,6 +271,8 @@ Entry point. Pull visitors in and communicate the vibe immediately.
 - Universal menu button (top-left positioning concept)
 
 - Clear navigation to Artists, Events, Music sections
+
+- **Current temporary implementation:** "Bunker Dreams" ticket overlay with Weeztix widget, crimson logo favicon, and social links.
 
 #### Artists / Roster Page — `/artists`
 
@@ -580,7 +582,7 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 | Static brand assets (logo, fixed visuals) | `/public` folder in repo | Served via Vercel CDN automatically |
 
-| Event photos, artist portraits, uploaded media | Backblaze B2 (`C9-Home-Storage` bucket) | Free egress via Cloudflare; S3-compatible API |
+| Event photos, artist portraits, uploaded media | Backblaze B2 (`C9-Home-Storage` bucket) | Artists upload via Payload CMS UI; a Payload afterChange hook pushes to B2 automatically. Free egress via Cloudflare. |
 
 | Public video (event aftermovies, sets) | YouTube / SoundCloud embed | Store embed URL in content layer; zero hosting cost |
 
@@ -602,6 +604,6 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 ---
 
-_Document last updated: June 27 2026_
+_Document last updated: July 7 2026_
 
 _Please update after major decisions, new features, or stack changes_
