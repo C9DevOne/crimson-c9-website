@@ -28,7 +28,8 @@ const dmSans = DM_Sans({
 
 export const metadata = {
   title: "CrimsonC9",
-  description: "Change Through Music",
+  description:
+    "Change Through Music. CrimsonC9 is a young Techno collective, label and event curator that serves as a platform for emerging artists to showcase their unique talent and passion for music to the world",
 };
 
 export default function RootLayout({
