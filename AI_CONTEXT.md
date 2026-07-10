@@ -272,7 +272,7 @@ Entry point. Pull visitors in and communicate the vibe immediately.
 
 - Clear navigation to Artists, Events, Music sections
 
-- **Current temporary implementation:** "Bunker Dreams" ticket overlay with Weeztix widget, crimson logo favicon, and social links.
+- **Current temporary implementation:** "Bunker Dreams" Ticket Portal at `/`. The shared Navbar, Sidebar, and Footer are removed from the root layout so only the portal page is visible. Uses a full-viewport `key_portal_background_169.png` background with soft edge vignette that dynamically covers/crops per device. Content sits directly on the background (no card) with Weeztix widget, crimson logo favicon, and social links. All other routes (artists, events, music, connect, about, contact, imprint, support, terms, dev/tokens) are temporarily disabled by renaming their folders with a `_` prefix so they are unreachable while the site operates as a single-page ticket portal.
 
 #### Artists / Roster Page — `/artists`
 
@@ -604,6 +604,6 @@ Then verify `package.json` — key versions that must not be downgraded:
 
 ---
 
-_Document last updated: July 7 2026_
+_Document last updated: July 10 2026_
 
 _Please update after major decisions, new features, or stack changes_

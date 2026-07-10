@@ -92,7 +92,7 @@
   }
 }
 
-/* Weeztix ticket widget: keep the injected iframe responsive, let the wrapper scroll */
+/* Weeztix ticket widget: keep the injected iframe responsive and let it grow with the page */
 .ot-iframe {
   width: 100%;
 }
@@ -152,7 +152,141 @@
     0 0 5px color-mix(in srgb, var(--glow-accent) 80%, transparent),
     0 0 15px color-mix(in srgb, var(--glow-accent) 60%, transparent),
     0 0 30px color-mix(in srgb, var(--glow-accent) 40%, transparent),
-    0 0 60px color-mix(in srgb, var(--glow-accent) 20%, transparent);
+    0 0 60px color-mix(in srgb, var(--glow-accent) 20%, transparent),
+    0 1px 4px var(--background);
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+/* Soft white glow for supporting text */
+.glow-text {
+  text-shadow:
+    0 0 6px color-mix(in srgb, var(--foreground) 50%, transparent),
+    0 0 18px color-mix(in srgb, var(--foreground) 30%, transparent),
+    0 1px 3px var(--background);
+}
+
+/* Soft orange glow for accent-coloured supporting text */
+.glow-text-accent {
+  text-shadow:
+    0 0 6px color-mix(in srgb, var(--glow-accent) 50%, transparent),
+    0 0 18px color-mix(in srgb, var(--glow-accent) 30%, transparent),
+    0 1px 3px var(--background);
+}
+
+/* Soft white glow for icons */
+.glow-icon {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--foreground) 50%, transparent))
+    drop-shadow(0 1px 2px var(--background));
+}
+
+/* Portal-style background image with subtle float */
+.dream-bg {
+  animation: floatBg 60s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes floatBg {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.005) translate(0.1%, -0.1%);
+  }
+}
+
+/* Breathing colour overlay */
+.dream-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      color-mix(in srgb, var(--brand-crimson) 15%, transparent) 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brand-crimson) 20%, transparent) 0%,
+      transparent 45%,
+      color-mix(in srgb, var(--brand-accent) 20%, transparent) 100%
+    );
+  animation: pulseOverlay 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseOverlay {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+/* Slow shimmer sweep */
+.dream-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    color-mix(in srgb, var(--glow-accent) 8%, transparent) 25%,
+    color-mix(in srgb, var(--foreground) 6%, transparent) 50%,
+    color-mix(in srgb, var(--glow-accent) 8%, transparent) 75%,
+    transparent 100%
+  );
+  background-size: 300% 100%;
+  animation: shimmerSweep 16s linear infinite;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* Soft radial fade so every edge of the image blends into the background */
+.dream-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 0%,
+    transparent 35%,
+    color-mix(in srgb, var(--background) 40%, transparent) 68%,
+    color-mix(in srgb, var(--background) 78%, transparent) 88%,
+    var(--background) 100%
+  );
+  pointer-events: none;
+}
+
+/* Very subtle pulsing glow on the background image */
+.dream-pulse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--foreground) 8%, transparent) 0%,
+    transparent 55%
+  );
+  animation: pulseGlow 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
