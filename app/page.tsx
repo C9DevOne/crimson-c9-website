@@ -31,7 +31,7 @@ export default function Page() {
       </div>
 
       {/* Ticket Portal content sits directly on the page */}
-      <div className="relative z-10 flex min-h-svh flex-col items-center justify-center gap-8 px-6 py-12 md:gap-10">
+      <div className="relative z-10 flex min-h-svh flex-col items-center justify-start gap-8 px-6 pt-8 pb-12">
         <Image
           src="/crimson_logo_black.png"
           alt="CrimsonC9"
@@ -42,7 +42,7 @@ export default function Page() {
           priority
         />
 
-        <div className="flex w-full max-w-3xl flex-col items-center gap-3 md:gap-4">
+        <div className="flex w-full max-w-3xl flex-col gap-3 text-center md:gap-4">
           <h1 className="neon-text text-4xl font-bold tracking-widest md:text-6xl">
             Bunker Dreams
           </h1>
@@ -55,7 +55,7 @@ export default function Page() {
           <p className="glow-text w-full text-left font-[family-name:var(--font-ui)] text-xl font-bold text-[var(--foreground)] md:text-2xl">
             Buy Your Personal Dream-Key Below:
           </p>
-          <div className="ticket-glass w-full rounded-3xl p-1">
+          <div className="ticket-glass w-full p-1">
             <div
               className="ot-iframe"
               data-ot-url="https://shop.weeztix.com/0bf26a79-697a-11f1-8e27-d65b0659bc31"
@@ -63,7 +63,11 @@ export default function Page() {
             />
           </div>
         </div>
-        <Script src="https://v1.widget.shop.weeztix.com/injector.js" strategy="afterInteractive" />
+        <Script
+          className="rounded-3xl"
+          src="https://v1.widget.shop.weeztix.com/injector.js"
+          strategy="afterInteractive"
+        />
 
         <div className="flex items-center gap-10">
           <a
