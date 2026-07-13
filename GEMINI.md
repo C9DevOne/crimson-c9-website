@@ -43,7 +43,8 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 
 - `npm run dev`: Starts the development server.
 - `npm run lint`: Runs ESLint for code quality checks.
-- You do not need to mention that you ran these two commands
+- `npm run format`: Runs Prettier to format the codebase.
+- You do not need to mention that you ran these commands
 - _Note: Do NOT run `npm run build`._
 
 ## Documentation References
