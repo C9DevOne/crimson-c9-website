@@ -43,16 +43,16 @@ export default function Page() {
         />
 
         <div className="flex w-full max-w-3xl flex-col gap-3 text-center md:gap-4">
-          <h1 className="neon-text text-4xl font-bold tracking-widest md:text-6xl">
+          <h1 className="bunker-heading text-4xl font-bold tracking-widest md:text-6xl">
             Bunker Dreams
           </h1>
-          <p className="glow-text-accent pt-2 text-center font-[family-name:var(--font-ui)] text-3xl font-bold tracking-wide text-[var(--glow-accent)] md:pt-4 md:text-4xl">
+          <p className="glow-text-accent font-display pt-2 text-center text-3xl font-bold tracking-wide text-[var(--background)] md:pt-4 md:text-4xl">
             Welcome To The Official Bunker Dreams Ticket Portal
           </p>
         </div>
 
         <div className="flex w-full max-w-2xl flex-col gap-3">
-          <p className="glow-text w-full text-left font-[family-name:var(--font-ui)] text-xl font-bold text-[var(--foreground)] md:text-2xl">
+          <p className="glow-text w-full text-center font-[family-name:var(--font-ui)] text-xl font-bold text-[var(--foreground)] md:text-2xl">
             Buy Your Personal Dream-Key Below:
           </p>
           <div className="ticket-glass w-full p-1">

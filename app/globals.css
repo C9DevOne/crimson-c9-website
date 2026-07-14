@@ -144,18 +144,43 @@
   outline: none;
 }
 
-/* Dreamy orange neon header text */
-.neon-text {
-  color: var(--glow-accent);
+/* Black Bunker Dreams heading with a strong breathing fiery glow */
+.bunker-heading {
+  color: var(--background);
   font-family: var(--font-display);
   text-shadow:
-    0 0 5px color-mix(in srgb, var(--glow-accent) 80%, transparent),
-    0 0 15px color-mix(in srgb, var(--glow-accent) 60%, transparent),
-    0 0 30px color-mix(in srgb, var(--glow-accent) 40%, transparent),
-    0 0 60px color-mix(in srgb, var(--glow-accent) 20%, transparent),
+    0 0 12px color-mix(in srgb, var(--brand-accent) 90%, transparent),
+    0 0 32px color-mix(in srgb, var(--glow-accent) 80%, transparent),
+    0 0 64px color-mix(in srgb, var(--glow-accent) 60%, transparent),
+    0 0 96px color-mix(in srgb, var(--glow-accent) 40%, transparent),
+    0 0 140px color-mix(in srgb, var(--glow-accent) 25%, transparent),
     0 1px 4px var(--background);
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  animation: breathe 5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px color-mix(in srgb, var(--brand-accent) 70%, transparent),
+      0 0 24px color-mix(in srgb, var(--glow-accent) 60%, transparent),
+      0 0 48px color-mix(in srgb, var(--glow-accent) 40%, transparent),
+      0 0 80px color-mix(in srgb, var(--glow-accent) 20%, transparent),
+      0 0 120px color-mix(in srgb, var(--glow-accent) 10%, transparent),
+      0 1px 4px var(--background);
+  }
+
+  50% {
+    text-shadow:
+      0 0 16px color-mix(in srgb, var(--brand-accent) 100%, transparent),
+      0 0 48px color-mix(in srgb, var(--glow-accent) 90%, transparent),
+      0 0 96px color-mix(in srgb, var(--glow-accent) 70%, transparent),
+      0 0 144px color-mix(in srgb, var(--glow-accent) 50%, transparent),
+      0 0 200px color-mix(in srgb, var(--glow-accent) 35%, transparent),
+      0 1px 4px var(--background);
+  }
 }
 
 /* Soft white glow for supporting text */
