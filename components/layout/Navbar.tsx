@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/components/ui/utils";
 
 export function Navbar() {
   const { toggleSidebar, openMobile, state, isMobile } = useSidebar();
@@ -17,7 +18,14 @@ export function Navbar() {
         variant="ghost"
         size="icon"
         onClick={toggleSidebar}
-        className="border-zinc-850 hover:bg-brand-crimson/10 hover:border-brand-crimson/50 hover:text-brand-crimson absolute top-1/2 left-4 z-50 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border bg-black/40 text-zinc-400 backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_15px_rgba(81,6,6,0.3)] md:left-8"
+        className={cn(
+          "border-zinc-850 hover:bg-brand-crimson/10 hover:border-brand-crimson/50 hover:text-brand-crimson absolute top-1/2 z-50 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border bg-black/40 text-zinc-400 backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_15px_rgba(81,6,6,0.3)]",
+          isOpen
+            ? isMobile
+              ? "left-[calc(12rem+0.5rem)]"
+              : "left-[calc(var(--sidebar-width)+0.5rem)]"
+            : "left-4 md:left-8",
+        )}
         aria-label="Toggle Menu"
       >
         <motion.div

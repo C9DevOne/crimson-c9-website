@@ -1,9 +1,9 @@
 import { Cinzel_Decorative, Philosopher, DM_Sans } from "next/font/google";
 import "./globals.css";
-// import { AppSidebar } from "@/components/layout/AppSidebar";
-// import { Footer } from "@/components/layout/Footer";
-// import { Navbar } from "@/components/layout/Navbar";
-// import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const cinzelDecorative = Cinzel_Decorative({
@@ -37,6 +37,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isDev = process.env.NODE_ENV !== "production";
+
   return (
     <html
       lang="en"
@@ -44,10 +46,20 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground flex h-svh overflow-hidden">
         <TooltipProvider>
-          {/* Sidebar, Navbar, and Footer are temporarily removed while the site is a single-page Ticket Portal. */}
-          <main className="flex flex-1 flex-col overflow-y-auto transition-colors duration-300">
-            {children}
-          </main>
+          {isDev ? (
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="flex flex-1 flex-col overflow-y-auto transition-colors duration-300">
+                <Navbar />
+                <div className="flex-1">{children}</div>
+                <Footer />
+              </main>
+            </SidebarProvider>
+          ) : (
+            <main className="flex flex-1 flex-col overflow-y-auto transition-colors duration-300">
+              {children}
+            </main>
+          )}
         </TooltipProvider>
       </body>
     </html>
