@@ -10,4 +10,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # DO NOT run build commands (e.g., do NOT run 'npm run build' or 'next build')
 
+# NEVER read, log, or include the contents of `.env.local` or any `.env*.local` file — these contain secrets
+
 <!-- END:nextjs-agent-rules -->
