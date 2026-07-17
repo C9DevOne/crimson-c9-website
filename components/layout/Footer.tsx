@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import DecryptedText from "@/components/ui/decrypted_text";
 
-const links = [
+const links: { name: string; href: Route }[] = [
   { name: "Contact", href: "/contact" },
   { name: "Imprint", href: "/imprint" },
   { name: "Support", href: "/support" },

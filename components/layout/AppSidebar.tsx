@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Music, Calendar, Users, Home, Heart, BookOpen } from "lucide-react";
+import type { Route } from "next";
+import { LucideIcon, Music, Calendar, Users, Home, Heart, BookOpen } from "lucide-react";
 import { DragonLogo } from "@/components/ui/dragon-logo";
 
 import {
@@ -19,7 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const navItems = [
+const navItems: { name: string; href: Route; icon: LucideIcon }[] = [
   { name: "Home", href: "/", icon: Home },
   { name: "Artists", href: "/artists", icon: Users },
   { name: "Events", href: "/events", icon: Calendar },
