@@ -9,18 +9,20 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - **UI & Styling:** [Tailwind CSS](https://tailwindcss.com/) (Version 4)
 - **Animation:** [GSAP](https://gsap.com/) + [Lenis](https://lenis.darkroom.engineering/) (Smooth Scroll)
 - **3D Graphics:** [Three.js](https://threejs.org/) / [React Three Fiber](https://r3f.docs.pmnd.rs/)
-- **Backend/CMS (Planned):** Supabase (DB), Sanity (CMS), Stripe (Payments)
+- **Backend/CMS:** Payload CMS (Version 3) with PostgreSQL (Supabase)
 - **Deployment:** [Vercel](https://vercel.com/)
 
 ## Project Structure
 
-- `app/`: Next.js App Router pages and layouts.
-- `components/`:
+- `src/app/`: Next.js App Router pages and layouts.
+- `src/components/`:
   - `layout/`: Shared structural components (Header, Footer, Navigation).
   - `ui/`: Reusable UI primitives.
     - `hooks/`: Custom React hooks.
   - `animations/`: Components or wrappers dedicated to GSAP/R3F animations.
-- `lib/`: Utility functions and shared library configurations.
+- `src/collections/`: Payload CMS Database Collections.
+- `src/globals/`: Payload CMS Database Globals.
+- `src/lib/`: Utility functions and shared library configurations (Planned/Custom).
 - `public/`: Static assets.
 
 ## Development Guidelines
@@ -38,6 +40,7 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - **Animation Logic:** Keep GSAP animations in dedicated hooks or utility components to maintain readability in main UI files.
 - **Minimal Dependencies:** Avoid external UI component libraries unless strictly necessary for complex functionality.
 - **No Build Commands:** Do NOT run build commands (such as `npm run build` or `next build`) in this environment.
+- **Typed Routes:** Next.js Typed Routes are enabled. When mapping over URL arrays, type the `href` fields as `Route` imported from `'next'` to ensure compile-time type-safety for all navigation links.
 
 ### Key Commands
 
