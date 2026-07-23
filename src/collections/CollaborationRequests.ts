@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isAdminOrEditor } from "../access";
 
 export const CollaborationRequests: CollectionConfig = {
   slug: "collaboration-requests",
@@ -8,12 +9,12 @@ export const CollaborationRequests: CollectionConfig = {
     description:
       "Inbound enquiries from the /connect form. Read-only in CMS — no public GET endpoint.",
   },
-  // Write-only from public API: anyone can create, only admins can read/update/delete
+  // Write-only from public API: anyone can create, only admins and editors can read/update/delete
   access: {
     create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    read: isAdminOrEditor,
+    update: isAdminOrEditor,
+    delete: isAdminOrEditor,
   },
   hooks: {
     afterChange: [

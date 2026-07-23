@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isAdminOrEditor } from "../access";
 
 export const Posts: CollectionConfig = {
   slug: "posts",
@@ -15,6 +16,9 @@ export const Posts: CollectionConfig = {
         status: { equals: "published" },
       };
     },
+    create: isAdminOrEditor,
+    update: isAdminOrEditor,
+    delete: isAdminOrEditor,
   },
   fields: [
     {

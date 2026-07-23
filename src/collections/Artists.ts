@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isAdminOrEditor } from "../access";
 
 export const Artists: CollectionConfig = {
   slug: "artists",
@@ -11,6 +12,22 @@ export const Artists: CollectionConfig = {
   access: {
     // Public read for published/active artists
     read: () => true,
+    create: isAdminOrEditor,
+    // Admins and editors can update any profile; artists can update their own
+    update: ({ req }) => {
+      const user = req.user;
+      if (!user) return false;
+      if (user.role === "admin" || user.role === "editor") return true;
+      if (user.role === "artist") {
+        return {
+          user: {
+            equals: user.id,
+          },
+        };
+      }
+      return false;
+    },
+    delete: isAdminOrEditor,
   },
   fields: [
     // ── Identity ──────────────────────────────────────────────────────────────
@@ -187,6 +204,10 @@ export const Artists: CollectionConfig = {
         description: "Manual sort order on the roster page. Lower = earlier.",
         position: "sidebar",
       },
+      access: {
+        create: isAdminOrEditor,
+        update: isAdminOrEditor,
+      },
     },
     {
       name: "publishedAt",
@@ -196,6 +217,21 @@ export const Artists: CollectionConfig = {
         description: "When the artist page goes live.",
         position: "sidebar",
         date: { pickerAppearance: "dayAndTime" },
+      },
+    },
+    {
+      name: "user",
+      type: "relationship",
+      relationTo: "users",
+      label: "Linked User Account",
+      admin: {
+        description:
+          "The CMS user account associated with this artist, allowing them to edit their own profile.",
+        position: "sidebar",
+      },
+      access: {
+        create: isAdminOrEditor,
+        update: isAdminOrEditor,
       },
     },
   ],

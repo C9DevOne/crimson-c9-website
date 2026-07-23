@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { isAdminOrEditor } from "../access";
 
 export const HomepageFeatured: GlobalConfig = {
   slug: "homepage-featured",
@@ -9,7 +10,7 @@ export const HomepageFeatured: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req }) => Boolean(req.user),
+    update: isAdminOrEditor,
   },
   fields: [
     {

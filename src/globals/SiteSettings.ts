@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { isAdminOrEditor } from "../access";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
@@ -8,7 +9,7 @@ export const SiteSettings: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req }) => Boolean(req.user),
+    update: isAdminOrEditor,
   },
   fields: [
     {

@@ -1,9 +1,31 @@
 import type { CollectionConfig } from "payload";
+import { isAnyUser } from "../access";
 
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
     read: () => true,
+    create: isAnyUser,
+    update: ({ req }) => {
+      const user = req.user;
+      if (!user) return false;
+      if (user.role === "admin" || user.role === "editor") return true;
+      return {
+        uploadedBy: {
+          equals: user.id,
+        },
+      };
+    },
+    delete: ({ req }) => {
+      const user = req.user;
+      if (!user) return false;
+      if (user.role === "admin" || user.role === "editor") return true;
+      return {
+        uploadedBy: {
+          equals: user.id,
+        },
+      };
+    },
   },
   upload: {
     staticDir: "public/media",
@@ -36,6 +58,25 @@ export const Media: CollectionConfig = {
       type: "text",
       required: true,
       label: "Alt Text",
+    },
+    {
+      name: "uploadedBy",
+      type: "relationship",
+      relationTo: "users",
+      label: "Uploaded By",
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+      },
+      hooks: {
+        beforeChange: [
+          ({ req, operation }) => {
+            if (operation === "create" && req?.user) {
+              return req.user.id;
+            }
+          },
+        ],
+      },
     },
   ],
 };
