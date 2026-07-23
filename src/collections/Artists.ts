@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdminOrEditor } from "../access";
+import { isAdminOrEditor, isAdminOrEditorFieldLevel } from "../access";
 
 export const Artists: CollectionConfig = {
   slug: "artists",
@@ -205,8 +205,8 @@ export const Artists: CollectionConfig = {
         position: "sidebar",
       },
       access: {
-        create: isAdminOrEditor,
-        update: isAdminOrEditor,
+        create: isAdminOrEditorFieldLevel,
+        update: isAdminOrEditorFieldLevel,
       },
     },
     {
@@ -230,8 +230,8 @@ export const Artists: CollectionConfig = {
         position: "sidebar",
       },
       access: {
-        create: isAdminOrEditor,
-        update: isAdminOrEditor,
+        create: isAdminOrEditorFieldLevel,
+        update: isAdminOrEditorFieldLevel,
       },
     },
   ],

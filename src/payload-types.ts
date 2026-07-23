@@ -74,6 +74,7 @@ export interface Config {
     posts: Post;
     "collaboration-requests": CollaborationRequest;
     media: Media;
+    "unique-visitors": UniqueVisitor;
     "payload-kv": PayloadKv;
     "payload-locked-documents": PayloadLockedDocument;
     "payload-preferences": PayloadPreference;
@@ -90,6 +91,7 @@ export interface Config {
       | CollaborationRequestsSelect<false>
       | CollaborationRequestsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    "unique-visitors": UniqueVisitorsSelect<false> | UniqueVisitorsSelect<true>;
     "payload-kv": PayloadKvSelect<false> | PayloadKvSelect<true>;
     "payload-locked-documents":
       | PayloadLockedDocumentsSelect<false>
@@ -145,6 +147,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  role: "admin" | "editor" | "artist" | "photographer";
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -492,6 +495,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -816,6 +820,22 @@ export interface CollectionsWidget {
  */
 export interface Auth {
   [k: string]: unknown;
+}
+
+export interface UniqueVisitor {
+  id: number;
+  sessionId: string;
+  timestamp: string;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface UniqueVisitorsSelect<T extends boolean = true> {
+  id?: T;
+  sessionId?: T;
+  timestamp?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 
 declare module "payload" {

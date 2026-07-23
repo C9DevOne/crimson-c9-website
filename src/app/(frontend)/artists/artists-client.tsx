@@ -3,15 +3,7 @@
 import CircularGallery from "@/components/ui/circular-gallery";
 import DecryptedText from "@/components/ui/decrypted_text";
 import { useIsMobile } from "@/components/ui/hooks/use-mobile";
-
-type ArtistItem = {
-  image: string;
-  text: string;
-  subtitle: string;
-  description: string;
-  instagram?: string;
-  soundcloud?: string;
-};
+import { ArtistItem } from "@/types/cms";
 
 export default function ArtistsClient({ artists }: { artists: ArtistItem[] }) {
   const isMobile = useIsMobile();

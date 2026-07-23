@@ -1,6 +1,7 @@
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import sharp from "sharp";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,6 +13,7 @@ import { Releases } from "./collections/Releases";
 import { Posts } from "./collections/Posts";
 import { CollaborationRequests } from "./collections/CollaborationRequests";
 import { Media } from "./collections/Media";
+import { UniqueVisitors } from "./collections/UniqueVisitors";
 
 // Globals
 import { SiteSettings } from "./globals/SiteSettings";
@@ -30,6 +32,9 @@ const serverURL =
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 export default buildConfig({
+  // Image resizer adapter required by Payload for media image resizing
+  sharp,
+
   // Canonical URL — required for CORS, email links, and media URLs to work in production
   serverURL,
 
@@ -42,7 +47,16 @@ export default buildConfig({
   },
 
   // All collections
-  collections: [Users, Artists, Events, Releases, Posts, CollaborationRequests, Media],
+  collections: [
+    Users,
+    Artists,
+    Events,
+    Releases,
+    Posts,
+    CollaborationRequests,
+    Media,
+    UniqueVisitors,
+  ],
 
   // All globals
   globals: [SiteSettings, SocialLinks, HomepageFeatured],

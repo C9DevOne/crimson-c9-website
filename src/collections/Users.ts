@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin } from "../access";
+import { isAdmin, isAdminFieldLevel } from "../access";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -39,7 +39,7 @@ export const Users: CollectionConfig = {
       ],
       admin: { position: "sidebar" },
       access: {
-        update: isAdmin,
+        update: isAdminFieldLevel,
       },
     },
   ],

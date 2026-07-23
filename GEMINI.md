@@ -47,6 +47,7 @@ This project is the digital home for **Crimson C9**, a Techno music collective b
 - `npm run dev`: Starts the development server.
 - `npm run lint`: Runs ESLint for code quality checks.
 - `npm run format`: Runs Prettier to format the codebase.
+- `npx tsc --noEmit`: Runs TypeScript compiler check for type errors.
 - You do not need to mention that you ran these commands
 - _Note: Do NOT run `npm run build`._
 

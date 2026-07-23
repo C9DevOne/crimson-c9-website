@@ -1,17 +1,90 @@
 import Script from "next/script";
 import { RiInstagramLine, RiSoundcloudLine } from "react-icons/ri";
 import Image from "next/image";
-
-// Temporary Ticket Portal: only the homepage is active. The shared Navbar,
-// Sidebar, and Footer are removed in layout.tsx. All other routes are disabled
-// by renaming their folders with a `_` prefix (Next.js private folders).
-// See AI_CONTEXT.md for details.
+import { getPayload } from "payload";
+import configPromise from "@payload-config";
+import { Artist, Event, Release, Media } from "@/payload-types";
+import FeaturedClient from "./dev/featured/featured-client";
 
 export const metadata = {
   title: "Ticket Portal | CrimsonC9",
 };
 
-export default function Page() {
+export default async function Page() {
+  const isDev = process.env.NODE_ENV === "development";
+  let featuredData = null;
+
+  if (isDev) {
+    try {
+      const payload = await getPayload({ config: configPromise });
+      const featuredGlobal = await payload.findGlobal({
+        slug: "homepage-featured",
+        depth: 2,
+      });
+
+      let featuredArtist = null;
+      if (featuredGlobal.featuredArtist && typeof featuredGlobal.featuredArtist === "object") {
+        const artist = featuredGlobal.featuredArtist as Artist;
+        let imageUrl = "https://picsum.photos/800/800?grayscale";
+        if (artist.profileImage && typeof artist.profileImage === "object") {
+          const media = artist.profileImage as Media;
+          if (media.url) imageUrl = media.url;
+        }
+        featuredArtist = {
+          name: artist.name,
+          role: artist.role || "Resident Artist",
+          bio: artist.shortBio || null,
+          imageUrl,
+        };
+      }
+
+      let featuredEvent = null;
+      if (featuredGlobal.featuredEvent && typeof featuredGlobal.featuredEvent === "object") {
+        const event = featuredGlobal.featuredEvent as Event;
+        let imageUrl = "/key_portal_background_169.png";
+        if (event.coverImage && typeof event.coverImage === "object") {
+          const media = event.coverImage as Media;
+          if (media.url) imageUrl = media.url;
+        }
+        featuredEvent = {
+          title: event.title,
+          date: event.date,
+          venue: event.venue || "TBA",
+          city: event.city || "Aachen / Cologne / Berlin",
+          status: event.status,
+          imageUrl,
+        };
+      }
+
+      let featuredRelease = null;
+      if (featuredGlobal.featuredRelease && typeof featuredGlobal.featuredRelease === "object") {
+        const release = featuredGlobal.featuredRelease as Release;
+        let coverArtUrl = "https://picsum.photos/800/800?grayscale";
+        if (release.coverArt && typeof release.coverArt === "object") {
+          const media = release.coverArt as Media;
+          if (media.url) coverArtUrl = media.url;
+        }
+        featuredRelease = {
+          title: release.title,
+          type: release.type,
+          coverArtUrl,
+          soundcloudUrl: release.soundcloudUrl || null,
+          spotifyUrl: release.spotifyUrl || null,
+        };
+      }
+
+      featuredData = {
+        heroHeadline: featuredGlobal.heroHeadline,
+        heroSubtext: featuredGlobal.heroSubtext,
+        featuredArtist,
+        featuredEvent,
+        featuredRelease,
+      };
+    } catch {
+      // Graceful fallback if Payload/DB is not accessible during render
+    }
+  }
+
   return (
     <>
       {/* Full-viewport portal background — dynamically covers/crops per device */}
@@ -94,6 +167,13 @@ export default function Page() {
           &copy; 2026 CrimsonC9
         </p>
       </div>
+
+      {/* Dev environment only: Homepage Featured Section */}
+      {isDev && featuredData && (
+        <div className="relative z-10 border-t border-zinc-800 bg-[#0a0a0a]">
+          <FeaturedClient data={featuredData} />
+        </div>
+      )}
     </>
   );
 }

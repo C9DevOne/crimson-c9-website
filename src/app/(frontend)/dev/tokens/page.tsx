@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 const colors = [
@@ -51,6 +52,15 @@ export default function TokensPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen p-12">
+      <div className="mb-12 flex items-center justify-between border-b border-zinc-800 pb-4">
+        <Link
+          href="/dev"
+          className="text-brand-crimson font-mono text-xs tracking-widest uppercase transition-colors hover:text-white"
+        >
+          ← Back to Dev Portal
+        </Link>
+      </div>
+
       <h1 className="font-display mb-16 text-5xl">Design Tokens</h1>
 
       <section className="mb-16">

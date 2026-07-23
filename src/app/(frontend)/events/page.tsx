@@ -1,25 +1,53 @@
-"use client";
-import DecryptedText from "@/components/ui/decrypted_text";
+import { getPayload } from "payload";
+import configPromise from "@payload-config";
+import EventsClient from "./events-client";
+import { Event, Media } from "@/payload-types";
 
-export default function Page() {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-      <h1 className="mb-4 text-4xl font-bold tracking-tighter">
-        <DecryptedText
-          text="EVENTS"
-          speed={100}
-          maxIterations={20}
-          sequential={true}
-          animateOn="hover"
-          revealDirection="center"
-          className="text-brand-crimson"
-          encryptedClassName="text-white/20"
-          useRandomColors={true}
-        />
-      </h1>
-      <p className="max-w-md text-sm leading-relaxed tracking-widest text-zinc-500 uppercase">
-        This section is under development. <br /> Discover, Connect, Have Fun.
-      </p>
-    </div>
-  );
+export const dynamic = "force-dynamic";
+
+export default async function EventsPage() {
+  const payload = await getPayload({ config: configPromise });
+
+  const eventsRes = await payload.find({
+    collection: "events",
+    depth: 1,
+    sort: "-date",
+  });
+
+  const formattedEvents = eventsRes.docs.map((event: Event) => {
+    let imageUrl = "/key_portal_background_169.png";
+    if (event.coverImage && typeof event.coverImage === "object") {
+      const media = event.coverImage as Media;
+      if (media.url) {
+        imageUrl = media.url;
+      }
+    }
+
+    return {
+      id: event.id,
+      title: event.title,
+      slug: event.slug,
+      status: event.status,
+      date: event.date,
+      venue: event.venue || "TBA",
+      city: event.city || "Aachen / Cologne / Berlin",
+      imageUrl,
+      ticketUrl: event.ticketUrl || null,
+      residentAdvisorUrl: event.residentAdvisorUrl || null,
+      lineup:
+        event.lineup?.map((item) => {
+          let name = item.guestName || "Resident Act";
+          if (item.artist && typeof item.artist === "object") {
+            name = item.artist.name;
+          }
+          return {
+            name,
+            startTime: item.startTime,
+            setType: item.setType,
+          };
+        }) || [],
+    };
+  });
+
+  return <EventsClient events={formattedEvents} />;
 }

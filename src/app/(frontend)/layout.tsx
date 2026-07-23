@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PageTracker } from "@/components/analytics/PageTracker";
 
 const cinzelDecorative = Cinzel_Decorative({
   variable: "--font-display",
@@ -46,6 +47,7 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground flex h-svh overflow-hidden">
         <TooltipProvider>
+          <PageTracker />
           {isDev ? (
             <SidebarProvider>
               <AppSidebar />

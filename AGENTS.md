@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # run 'npm install' when first starting
 
-# lint and format after every change that is made you do not need to tell that you have run them
+# lint, format, and run 'npx tsc --noEmit' after every change that is made; you do not need to mention that you have run them
 
 # DO NOT run build commands (e.g., do NOT run 'npm run build' or 'next build')
 

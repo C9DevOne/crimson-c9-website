@@ -1,25 +1,29 @@
-"use client";
-import DecryptedText from "@/components/ui/decrypted_text";
+import { getPayload } from "payload";
+import configPromise from "@payload-config";
+import ConnectClient from "./connect-client";
 
-export default function Page() {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-      <h1 className="mb-4 text-4xl font-bold tracking-tighter">
-        <DecryptedText
-          text="CONNECT"
-          speed={100}
-          maxIterations={20}
-          sequential={true}
-          animateOn="hover"
-          revealDirection="center"
-          className="text-brand-crimson"
-          encryptedClassName="text-white/20"
-          useRandomColors={true}
-        />
-      </h1>
-      <p className="max-w-md text-sm leading-relaxed tracking-widest text-zinc-500 uppercase">
-        This section is under development. <br /> Discover, Connect, Have Fun.
-      </p>
-    </div>
-  );
+export const dynamic = "force-dynamic";
+
+export default async function ConnectPage() {
+  const payload = await getPayload({ config: configPromise });
+
+  const socialLinks = await payload.findGlobal({
+    slug: "social-links",
+  });
+
+  const siteSettings = await payload.findGlobal({
+    slug: "site-settings",
+  });
+
+  const connectData = {
+    instagram: socialLinks.instagram,
+    soundcloud: socialLinks.soundcloud,
+    youtube: socialLinks.youtube,
+    spotify: socialLinks.spotify,
+    whatsappCommunity: socialLinks.whatsappCommunity,
+    residentAdvisor: socialLinks.residentAdvisor,
+    contactEmail: siteSettings.contactEmail || "hello@crimsonc9.com",
+  };
+
+  return <ConnectClient data={connectData} />;
 }
