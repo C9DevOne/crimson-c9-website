@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.178.*"],
 
   images: {
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",

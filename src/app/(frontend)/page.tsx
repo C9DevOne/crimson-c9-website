@@ -19,7 +19,7 @@ export default async function Page() {
       const payload = await getPayload({ config: configPromise });
       const featuredGlobal = await payload.findGlobal({
         slug: "homepage-featured",
-        depth: 2,
+        depth: 3,
       });
 
       let featuredArtist = null;

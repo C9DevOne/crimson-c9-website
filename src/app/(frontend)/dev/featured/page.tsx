@@ -10,7 +10,7 @@ export default async function DevFeaturedPage() {
 
   const featuredGlobal = await payload.findGlobal({
     slug: "homepage-featured",
-    depth: 2,
+    depth: 3,
   });
 
   let featuredArtist = null;
