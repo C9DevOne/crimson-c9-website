@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# payload local media uploads
+/public/media/
+
+# AI-agent configurations
+.devin/
+.agents/
+.claudeignore
+.geminiignore
+CLAUDE.md
