@@ -43,6 +43,8 @@ next-env.d.ts
 # payload local media uploads
 /public/media/
 
+test
+
 # AI-agent configurations
 .devin/
 .agents/
