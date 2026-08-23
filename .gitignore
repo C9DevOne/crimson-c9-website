@@ -44,8 +44,11 @@ next-env.d.ts
 /public/media/
 
 # AI-agent configurations
-.devin/
 .agents/
 .claudeignore
 .geminiignore
-CLAUDE.md
+
+# Per-contributor preference files — personal, local only.
+# See docs/personal/README.md (the only file in there that is committed).
+docs/personal/*
+!docs/personal/README.md
