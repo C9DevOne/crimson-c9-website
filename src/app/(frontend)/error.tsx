@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-[85vh] w-full flex-col items-center justify-center bg-[#0a0a0a] px-6 py-16 text-white">
+    <div className="bg-background text-foreground flex min-h-[85vh] w-full flex-col items-center justify-center px-6 py-16">
       <div className="mx-auto w-full max-w-lg rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 text-center backdrop-blur-md md:p-12">
         <div className="bg-brand-crimson/20 text-brand-crimson mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl font-mono text-2xl font-bold">
           909

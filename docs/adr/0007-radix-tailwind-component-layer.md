@@ -1,6 +1,6 @@
 # ADR-0007: Radix UI + Tailwind CSS for the Component Layer
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0010
 **Date:** 2026-05
 **Deciders:** Aaron
 

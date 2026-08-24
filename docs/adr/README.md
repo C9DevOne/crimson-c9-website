@@ -15,17 +15,18 @@ This matters more as the team grows past one person — it's the answer to "wait
 
 ## Index
 
-| ADR                                                  | Title                                            | Status   |
-| ---------------------------------------------------- | ------------------------------------------------ | -------- |
-| [0001](./0001-nextjs-app-router.md)                  | Next.js (App Router) as the Frontend Framework   | Accepted |
-| [0002](./0002-payload-cms-over-sanity.md)            | Payload CMS Instead of Sanity                    | Accepted |
-| [0003](./0003-postgres-via-supabase.md)              | Postgres via Supabase                            | Accepted |
-| [0004](./0004-backblaze-b2-media-storage.md)         | Backblaze B2 for Media Storage                   | Accepted |
-| [0005](./0005-vercel-hosting.md)                     | Vercel for Hosting and Deployment                | Accepted |
-| [0006](./0006-cloudflare-dns-namecheap-registrar.md) | Cloudflare DNS/CDN, Namecheap Registrar Only     | Accepted |
-| [0007](./0007-radix-tailwind-component-layer.md)     | Radix UI + Tailwind for the Component Layer      | Accepted |
-| [0008](./0008-animation-library-framer-vs-gsap.md)   | Animation Library — Framer Motion vs. GSAP       | Proposed |
-| [0009](./0009-pretix-ticketing.md)                   | Pretix as Ticketing Platform (Replacing Weeztix) | Proposed |
+| ADR                                                  | Title                                                      | Status                 |
+| ---------------------------------------------------- | ---------------------------------------------------------- | ---------------------- |
+| [0001](./0001-nextjs-app-router.md)                  | Next.js (App Router) as the Frontend Framework             | Accepted               |
+| [0002](./0002-payload-cms-over-sanity.md)            | Payload CMS Instead of Sanity                              | Accepted               |
+| [0003](./0003-postgres-via-supabase.md)              | Postgres via Supabase                                      | Accepted               |
+| [0004](./0004-backblaze-b2-media-storage.md)         | Backblaze B2 for Media Storage                             | Accepted               |
+| [0005](./0005-vercel-hosting.md)                     | Vercel for Hosting and Deployment                          | Accepted               |
+| [0006](./0006-cloudflare-dns-namecheap-registrar.md) | Cloudflare DNS/CDN, Namecheap Registrar Only               | Accepted               |
+| [0007](./0007-radix-tailwind-component-layer.md)     | Radix UI + Tailwind for the Component Layer                | Superseded by ADR-0010 |
+| [0008](./0008-animation-library-framer-vs-gsap.md)   | Animation Library — Framer Motion vs. GSAP                 | Proposed               |
+| [0009](./0009-pretix-ticketing.md)                   | Pretix as Ticketing Platform (Replacing Weeztix)           | Proposed               |
+| [0010](./0010-shadcn-scaffolding-on-radix.md)        | shadcn CLI for Component Scaffolding (Supersedes ADR-0007) | Accepted               |
 
 ## Adding a new ADR
 

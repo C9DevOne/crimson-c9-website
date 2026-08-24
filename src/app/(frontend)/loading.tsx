@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="flex min-h-[85vh] w-full flex-col items-center justify-center bg-[#0a0a0a] px-6 py-16 text-white">
+    <div className="bg-background text-foreground flex min-h-[85vh] w-full flex-col items-center justify-center px-6 py-16">
       {/* Brand Dragon Logo / Pulsing Header */}
       <div className="relative mb-8 flex items-center justify-center">
         <div className="bg-brand-crimson/20 absolute h-24 w-24 animate-ping rounded-full blur-xl" />

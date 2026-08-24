@@ -7,7 +7,7 @@ import { ReleaseItem } from "@/types/cms";
 
 export default function MusicClient({ releases }: { releases: ReleaseItem[] }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {/* Header */}
       <div className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8 text-center">
         <h1 className="text-brand-crimson mb-4 text-4xl font-extrabold tracking-wider uppercase md:text-6xl">
