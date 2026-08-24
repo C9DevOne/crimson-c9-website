@@ -170,7 +170,7 @@ export default async function Page() {
 
       {/* Dev environment only: Homepage Featured Section */}
       {isDev && featuredData && (
-        <div className="relative z-10 border-t border-zinc-800 bg-[#0a0a0a]">
+        <div className="bg-background relative z-10 border-t border-zinc-800">
           <FeaturedClient data={featuredData} />
         </div>
       )}

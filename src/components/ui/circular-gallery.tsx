@@ -315,7 +315,9 @@ class App {
     this.onResize();
 
     this.planeGeometry = new Plane(this.gl, { heightSegments: 50, widthSegments: 100 });
-    this.createMedias(opts.items, opts.bend, opts.textColor ?? "#ffffff", opts.borderRadius ?? 0);
+    // Canvas/WebGL text rendering — CSS custom properties don't resolve here, so this must
+    // be a literal value. Keep in sync with --foreground (VISION.md §4) if it ever changes.
+    this.createMedias(opts.items, opts.bend, opts.textColor ?? "#f5f5f5", opts.borderRadius ?? 0);
     this.update();
     this.addEventListeners();
   }
@@ -491,7 +493,9 @@ interface CircularGalleryProps {
 export default function CircularGallery({
   items,
   bend = 3,
-  textColor = "#ffffff",
+  // Canvas/WebGL text rendering — CSS custom properties don't resolve here, so this must
+  // be a literal value. Keep in sync with --foreground (VISION.md §4) if it ever changes.
+  textColor = "#f5f5f5",
   borderRadius = 0.05,
   scrollSpeed = 2,
   scrollEase = 0.05,

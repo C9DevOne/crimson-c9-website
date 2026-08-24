@@ -9,7 +9,7 @@ export default function ArtistsClient({ artists }: { artists: ArtistItem[] }) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex min-h-[85vh] flex-col items-center justify-center bg-[#0a0a0a] text-white">
+    <div className="bg-background text-foreground flex min-h-[85vh] flex-col items-center justify-center">
       {/* Page Header */}
       <div className="z-10 mt-4 mb-2 max-w-2xl px-4 text-center md:mt-8 md:mb-4">
         <h1 className="text-brand-crimson mb-2 text-3xl font-extrabold tracking-widest uppercase md:text-5xl">
@@ -36,7 +36,9 @@ export default function ArtistsClient({ artists }: { artists: ArtistItem[] }) {
           <CircularGallery
             items={artists}
             bend={isMobile ? 5 : 5.5}
-            textColor="#dc143c"
+            // Canvas/WebGL text rendering — CSS custom properties don't resolve here, so
+            // this must be a literal value. Keep in sync with --brand-crimson (VISION.md §4).
+            textColor="#510606"
             borderRadius={0.05}
             scrollSpeed={isMobile ? 1.5 : 2}
             scrollEase={0.05}

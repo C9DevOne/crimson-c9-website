@@ -69,5 +69,9 @@
     "*.{json,css,md}": [
       "prettier --write"
     ]
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "sharp@0.35.3": true
   }
 }

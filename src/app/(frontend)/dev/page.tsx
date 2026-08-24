@@ -3,7 +3,7 @@ import DevClient from "./dev-client";
 
 export default function DevPortalPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="bg-background text-foreground min-h-screen">
       <div className="mx-auto max-w-5xl px-6 py-8">
         <div className="mb-8 flex items-center justify-between border-b border-zinc-800 pb-4">
           <h1 className="text-brand-crimson text-xl font-bold tracking-widest uppercase">
