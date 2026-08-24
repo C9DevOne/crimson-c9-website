@@ -23,6 +23,23 @@ import { HomepageFeatured } from "./globals/HomepageFeatured";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// Fail fast with an actionable message in local dev, instead of a cryptic Payload
+// internal error surfacing later, deep inside whichever route first calls getPayload().
+// Guarded to non-production so this can never affect a Vercel build or deploy — Next
+// sets NODE_ENV=production for every deployed build (Preview and Production alike),
+// regardless of which Vercel Environment it is.
+if (process.env.NODE_ENV !== "production") {
+  const missing = ["DATABASE_URI", "PAYLOAD_SECRET"].filter((name) => !process.env[name]);
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required env var(s): ${missing.join(", ")}.\n` +
+        `Copy .env.example to .env.local and fill them in, or run \`vercel env pull .env.local\` ` +
+        `to pull real values from the team's Vercel project.\n` +
+        `Full context on what each variable does: docs/concepts/CONCEPT_environment-variables.md`,
+    );
+  }
+}
+
 // Resolve the canonical server URL:
 // - On Vercel: NEXT_PUBLIC_SERVER_URL is set manually in the dashboard (preferred)
 // - Fallback: VERCEL_URL is auto-set by Vercel (no https prefix, so we add it)

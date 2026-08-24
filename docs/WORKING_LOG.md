@@ -22,7 +22,7 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
-- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled.
+- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled. Why this is dangerous even outside migrations, and how the three-environment model works generally: `concepts/CONCEPT_environment-variables.md` §2 and §6.
 - **B2 media storage is entirely unimplemented.** Checked 2026-08-23: `@payloadcms/storage-s3` is not in `package.json`, and `payload.config.ts` still uses Payload's local-filesystem upload handling with a 10 MB cap. Vercel's filesystem is ephemeral, so **any media uploaded in production today is lost on redeploy.** This also settles the old "documented two different ways" question — neither the presigned model nor the `afterChange` server-routed model is running, because nothing is. Build against ADR-0004 + `concepts/CONCEPT_media-pipeline.md` (presigned/`clientUploads`) when wiring it up.
 - **Postgres backup configuration is unconfirmed.** Nobody has verified what Supabase's backup setup actually is for this project.
 
@@ -50,7 +50,6 @@ Known work, not yet done. Not decisions — just things somebody needs to actual
 - **Decommission the Weeztix portal** and restore real routes as prototype pages ship.
 - **Create `/docs/personal/` preference files** per contributor — agreed on as the pattern, none written yet.
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
-- **`.env.local` needs `PAYLOAD_SECRET` for local dev to work at all**, not just for Supabase/external-API features as `CONTRIBUTING.md` currently implies — confirmed 2026-08-23, any page calling `getPayload()` (most of the site) hard-crashes without it, caught only by the error boundary. Setting the value in Vercel does not populate it locally; it's a separate step per contributor.
 - **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.
 - **Take migrations out of the build command permanently.** `next build` should build. A failed build is harmless; a half-applied migration is not.
 - **Confirm Postgres backups are on, check the retention window, and run one actual restore.** An untested backup is a hypothesis. Schedule a restore test twice a year (DB + a sample file from B2).

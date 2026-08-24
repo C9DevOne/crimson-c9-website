@@ -31,7 +31,15 @@ Open [http://localhost:3000](http://localhost:3000/) in your browser. You should
 
 ### Environment variables
 
-You'll need a `.env.local` file for any features that connect to Supabase or external APIs. Ask a teammate with existing access for the values — never commit `.env.local`, it's already in `.gitignore`.
+You'll need a `.env.local` file — the site won't run at all without it, not just the parts that touch Supabase.
+
+```bash
+cp .env.example .env.local
+```
+
+`.env.example` lists every variable, what it's for, and where to get a real value. Fastest path to real values: `vercel link` once, then `vercel env pull .env.local` any time — pulls current values straight from the team's Vercel project instead of asking a teammate to paste them somewhere. Never commit `.env.local`, it's already in `.gitignore`.
+
+Full context on what each variable actually does, the three-environment model, and what's likely coming next: [`concepts/CONCEPT_environment-variables.md`](./concepts/CONCEPT_environment-variables.md).
 
 ---
 
