@@ -87,8 +87,14 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
     },
-    // In production, migrations are run via the Vercel build command.
-    // In dev, push:true lets Payload sync schema changes without generating migration files.
+    // Migrations are deliberately NOT run from the Vercel build command — builds fire on
+    // every push including previews, run concurrently, and happen for code that never ships.
+    // A failed build is harmless; a half-applied migration is not. Run them deliberately.
+    // See docs/WORKING_LOG.md and docs/TRAP_LORE.md.
+    //
+    // push:true lets Payload sync schema changes in dev without generating migration files.
+    // It alters whatever database DATABASE_URI points at, directly and without prompting —
+    // so make sure that is NOT production before running `npm run dev`.
     push: process.env.NODE_ENV === "development",
   }),
 
