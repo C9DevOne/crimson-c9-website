@@ -4,15 +4,16 @@ _Start here if you're new to the codebase. This explains where things live and w
 
 ## Where things live
 
-| Doc                                | What it's for                                                                                          | How often it changes                               |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| [`TECH_STACK.md`](./TECH_STACK.md) | Live snapshot of what we currently run on — quick reference                                            | Often, as the stack changes                        |
-| [`/docs/adr/`](./adr/README.md)    | Why we made specific architectural calls                                                               | Never edited after acceptance — only added to      |
-| `VISION.md`                        | Brand identity, design language, and dev/coding foundations                                            | Rarely — this is the anchor doc                    |
-| `CONTRIBUTING.md`                  | Local setup, Git workflow, and how PRs get reviewed and merged                                         | As process evolves                                 |
-| `WORKING_LOG.md`                   | Week-to-week project state, open risks, pending decisions                                              | Continuously                                       |
-| `CONCEPT_*.md`                     | Deep dive on how one specific, complex feature actually works (e.g. `concepts/CONCEPT_page-events.md`) | Added per feature, updated as that feature evolves |
-| `TRAP_LORE.md`                     | Mistakes and pitfalls already lived through, so they aren't repeated                                   | Added whenever something bites someone             |
+| Doc                                          | What it's for                                                                                          | How often it changes                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| [`TECH_STACK.md`](./TECH_STACK.md)           | Live snapshot of what we currently run on — quick reference                                            | Often, as the stack changes                        |
+| [`/docs/adr/`](./adr/README.md)              | Why we made specific architectural calls                                                               | Never edited after acceptance — only added to      |
+| `VISION.md`                                  | Brand identity, design language, and dev/coding foundations                                            | Rarely — this is the anchor doc                    |
+| `CONTRIBUTING.md`                            | Local setup, Git workflow, and how PRs get reviewed and merged                                         | As process evolves                                 |
+| [`BACKBLAZE_SETUP.md`](./BACKBLAZE_SETUP.md) | Backblaze B2 provisioning, CORS setup, and env variable configuration guide                            | As storage operations evolve                       |
+| `WORKING_LOG.md`                             | Week-to-week project state, open risks, pending decisions                                              | Continuously                                       |
+| `CONCEPT_*.md`                               | Deep dive on how one specific, complex feature actually works (e.g. `concepts/CONCEPT_page-events.md`) | Added per feature, updated as that feature evolves |
+| `TRAP_LORE.md`                               | Mistakes and pitfalls already lived through, so they aren't repeated                                   | Added whenever something bites someone             |
 
 **The short version:** if you want to know what we use right now, check `TECH_STACK.md`. If you want to know _why_ we use it instead of the obvious alternative, follow the ADR link next to it. If you want to know exactly how a specific complex system works day-to-day, check for a `CONCEPT_*.md`. If none of those answer it, ask in the team chat — and if the answer to something wasn't written down anywhere, that's usually a sign it should become one of the above.
 

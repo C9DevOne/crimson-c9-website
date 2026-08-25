@@ -23,7 +23,7 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
 - **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled.
-- **B2 media storage is entirely unimplemented.** Checked 2026-08-23: `@payloadcms/storage-s3` is not in `package.json`, and `payload.config.ts` still uses Payload's local-filesystem upload handling with a 10 MB cap. Vercel's filesystem is ephemeral, so **any media uploaded in production today is lost on redeploy.** This also settles the old "documented two different ways" question — neither the presigned model nor the `afterChange` server-routed model is running, because nothing is. Build against ADR-0004 + `concepts/CONCEPT_media-pipeline.md` (presigned/`clientUploads`) when wiring it up.
+- **B2 media storage wired in codebase; bucket setup & env vars pending.** `@payloadcms/storage-s3` is installed and configured on the `feat/backblaze-b2-storage` branch with `clientUploads: true` and `signedDownloads`. Bucket creation, CORS PUT/GET rules, and `S3_*` env vars on Vercel and local dev are documented in `docs/BACKBLAZE_SETUP.md` and need manual setup before production media uploads go live.
 - **Postgres backup configuration is unconfirmed.** Nobody has verified what Supabase's backup setup actually is for this project.
 
 ---
@@ -51,7 +51,7 @@ Known work, not yet done. Not decisions — just things somebody needs to actual
 - **Create `/docs/personal/` preference files** per contributor — agreed on as the pattern, none written yet.
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
 - **`.env.local` needs `PAYLOAD_SECRET` for local dev to work at all**, not just for Supabase/external-API features as `CONTRIBUTING.md` currently implies — confirmed 2026-08-23, any page calling `getPayload()` (most of the site) hard-crashes without it, caught only by the error boundary. Setting the value in Vercel does not populate it locally; it's a separate step per contributor.
-- **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.
+- **Provision Backblaze B2 bucket & credentials** — B2 storage is wired in the codebase (`feat/backblaze-b2-storage`). Create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment** and in `.env.local`. Full operational walkthrough in `docs/BACKBLAZE_SETUP.md`.
 - **Take migrations out of the build command permanently.** `next build` should build. A failed build is harmless; a half-applied migration is not.
 - **Confirm Postgres backups are on, check the retention window, and run one actual restore.** An untested backup is a hypothesis. Schedule a restore test twice a year (DB + a sample file from B2).
 - **2FA on the org email**, with recovery codes stored somewhere a second person can reach them. 2FA living only on one phone is still a single point of failure.

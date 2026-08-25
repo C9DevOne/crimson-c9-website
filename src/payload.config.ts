@@ -1,6 +1,7 @@
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { s3Storage } from "@payloadcms/storage-s3";
 import sharp from "sharp";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -65,11 +66,14 @@ export default buildConfig({
   editor: lexicalEditor(),
 
   // Postgres adapter — DATABASE_URI must be set in environment
-  // In production (Vercel): use the Transaction pooler URL from Supabase (port 6543)
-  // In local dev: use the Session mode URL (port 5432) or Transaction pooler
+  // In production (Vercel): use the Transaction pooler URL from Supabase (port 6543) via DATABASE_URI
+  // In local dev: use DATABASE_URI_DEV (or fallback to DATABASE_URI)
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || "",
+      connectionString:
+        (process.env.NODE_ENV === "development"
+          ? process.env.DATABASE_URI_DEV || process.env.DATABASE_URI
+          : process.env.DATABASE_URI) || "",
     },
     // In production, migrations are run via the Vercel build command.
     // In dev, push:true lets Payload sync schema changes without generating migration files.
@@ -84,12 +88,37 @@ export default buildConfig({
   // Secret for JWT signing — PAYLOAD_SECRET must be set in environment
   secret: process.env.PAYLOAD_SECRET || "",
 
-  // Upload storage directory (local dev only).
-  // On Vercel the filesystem is ephemeral — wire up Backblaze B2 storage adapter
-  // via @payloadcms/storage-s3 before going live with media uploads.
+  // Plugins — Backblaze B2 media storage via S3 adapter
+  plugins: [
+    s3Storage({
+      collections: {
+        media: {
+          prefix: "media",
+        },
+      },
+      bucket: process.env.S3_BUCKET || "",
+      clientUploads: true,
+      signedDownloads: {
+        expiresIn: 7200, // 2 hours
+      },
+      config: {
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION,
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+        },
+        forcePathStyle: true,
+      },
+      // When S3 credentials are not configured (e.g. offline dev), fallback to local storage
+      enabled: Boolean(process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID),
+    }),
+  ],
+
+  // Upload storage directory / fallback limits
   upload: {
     limits: {
-      fileSize: 10_000_000, // 10MB
+      fileSize: 50_000_000, // 50MB for server uploads; clientUploads handles larger files direct to B2
     },
   },
 });
