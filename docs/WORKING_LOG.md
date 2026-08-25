@@ -38,7 +38,7 @@ Things that could cause real problems if left unresolved, roughly in order of ho
 
   `engines: { node: "20.x" }` was added in [#9](https://github.com/C9DevOne/crimson-c9-website/pull/9) to avoid exactly this, and is no longer effective — Node 20 is end-of-life and Vercel builds on 24 regardless. Not urgent while migrations stay out of the build command, but unresolved, and it blocks any future migration workflow that runs on Vercel.
 
-- **B2 media storage is entirely unimplemented.** Checked 2026-08-23: `@payloadcms/storage-s3` is not in `package.json`, and `payload.config.ts` still uses Payload's local-filesystem upload handling with a 10 MB cap. Vercel's filesystem is ephemeral, so **any media uploaded in production today is lost on redeploy.** This also settles the old "documented two different ways" question — neither the presigned model nor the `afterChange` server-routed model is running, because nothing is. Build against ADR-0004 + `concepts/CONCEPT_media-pipeline.md` (presigned/`clientUploads`) when wiring it up.
+- **B2 media storage wired in codebase; bucket setup & env vars pending.** `@payloadcms/storage-s3` is installed and configured on the `feat/backblaze-b2-storage` branch with `clientUploads: true` and `signedDownloads`. Bucket creation, CORS PUT/GET rules, and `S3_*` env vars on Vercel and local dev are documented in `docs/BACKBLAZE_SETUP.md` and need manual setup before production media uploads go live.
 - **Postgres backup configuration is unconfirmed.** Nobody has verified what Supabase's backup setup actually is for this project.
 
 ---
@@ -65,7 +65,7 @@ Known work, not yet done. Not decisions — just things somebody needs to actual
 - **Decommission the Weeztix portal** and restore real routes as prototype pages ship.
 - **Create `/docs/personal/` preference files** per contributor — agreed on as the pattern, none written yet.
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
-- **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.
+- **Provision Backblaze B2 bucket & credentials** — B2 storage is wired in the codebase (`feat/backblaze-b2-storage`). Create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment** and in `.env.local`. Full operational walkthrough in `docs/BACKBLAZE_SETUP.md`.
 - **Confirm Postgres backups are on, check the retention window, and run one actual restore.** An untested backup is a hypothesis. Schedule a restore test twice a year (DB + a sample file from B2).
 - **2FA on the org email**, with recovery codes stored somewhere a second person can reach them. 2FA living only on one phone is still a single point of failure.
 - **Protect Vercel preview deployments.** Preview URLs are public by default — unreleased content on a preview build is the most common way it leaks, because nobody thinks about previews.

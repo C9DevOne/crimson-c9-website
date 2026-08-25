@@ -25,10 +25,10 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
+     * - api (API routes)
+     * - _next (Next.js internal files, including static assets, images, data, and HMR)
      * - favicon.ico, logo, icons, or backgrounds (e.g., key_portal_background_169.png)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|js|css)).*)",
+    "/((?!api|_next|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|js|css)).*)",
   ],
 };

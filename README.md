@@ -27,16 +27,17 @@ Full setup, Git workflow, and review process: [`docs/CONTRIBUTING.md`](./docs/CO
 
 All project documentation lives in [`/docs`](./docs). Start with [`docs/ONBOARDING.md`](./docs/ONBOARDING.md) — it explains what each doc is for and how they fit together.
 
-|                                                  |                                                                    |
-| ------------------------------------------------ | ------------------------------------------------------------------ |
-| [`docs/VISION.md`](./docs/VISION.md)             | Brand identity, design language, coding standards — the anchor doc |
-| [`docs/TECH_STACK.md`](./docs/TECH_STACK.md)     | Live snapshot of what we run on                                    |
-| [`docs/adr/`](./docs/adr/README.md)              | Why each architectural call was made                               |
-| [`docs/concepts/`](./docs/concepts/)             | How a specific page or system actually works                       |
-| [`docs/WORKING_LOG.md`](./docs/WORKING_LOG.md)   | Open risks, pending decisions, known work                          |
-| [`docs/TRAP_LORE.md`](./docs/TRAP_LORE.md)       | Mistakes already survived, so nobody repeats them                  |
-| [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) | Setup, Git workflow, PR review                                     |
-| [`docs/TEAM.md`](./docs/TEAM.md)                 | Who to loop in on what                                             |
+|                                                        |                                                                    |
+| ------------------------------------------------------ | ------------------------------------------------------------------ |
+| [`docs/VISION.md`](./docs/VISION.md)                   | Brand identity, design language, coding standards — the anchor doc |
+| [`docs/TECH_STACK.md`](./docs/TECH_STACK.md)           | Live snapshot of what we run on                                    |
+| [`docs/adr/`](./docs/adr/README.md)                    | Why each architectural call was made                               |
+| [`docs/concepts/`](./docs/concepts/)                   | How a specific page or system actually works                       |
+| [`docs/WORKING_LOG.md`](./docs/WORKING_LOG.md)         | Open risks, pending decisions, known work                          |
+| [`docs/TRAP_LORE.md`](./docs/TRAP_LORE.md)             | Mistakes already survived, so nobody repeats them                  |
+| [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md)       | Setup, Git workflow, PR review                                     |
+| [`docs/BACKBLAZE_SETUP.md`](./docs/BACKBLAZE_SETUP.md) | Backblaze B2 provisioning, CORS, and env setup guide               |
+| [`docs/TEAM.md`](./docs/TEAM.md)                       | Who to loop in on what                                             |
 
 AI coding tools read [`AGENTS.md`](./AGENTS.md), which points at the same docs.
 
