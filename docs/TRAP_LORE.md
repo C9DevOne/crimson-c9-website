@@ -40,6 +40,36 @@ A running list of mistakes, pitfalls, and "how tf did that just happen" moments 
 
 ---
 
+### A Vercel dashboard setting silently overriding `package.json`
+
+**What happened:** `package.json` has `"build": "next build"` and always has — checked the full history, `migrate` was never in it. But Vercel was running `npm run migrate && next build`, because a **Build Command override was set in the dashboard** and never removed. `WORKING_LOG.md` recorded the repo as correct and treated the matter as settled. Every Preview build was running migrations against the live database for weeks, and nobody could see it by reading the repo.
+
+**Why it's a trap:** Vercel's project settings silently take precedence over `package.json`. Nothing in the repo hints that an override exists, so reading the code tells you the wrong thing with total confidence. Worse, it's invisible to code review — the one process that would otherwise catch it.
+
+**Do this instead:** When deployment behaviour doesn't match what the repo says, **check the dashboard before trusting the repo.** The build log's `Running "..."` line is the ground truth for what actually executes — read it, don't assume. If a setting has to be overridden in the dashboard, say so in the repo so the next person knows to look.
+
+---
+
+### A pinned Node version expiring underneath you
+
+**What happened:** `engines: { node: "20.x" }` was added in [#9](https://github.com/C9DevOne/crimson-c9-website/pull/9) to fix `payload migrate` crashing with `ERR_REQUIRE_ASYNC_MODULE`. It was the right fix — Node 20 has no `require(esm)`, so the error can't occur. It worked. Then it stopped, with no commit and no config change: Node 20 reached end-of-life, Vercel builds moved to Node 24, and the pin quietly stopped being honoured.
+
+**Why it's a trap:** A version pin looks permanent and isn't. Pinning to an LTS release buys you exactly as long as that release is supported, and the expiry arrives as a mystery breakage in unrelated work — in this case surfacing on a docs-only PR that touched no code at all.
+
+**Do this instead:** Treat a version pin as a dated workaround, not a fix. Write down _why_ it's pinned and what the real fix would be, so the next person doesn't have to reverse-engineer the reasoning from a one-line commit. And when something breaks with no corresponding change on your side, suspect the platform.
+
+---
+
+### `npm run dev` rewriting a shared database's schema
+
+**What happened:** `payload_migrations` on the shared database contains one row: `name: dev`, `batch: -1`. That's Payload's marker for a schema built by **dev push**, not by a migration. `payload.config.ts` sets `push: process.env.NODE_ENV === "development"`, so running `npm run dev` against that `DATABASE_URI` let Payload alter the live schema directly — no migration file, no prompt, no record beyond that single row.
+
+**Why it's a trap:** Dev push is a genuinely good feature — it's what makes iterating on collections fast. The danger is entirely in _which database it's pointed at_, and that's set in `.env.local`, which nobody reviews and nobody else can see. The failure is silent and cumulative: the schema drifts from the migration files in the repo, and nothing ever warns you.
+
+**Do this instead:** **Never point local dev at the production database.** Use a separate one. If you're unsure which yours is aimed at, check `.env.local` before running `npm run dev` — by the time you notice, the schema has already changed.
+
+---
+
 ### `npm run dev` failing silently after `npm install` (Aaron)
 
 **What happened:** `npm run dev` crashed at startup with no obvious cause. `npm install` itself completed and only printed warnings — `npm warn install-scripts sharp@0.34.5 (install: node install/check.js || npm run build)` among them, easy to skim past. As of npm 12, install scripts are **blocked by default** unless a package is explicitly allowlisted — `npm install` silently skips them rather than failing. `sharp`'s install script is what fetches its native binary; skipped, the package exists on disk with no working binary behind it. `payload.config.ts` imports `sharp` directly and eagerly (`import sharp from "sharp"`, passed straight into `buildConfig`), so the crash happens the moment the dev server tries to load the config — immediately, every time.

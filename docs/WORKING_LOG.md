@@ -22,7 +22,22 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
-- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled.
+- **One database is shared across Production, Preview, and local development — confirmed 2026-08-23, no longer a hypothesis.** `DATABASE_URI` now resolves to the same Supabase database in all three Vercel environments, and at least one contributor's local `.env.local` points at it too.
+
+  The local-dev part is the sharp end. `payload.config.ts` sets `push: process.env.NODE_ENV === "development"`, so running `npm run dev` against this database lets Payload **alter the live schema directly**, with no migration and no prompt. That has already happened — see the migration-history risk below.
+
+  Now that `artists` holds real content, this is the highest-priority item on this list. Minimum fix: a separate database for local development. Proper fix: a separate database per environment. Supabase's branching feature may cover Preview — the `Supabase Preview` check appears on PRs but reports `skipping`, so the integration is installed and inactive. Worth investigating.
+
+- **The tracked migration has never been applied; the live schema came from dev push.** `payload_migrations` contains exactly one row — `name: dev`, `batch: -1` — which is Payload's marker for a schema synced by dev push rather than by a migration. `migrations/20260716_215159_initial_schema` is not recorded there and has never run.
+
+  So the live schema is whatever the most recent `npm run dev` synced, and nothing guarantees it matches the migration file in the repo. Two consequences: the database can't be reproduced from the repo, and running `npm run migrate` against it now would try to create tables that already exist.
+
+  Needs a deliberate decision before migrations can be trusted at all: either baseline the existing schema as already-applied, or rebuild from migrations onto a fresh database. Backend call — loop in Nick.
+
+- **`payload migrate` cannot currently run on Vercel.** It fails with `ERR_REQUIRE_ASYNC_MODULE`: the Payload CLI loads `payload.config.ts` through `tsx`, which `require()`s it, and `@payloadcms/richtext-lexical` is ESM containing top-level await. Node refuses to `require()` such a graph from 22.12 onward, and Vercel now builds on Node 24.
+
+  `engines: { node: "20.x" }` was added in [#9](https://github.com/C9DevOne/crimson-c9-website/pull/9) to avoid exactly this, and is no longer effective — Node 20 is end-of-life and Vercel builds on 24 regardless. Not urgent while migrations stay out of the build command, but unresolved, and it blocks any future migration workflow that runs on Vercel.
+
 - **B2 media storage is entirely unimplemented.** Checked 2026-08-23: `@payloadcms/storage-s3` is not in `package.json`, and `payload.config.ts` still uses Payload's local-filesystem upload handling with a 10 MB cap. Vercel's filesystem is ephemeral, so **any media uploaded in production today is lost on redeploy.** This also settles the old "documented two different ways" question — neither the presigned model nor the `afterChange` server-routed model is running, because nothing is. Build against ADR-0004 + `concepts/CONCEPT_media-pipeline.md` (presigned/`clientUploads`) when wiring it up.
 - **Postgres backup configuration is unconfirmed.** Nobody has verified what Supabase's backup setup actually is for this project.
 
@@ -52,7 +67,6 @@ Known work, not yet done. Not decisions — just things somebody needs to actual
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
 - **`.env.local` needs `PAYLOAD_SECRET` for local dev to work at all**, not just for Supabase/external-API features as `CONTRIBUTING.md` currently implies — confirmed 2026-08-23, any page calling `getPayload()` (most of the site) hard-crashes without it, caught only by the error boundary. Setting the value in Vercel does not populate it locally; it's a separate step per contributor.
 - **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.
-- **Take migrations out of the build command permanently.** `next build` should build. A failed build is harmless; a half-applied migration is not.
 - **Confirm Postgres backups are on, check the retention window, and run one actual restore.** An untested backup is a hypothesis. Schedule a restore test twice a year (DB + a sample file from B2).
 - **2FA on the org email**, with recovery codes stored somewhere a second person can reach them. 2FA living only on one phone is still a single point of failure.
 - **Protect Vercel preview deployments.** Preview URLs are public by default — unreleased content on a preview build is the most common way it leaks, because nobody thinks about previews.
