@@ -10,11 +10,15 @@ The project's week-to-week state: what's unresolved, what's risky, and what's kn
 
 ## Current State
 
-The live site still serves the **"Bunker Dreams" Weeztix ticket portal** at `/` — a temporary setup built for the last event. It's stale and scheduled for removal (see Pending Actions).
+`/` serves the **under-construction placeholder** — hero visual, "Something is growing here", CMS-driven social links, and a contact address. The Bunker Dreams Weeztix portal it replaced is fully removed, including its widget script and all its bespoke CSS.
 
-The `_`-prefix route disabling that accompanied it **has already been reverted**: `/about`, `/artists`, `/connect`, `/contact`, `/events`, `/music`, `/imprint`, `/support` and `/terms` are all live routes again, in their pre-prototype state. So the site is currently neither a clean portal nor the prototype — it's a half-reverted mix, which is the main argument for getting the placeholder up sooner rather than later.
+The nine pre-prototype interior routes (`/about`, `/artists`, `/connect`, `/contact`, `/events`, `/music`, `/imprint`, `/support`, `/terms`) are **disabled again** via Next's `_`-prefix private-folder convention, so the site is a single coherent holding page rather than the half-reverted mix it was before. Each folder keeps its code intact under the prefix — re-enabling one is a rename, not a rewrite.
 
-The prototype itself — compass navigation, the pages documented in `concepts/CONCEPT_site-structure.md` — is being built behind that, not yet live.
+`/dev/*` and `/admin` remain reachable in local development only.
+
+**Two things to remember when routes come back:** `Footer.tsx` and `AppSidebar.tsx` have their link entries commented out rather than deleted (Next's typed routes reject links to routes that don't exist, which would otherwise fail the build) — uncomment the matching entry as each page ships. And `/imprint` and `/terms` are **legally required in DE** and must be live again before any public launch.
+
+The prototype itself — compass navigation, the pages documented in `concepts/CONCEPT_site-structure.md` — is being built behind the placeholder, not yet live.
 
 ---
 
@@ -61,8 +65,7 @@ Real choices that need to be made, with no deadline forcing them yet.
 
 Known work, not yet done. Not decisions — just things somebody needs to actually build or write.
 
-- **Build the under-construction placeholder** — single page, social links, contact, a small dragon-under-construction visual. Replaces the Weeztix portal while the prototype is built.
-- **Decommission the Weeztix portal** and restore real routes as prototype pages ship.
+- **Restore the interior routes as prototype pages ship.** Each is `_`-prefixed under `src/app/(frontend)/`; drop the prefix and uncomment the matching entry in `Footer.tsx` / `AppSidebar.tsx`. `/imprint` and `/terms` are legally required in DE and must be back before public launch.
 - **Create `/docs/personal/` preference files** per contributor — agreed on as the pattern, none written yet.
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
 - **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.

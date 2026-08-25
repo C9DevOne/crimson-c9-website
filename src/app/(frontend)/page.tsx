@@ -1,18 +1,33 @@
-import Script from "next/script";
-import { RiInstagramLine, RiSoundcloudLine } from "react-icons/ri";
 import Image from "next/image";
+import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
-import { Artist, Event, Release, Media } from "@/payload-types";
+import type { Artist, Event, Release, Media } from "@/payload-types";
 import FeaturedClient from "./dev/featured/featured-client";
 
 export const metadata = {
-  title: "Ticket Portal | CrimsonC9",
+  title: "CrimsonC9",
+  description: "Change Through Music. Something is growing here — the site is under construction.",
+};
+
+type SocialLinksData = {
+  instagram?: string | null;
+  soundcloud?: string | null;
+  youtube?: string | null;
 };
 
 export default async function Page() {
   const isDev = process.env.NODE_ENV === "development";
   let featuredData = null;
+  let social: SocialLinksData | null = null;
+
+  try {
+    const payload = await getPayload({ config: configPromise });
+    social = await payload.findGlobal({ slug: "social-links" });
+  } catch {
+    // Graceful fallback — a CMS hiccup should never take the placeholder down with it.
+    // The page still renders, just without the social row.
+  }
 
   if (isDev) {
     try {
@@ -87,88 +102,75 @@ export default async function Page() {
 
   return (
     <>
-      {/* Full-viewport portal background — dynamically covers/crops per device */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-8 px-6 py-12 text-center">
         <Image
-          src="/key_portal_background_169.png"
+          src="/DigitalTreeVisual.png"
           alt=""
-          fill
-          className="dream-bg object-cover"
+          width={1024}
+          height={1024}
+          className="hero-visual h-auto w-64 md:w-80"
           priority
           aria-hidden="true"
         />
-        <div className="dream-overlay" />
-        <div className="dream-shimmer" />
-        <div className="dream-vignette" />
-        <div className="dream-pulse" />
-      </div>
 
-      {/* Ticket Portal content sits directly on the page */}
-      <div className="relative z-10 flex min-h-svh flex-col items-center justify-start gap-8 px-6 pt-8 pb-12">
-        <Image
-          src="/crimson_logo_black.png"
-          alt="CrimsonC9"
-          width={144}
-          height={144}
-          className="h-24 w-auto md:h-36"
-          style={{ filter: "drop-shadow(0 0 24px var(--foreground))" }}
-          priority
-        />
-
-        <div className="flex w-full max-w-3xl flex-col gap-3 text-center md:gap-4">
-          <h1 className="bunker-heading text-4xl font-bold tracking-widest md:text-6xl">
-            Bunker Dreams
-          </h1>
-          <p className="glow-text-accent font-display pt-2 text-center text-3xl font-bold tracking-wide text-[var(--background)] md:pt-4 md:text-4xl">
-            Welcome To The Official Bunker Dreams Ticket Portal
+        <div className="flex flex-col gap-2">
+          <h1 className="font-display text-4xl tracking-wide md:text-5xl">CRIMSONC9</h1>
+          <p className="glow-text font-body text-muted-foreground text-lg md:text-xl">
+            Something is growing here.
           </p>
         </div>
 
-        <div className="flex w-full max-w-2xl flex-col gap-3">
-          <p className="glow-text w-full text-center font-[family-name:var(--font-ui)] text-xl font-bold text-[var(--foreground)] md:text-2xl">
-            Buy Your Personal Dream-Key Below:
-          </p>
-          <div className="ticket-glass w-full p-1">
-            <div
-              className="ot-iframe"
-              data-ot-url="https://shop.weeztix.com/0bf26a79-697a-11f1-8e27-d65b0659bc31"
-              data-ot-guid="0bf26a79-697a-11f1-8e27-d65b0659bc31"
-            />
+        {social && (social.instagram || social.soundcloud || social.youtube) && (
+          <div className="flex items-center gap-8">
+            {social.instagram && (
+              <a
+                href={social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
+                <RiInstagramLine className="glow-icon size-8" />
+              </a>
+            )}
+            {social.soundcloud && (
+              <a
+                href={social.soundcloud}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="SoundCloud"
+                className="text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
+                <RiSoundcloudLine className="glow-icon size-8" />
+              </a>
+            )}
+            {social.youtube && (
+              <a
+                href={social.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
+                <RiYoutubeLine className="glow-icon size-8" />
+              </a>
+            )}
           </div>
-        </div>
-        <Script
-          className="rounded-3xl"
-          src="https://v1.widget.shop.weeztix.com/injector.js"
-          strategy="afterInteractive"
-        />
+        )}
 
-        <div className="flex items-center gap-10">
-          <a
-            href="https://instagram.com/crimsonc9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--glow-accent)] transition-colors duration-300 hover:text-[var(--foreground)]"
-            aria-label="Instagram"
-          >
-            <RiInstagramLine className="glow-icon size-10 md:size-12" />
-          </a>
-          <a
-            href="https://soundcloud.com/crimsonc9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--glow-accent)] transition-colors duration-300 hover:text-[var(--foreground)]"
-            aria-label="SoundCloud"
-          >
-            <RiSoundcloudLine className="glow-icon size-10 md:size-12" />
-          </a>
-        </div>
+        <a
+          href="mailto:hello@crimsonc9.com"
+          className="font-ui text-muted-foreground hover:text-foreground text-sm transition-colors duration-300"
+        >
+          hello@crimsonc9.com
+        </a>
 
-        <p className="glow-text font-[family-name:var(--font-ui)] text-lg text-[var(--foreground)] md:text-xl">
-          &copy; 2026 CrimsonC9
+        <p className="font-ui text-muted-foreground/60 text-xs">
+          &copy; {new Date().getFullYear()} CrimsonC9
         </p>
       </div>
 
-      {/* Dev environment only: Homepage Featured Section */}
+      {/* Dev environment only: Homepage Featured Section preview */}
       {isDev && featuredData && (
         <div className="bg-background relative z-10 border-t border-zinc-800">
           <FeaturedClient data={featuredData} />

@@ -102,110 +102,11 @@
   }
 }
 
-/* Weeztix ticket widget: keep the injected iframe responsive and let it grow with the page */
-.ot-iframe {
-  width: 100%;
-}
-
-.ot-iframe iframe {
-  width: 100% !important;
-  min-height: 400px;
-  border: 0;
-  display: block;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Dreamy stained-glass glow for the ticket widget container */
-.ticket-glass {
-  background:
-    /* lead lines */
-    linear-gradient(
-      135deg,
-      transparent 45%,
-      color-mix(in srgb, var(--brand-crimson) 8%, transparent) 50%,
-      transparent 55%
-    ),
-    linear-gradient(
-      225deg,
-      transparent 45%,
-      color-mix(in srgb, var(--brand-accent) 8%, transparent) 50%,
-      transparent 55%
-    ),
-    /* colored panes */
-    linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--brand-crimson) 12%, transparent) 0%,
-        transparent 40%
-      ),
-    linear-gradient(
-      225deg,
-      color-mix(in srgb, var(--brand-accent) 10%, transparent) 0%,
-      transparent 40%
-    ),
-    color-mix(in srgb, var(--secondary) 40%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-crimson) 30%, transparent);
-  box-shadow:
-    0 0 20px color-mix(in srgb, var(--glow-accent) 35%, transparent),
-    0 0 50px color-mix(in srgb, var(--glow-accent) 15%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--glow-accent) 5%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  outline: none;
-}
-
-/* Black Bunker Dreams heading with a strong breathing fiery glow */
-.bunker-heading {
-  color: var(--background);
-  font-family: var(--font-display);
-  text-shadow:
-    0 0 12px color-mix(in srgb, var(--brand-accent) 90%, transparent),
-    0 0 32px color-mix(in srgb, var(--glow-accent) 80%, transparent),
-    0 0 64px color-mix(in srgb, var(--glow-accent) 60%, transparent),
-    0 0 96px color-mix(in srgb, var(--glow-accent) 40%, transparent),
-    0 0 140px color-mix(in srgb, var(--glow-accent) 25%, transparent),
-    0 1px 4px var(--background);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  animation: breathe 5s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%,
-  100% {
-    text-shadow:
-      0 0 8px color-mix(in srgb, var(--brand-accent) 70%, transparent),
-      0 0 24px color-mix(in srgb, var(--glow-accent) 60%, transparent),
-      0 0 48px color-mix(in srgb, var(--glow-accent) 40%, transparent),
-      0 0 80px color-mix(in srgb, var(--glow-accent) 20%, transparent),
-      0 0 120px color-mix(in srgb, var(--glow-accent) 10%, transparent),
-      0 1px 4px var(--background);
-  }
-
-  50% {
-    text-shadow:
-      0 0 16px color-mix(in srgb, var(--brand-accent) 100%, transparent),
-      0 0 48px color-mix(in srgb, var(--glow-accent) 90%, transparent),
-      0 0 96px color-mix(in srgb, var(--glow-accent) 70%, transparent),
-      0 0 144px color-mix(in srgb, var(--glow-accent) 50%, transparent),
-      0 0 200px color-mix(in srgb, var(--glow-accent) 35%, transparent),
-      0 1px 4px var(--background);
-  }
-}
-
 /* Soft white glow for supporting text */
 .glow-text {
   text-shadow:
     0 0 6px color-mix(in srgb, var(--foreground) 50%, transparent),
     0 0 18px color-mix(in srgb, var(--foreground) 30%, transparent),
-    0 1px 3px var(--background);
-}
-
-/* Soft orange glow for accent-coloured supporting text */
-.glow-text-accent {
-  text-shadow:
-    0 0 6px color-mix(in srgb, var(--glow-accent) 50%, transparent),
-    0 0 18px color-mix(in srgb, var(--glow-accent) 30%, transparent),
     0 1px 3px var(--background);
 }
 
@@ -215,113 +116,34 @@
     drop-shadow(0 1px 2px var(--background));
 }
 
-/* Portal-style background image with subtle float */
-.dream-bg {
-  animation: floatBg 60s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  will-change: transform;
+/* Placeholder homepage hero visual.
+   The source artwork is a square PNG whose own black level (rgb 3,3,3) is *darker* than
+   the page background (#0a0a0a), so its edges would otherwise read as a visible pasted
+   rectangle. The radial mask fades those edges out so it sits in the page rather than on
+   top of it — values tuned against the actual image, not guessed.
+   The breathe is deliberately on the image itself rather than a coloured glow behind it:
+   the artwork already carries its own lighting, and a crimson wash behind it muddied the
+   blend without adding anything.
+   Motion degrades per VISION.md §5 — graceful degradation is non-negotiable. */
+.hero-visual {
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 48%, #000 30%, transparent 92%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 48%, #000 30%, transparent 92%);
+  animation: heroBreathe 6s ease-in-out infinite;
 }
 
-@keyframes floatBg {
+@keyframes heroBreathe {
   0%,
   100% {
-    transform: scale(1) translate(0, 0);
+    opacity: 0.82;
   }
   50% {
-    transform: scale(1.005) translate(0.1%, -0.1%);
+    opacity: 1;
   }
 }
 
-/* Breathing colour overlay */
-.dream-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      color-mix(in srgb, var(--brand-crimson) 15%, transparent) 0%,
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--brand-crimson) 20%, transparent) 0%,
-      transparent 45%,
-      color-mix(in srgb, var(--brand-accent) 20%, transparent) 100%
-    );
-  animation: pulseOverlay 10s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes pulseOverlay {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.65;
-  }
-}
-
-/* Slow shimmer sweep */
-.dream-shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 0%,
-    color-mix(in srgb, var(--glow-accent) 8%, transparent) 25%,
-    color-mix(in srgb, var(--foreground) 6%, transparent) 50%,
-    color-mix(in srgb, var(--glow-accent) 8%, transparent) 75%,
-    transparent 100%
-  );
-  background-size: 300% 100%;
-  animation: shimmerSweep 16s linear infinite;
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-}
-
-@keyframes shimmerSweep {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: -200% center;
-  }
-}
-
-/* Soft radial fade so every edge of the image blends into the background */
-.dream-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    transparent 0%,
-    transparent 35%,
-    color-mix(in srgb, var(--background) 40%, transparent) 68%,
-    color-mix(in srgb, var(--background) 78%, transparent) 88%,
-    var(--background) 100%
-  );
-  pointer-events: none;
-}
-
-/* Very subtle pulsing glow on the background image */
-.dream-pulse {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    color-mix(in srgb, var(--foreground) 8%, transparent) 0%,
-    transparent 55%
-  );
-  animation: pulseGlow 8s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes pulseGlow {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.55;
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual {
+    animation: none;
+    opacity: 1;
   }
 }

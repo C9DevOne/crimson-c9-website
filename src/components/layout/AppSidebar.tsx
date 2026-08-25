@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { LucideIcon, Music, Calendar, Users, Home, Heart, BookOpen } from "lucide-react";
+import { LucideIcon, Home } from "lucide-react";
 import { DragonLogo } from "@/components/ui/dragon-logo";
 
 import {
@@ -20,13 +20,15 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+// Only routes that actually exist may be listed here — Next's typed routes reject the
+// rest at build time, which is deliberate: a dead link can't ship unnoticed.
+//
+// The interior routes are disabled during the placeholder phase (`_`-prefixed, see
+// docs/concepts/CONCEPT_site-structure.md §5). Re-add each entry below as its prototype
+// page ships, along with its icon import from lucide-react:
+//   Artists (Users) · Events (Calendar) · Music (Music) · Connect (Heart) · About us (BookOpen)
 const navItems: { name: string; href: Route; icon: LucideIcon }[] = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Artists", href: "/artists", icon: Users },
-  { name: "Events", href: "/events", icon: Calendar },
-  { name: "Music", href: "/music", icon: Music },
-  { name: "Connect", href: "/connect", icon: Heart },
-  { name: "About us", href: "/about", icon: BookOpen },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
