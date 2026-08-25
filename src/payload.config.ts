@@ -34,8 +34,7 @@ if (process.env.NODE_ENV !== "production") {
     throw new Error(
       `Missing required env var(s): ${missing.join(", ")}.\n` +
         `Copy .env.example to .env.local and fill them in, or run \`vercel env pull .env.local\` ` +
-        `to pull real values from the team's Vercel project.\n` +
-        `Full context on what each variable does: docs/concepts/CONCEPT_environment-variables.md`,
+        `to pull real values from the team's Vercel project.`,
     );
   }
 }

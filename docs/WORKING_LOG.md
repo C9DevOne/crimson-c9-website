@@ -22,7 +22,7 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
-- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled. Why this is dangerous even outside migrations, and how the three-environment model works generally: `concepts/CONCEPT_environment-variables.md` §2 and §6.
+- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data — Preview is a real, fully-running deployment, not a screenshot; it executes and connects to whatever database its `DATABASE_URI` points at. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled.
 - **B2 media storage is entirely unimplemented.** Checked 2026-08-23: `@payloadcms/storage-s3` is not in `package.json`, and `payload.config.ts` still uses Payload's local-filesystem upload handling with a 10 MB cap. Vercel's filesystem is ephemeral, so **any media uploaded in production today is lost on redeploy.** This also settles the old "documented two different ways" question — neither the presigned model nor the `afterChange` server-routed model is running, because nothing is. Build against ADR-0004 + `concepts/CONCEPT_media-pipeline.md` (presigned/`clientUploads`) when wiring it up.
 - **Postgres backup configuration is unconfirmed.** Nobody has verified what Supabase's backup setup actually is for this project.
 
