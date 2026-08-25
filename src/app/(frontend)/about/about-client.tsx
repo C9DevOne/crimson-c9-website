@@ -5,7 +5,7 @@ import { AboutData } from "@/types/cms";
 
 export default function AboutClient({ data }: { data: AboutData }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {/* Header */}
       <div className="mx-auto w-full max-w-4xl px-6 pt-16 pb-12 text-center">
         <h1 className="text-brand-crimson mb-4 text-4xl font-extrabold tracking-wider uppercase md:text-6xl">

@@ -200,7 +200,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   };
 
   return (
-    <div className="font-ui min-h-screen w-full bg-[#0a0a0a] px-6 py-8 text-zinc-100 md:px-12 md:py-12">
+    <div className="font-ui bg-background min-h-screen w-full px-6 py-8 text-zinc-100 md:px-12 md:py-12">
       {/* Top Header */}
       <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -346,8 +346,8 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
               </filter>
               {/* Gradient for area fill */}
               <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#DC143C" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#DC143C" stopOpacity="0.00" />
+                <stop offset="0%" stopColor="var(--brand-crimson)" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="var(--brand-crimson)" stopOpacity="0.00" />
               </linearGradient>
               {/* Grid line pattern */}
               <linearGradient id="gridGradient" x1="0" y1="0" x2="1" y2="0">
@@ -428,7 +428,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
               <path
                 d={linePath}
                 fill="none"
-                stroke="#DC143C"
+                stroke="var(--brand-crimson)"
                 strokeWidth={2.5}
                 filter="url(#glow)"
                 className="transition-all duration-300"
@@ -454,10 +454,10 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                 cx={hoveredPoint.x}
                 cy={hoveredPoint.y}
                 r={5.5}
-                fill="#ffffff"
-                stroke="#DC143C"
+                fill="var(--foreground)"
+                stroke="var(--brand-crimson)"
                 strokeWidth={3.5}
-                className="shadow-[0_0_8px_rgba(220,20,60,0.8)]"
+                className="shadow-[0_0_8px_color-mix(in_srgb,var(--brand-crimson)_80%,transparent)]"
               />
             )}
           </svg>

@@ -7,7 +7,7 @@ import { FeaturedData } from "@/types/cms";
 
 export default function FeaturedClient({ data }: { data: FeaturedData }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {/* Dev Environment Banner */}
       <div className="bg-brand-crimson/20 border-brand-crimson/40 text-brand-crimson border-b px-4 py-2 text-center font-mono text-xs tracking-widest uppercase">
         DEV ONLY — Homepage Featured Global Preview

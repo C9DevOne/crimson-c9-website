@@ -70,4 +70,24 @@ A running list of mistakes, pitfalls, and "how tf did that just happen" moments 
 
 ---
 
+### `npm run dev` failing silently after `npm install` (Aaron)
+
+**What happened:** `npm run dev` crashed at startup with no obvious cause. `npm install` itself completed and only printed warnings — `npm warn install-scripts sharp@0.34.5 (install: node install/check.js || npm run build)` among them, easy to skim past. As of npm 12, install scripts are **blocked by default** unless a package is explicitly allowlisted — `npm install` silently skips them rather than failing. `sharp`'s install script is what fetches its native binary; skipped, the package exists on disk with no working binary behind it. `payload.config.ts` imports `sharp` directly and eagerly (`import sharp from "sharp"`, passed straight into `buildConfig`), so the crash happens the moment the dev server tries to load the config — immediately, every time.
+
+**Why it's a trap:** Nothing about the failure points at the cause. The actual error is a native-binary import failure deep in Payload's config loading; the real cause is a warning printed during a completely different command, minutes earlier, that looked like routine `npm install` noise. Anyone on npm 12+ doing a first-time clone will hit this.
+
+**Do this instead:**
+
+```bash
+npm install-scripts approve sharp
+npm install
+npm run dev
+```
+
+The `approve` step only updates the allowlist (see `allowScripts` in `package.json`) — the second `npm install` is what actually runs the now-permitted script and fetches the real binary. If `npm run dev` still fails after a fresh install, check for this warning before assuming something else is wrong.
+
+**Do NOT** reach for `npm audit fix --force` here or on any of the other packages this warning lists — see the entry above. Nothing about this problem needs it.
+
+---
+
 _Shit made you go grrr? Add it above — make the trap lore live on._

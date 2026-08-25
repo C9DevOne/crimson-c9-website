@@ -1,16 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-const colors = [
-  { name: "--background", var: "bg-background" },
-  { name: "--foreground", var: "bg-foreground" },
-  { name: "--brand-crimson", var: "bg-[var(--brand-crimson)]" },
-  { name: "--brand-accent", var: "bg-[var(--brand-accent)]" },
-  { name: "--secondary", var: "bg-secondary" },
-  { name: "--muted-foreground", var: "bg-[var(--muted-foreground)]" },
+const tokenGroups = [
+  {
+    title: "Brand & Background",
+    note: "The tokens documented in VISION.md §4.",
+    tokens: [
+      { name: "--background", swatch: "bg-background" },
+      { name: "--foreground", swatch: "bg-foreground" },
+      { name: "--brand-crimson", swatch: "bg-[var(--brand-crimson)]" },
+      { name: "--brand-accent", swatch: "bg-[var(--brand-accent)]" },
+      { name: "--glow-accent", swatch: "bg-[var(--glow-accent)]" },
+    ],
+  },
+  {
+    title: "shadcn semantic tokens",
+    note: "A second, broader token layer shadcn's generated components read from — see WORKING_LOG.md on the overlap with the brand tokens above.",
+    tokens: [
+      { name: "--primary", swatch: "bg-primary" },
+      { name: "--secondary", swatch: "bg-secondary" },
+      { name: "--muted", swatch: "bg-muted" },
+      { name: "--muted-foreground", swatch: "bg-muted-foreground" },
+      { name: "--accent", swatch: "bg-accent" },
+      { name: "--destructive", swatch: "bg-destructive" },
+      { name: "--border", swatch: "bg-border" },
+      { name: "--ring", swatch: "bg-ring" },
+    ],
+  },
 ];
 
 const fonts = [
@@ -42,13 +72,33 @@ const radiuses = [
   { name: "rounded-full", className: "rounded-full" },
 ];
 
+const buttonVariants = ["default", "outline", "secondary", "ghost", "destructive", "link"] as const;
+
 export default function TokensPage() {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [resolved, setResolved] = useState<Record<string, string>>({});
 
   const handleAnimate = () => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 700);
   };
+
+  // Reads the actual live value straight off the CSS custom property, so the value
+  // shown next to each swatch can never silently drift from what globals.css defines
+  // — no hex code duplicated into this file to go stale.
+  useEffect(() => {
+    const styles = getComputedStyle(document.documentElement);
+    const names = tokenGroups.flatMap((group) => group.tokens.map((t) => t.name));
+    const next: Record<string, string> = {};
+    for (const name of names) {
+      next[name] = styles.getPropertyValue(name).trim();
+    }
+    // getComputedStyle needs the DOM, so this value can't be derived at render time or
+    // read in a state initializer (both run during SSR, before the DOM exists). This is
+    // a one-time read on mount (empty deps), not a re-render loop.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setResolved(next);
+  }, []);
 
   return (
     <div className="bg-background text-foreground min-h-screen p-12">
@@ -63,19 +113,25 @@ export default function TokensPage() {
 
       <h1 className="font-display mb-16 text-5xl">Design Tokens</h1>
 
-      <section className="mb-16">
-        <h2 className="font-display mb-8 text-3xl">Colours</h2>
-        <div className="grid grid-cols-3 gap-6">
-          {colors.map((color) => (
-            <div key={color.name} className="border-border overflow-hidden rounded-2xl border">
-              <div className={`h-24 ${color.var}`} />
-              <div className="bg-secondary p-4">
-                <p className="font-ui text-foreground text-sm">{color.name}</p>
+      {tokenGroups.map((group) => (
+        <section key={group.title} className="mb-16">
+          <h2 className="font-display mb-2 text-3xl">{group.title}</h2>
+          <p className="font-ui text-muted-foreground mb-8 text-sm">{group.note}</p>
+          <div className="grid grid-cols-3 gap-6">
+            {group.tokens.map((token) => (
+              <div key={token.name} className="border-border overflow-hidden rounded-2xl border">
+                <div className={`h-24 ${token.swatch}`} />
+                <div className="bg-secondary space-y-1 p-4">
+                  <p className="font-ui text-foreground text-sm">{token.name}</p>
+                  <p className="text-muted-foreground font-mono text-[10px]">
+                    {resolved[token.name] || "…"}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ))}
 
       <section className="mb-16">
         <h2 className="font-display mb-8 text-3xl">Typography</h2>
@@ -141,6 +197,59 @@ export default function TokensPage() {
           >
             {isAnimating ? "Animating..." : "Trigger Animation"}
           </button>
+        </div>
+      </section>
+
+      <section className="mb-16">
+        <h2 className="font-display mb-2 text-3xl">Components</h2>
+        <p className="font-ui text-muted-foreground mb-8 text-sm">
+          Real components from <code className="text-foreground">src/components/ui/</code> —
+          shadcn-generated, built on Radix, styled with the tokens above. Not a mockup.
+        </p>
+
+        <div className="bg-secondary mb-6 space-y-4 rounded-2xl p-8">
+          <p className="font-ui text-muted-foreground text-xs tracking-widest uppercase">Button</p>
+          <div className="flex flex-wrap gap-3">
+            {buttonVariants.map((variant) => (
+              <Button key={variant} variant={variant}>
+                {variant}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-secondary mb-6 space-y-4 rounded-2xl p-8">
+          <p className="font-ui text-muted-foreground text-xs tracking-widest uppercase">Input</p>
+          <Input placeholder="you@example.com" className="max-w-sm" />
+        </div>
+
+        <div className="bg-secondary mb-6 space-y-4 rounded-2xl p-8">
+          <p className="font-ui text-muted-foreground text-xs tracking-widest uppercase">
+            Tooltip & Sheet
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline">Hover me</Button>
+              </TooltipTrigger>
+              <TooltipContent>This is a tooltip, unmodified from shadcn</TooltipContent>
+            </Tooltip>
+
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="secondary">Open Sheet</Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Example Sheet</SheetTitle>
+                  <SheetDescription>
+                    The same component the universal menu is a plausible candidate to be built from
+                    — slides in from the right, styled entirely with the tokens on this page.
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </section>
     </div>
