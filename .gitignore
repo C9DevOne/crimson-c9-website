@@ -55,3 +55,7 @@ test
 # See docs/personal/README.md (the only file in there that is committed).
 docs/personal/*
 !docs/personal/README.md
+
+# IDE — personal editor state, not project config
+.idea/
+.vscode/

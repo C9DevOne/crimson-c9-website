@@ -22,6 +22,12 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
+- **Row-Level Security is disabled on at least one table — confirmed 2026-08-26 via Supabase's own security advisor, flagged CRITICAL.** `rls_disabled_in_public` and `sensitive_columns_exposed` both fired; the sensitive-columns flag almost certainly means the `Users` collection (password hashes, emails).
+
+  This is not something Payload's own `access: {...}` rules protect against. Those rules only govern requests through Payload's API — Supabase separately auto-exposes every table through its own direct REST API (PostgREST), and without RLS enabled on a table, that second path has no access control at all. Right now, anyone with the project URL can read (and possibly write) through it, regardless of what any collection config says.
+
+  Not safe to fix blind: enabling RLS with no policies defined can just as easily break Payload's own read/write access. Nick's call — Supabase is his domain and this is exactly the kind of change that needs someone who knows the schema.
+
 - **One database is shared across Production, Preview, and local development — confirmed 2026-08-23, no longer a hypothesis.** `DATABASE_URI` now resolves to the same Supabase database in all three Vercel environments, and at least one contributor's local `.env.local` points at it too.
 
   The local-dev part is the sharp end. `payload.config.ts` sets `push: process.env.NODE_ENV === "development"`, so running `npm run dev` against this database lets Payload **alter the live schema directly**, with no migration and no prompt. That has already happened — see the migration-history risk below.
