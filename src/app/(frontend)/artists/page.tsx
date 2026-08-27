@@ -3,8 +3,6 @@ import configPromise from "@payload-config";
 import ArtistsClient from "./artists-client";
 import { Artist, Media } from "@/payload-types";
 
-export const dynamic = "force-dynamic";
-
 export default async function ArtistsPage() {
   const payload = await getPayload({ config: configPromise });
 

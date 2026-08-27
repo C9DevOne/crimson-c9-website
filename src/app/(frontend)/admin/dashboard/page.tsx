@@ -5,8 +5,6 @@ import { redirect } from "next/navigation";
 import type { Route } from "next";
 import { DashboardClient } from "./dashboard-client";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminDashboardPage() {
   const payload = await getPayload({ config: configPromise });
   const { user } = await payload.auth({ headers: await headers() });
