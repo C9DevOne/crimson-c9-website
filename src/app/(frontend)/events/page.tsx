@@ -1,9 +1,9 @@
+"use cache";
+
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import EventsClient from "./events-client";
 import { Event, Media } from "@/payload-types";
-
-export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
   const payload = await getPayload({ config: configPromise });

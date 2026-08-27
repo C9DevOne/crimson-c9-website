@@ -1,8 +1,8 @@
+"use cache";
+
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import ContactClient from "./contact-client";
-
-export const dynamic = "force-dynamic";
 
 export default async function ContactPage() {
   const payload = await getPayload({ config: configPromise });

@@ -1,8 +1,8 @@
+"use cache";
+
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import TermsClient from "./terms-client";
-
-export const dynamic = "force-dynamic";
 
 export default async function TermsPage() {
   const payload = await getPayload({ config: configPromise });

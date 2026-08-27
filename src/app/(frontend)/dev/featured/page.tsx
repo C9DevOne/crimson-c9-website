@@ -1,9 +1,9 @@
+"use cache";
+
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import FeaturedClient from "./featured-client";
 import { Artist, Event, Release, Media } from "@/payload-types";
-
-export const dynamic = "force-dynamic";
 
 export default async function DevFeaturedPage() {
   const payload = await getPayload({ config: configPromise });

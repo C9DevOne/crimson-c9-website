@@ -1,3 +1,5 @@
+"use cache";
+
 import Script from "next/script";
 import { RiInstagramLine, RiSoundcloudLine } from "react-icons/ri";
 import Image from "next/image";
