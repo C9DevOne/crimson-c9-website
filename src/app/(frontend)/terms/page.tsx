@@ -1,5 +1,3 @@
-"use cache";
-
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import TermsClient from "./terms-client";

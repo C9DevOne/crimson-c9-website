@@ -3,8 +3,6 @@ import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import crypto from "crypto";
 
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   try {
     // Get visitor's IP and User Agent to compute unique daily hash
