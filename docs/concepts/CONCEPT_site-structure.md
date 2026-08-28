@@ -143,11 +143,13 @@ _Historical note:_ a Weeztix-based portal served the previous event and is now s
 
 ## 5. Placeholder during build
 
-**The intent:** while the prototype is under construction, `/` serves a **single-page under-construction placeholder** — social links, contact, and a small dragon-under-construction visual. Deliberately light: it is a holding page, not a product.
+While the prototype is under construction, `/` serves a **single-page under-construction placeholder** — deliberately light: a holding page, not a product.
 
-**Not yet the case.** As of 2026-08-23 the repo still serves the stale "Bunker Dreams" Weeztix ticket portal at `/`, and the interior routes listed above are live rather than sealed off — the `_`-prefix disabling described in [`ADR-0009`](../adr/0009-pretix-ticketing.md) has already been reverted. Building the placeholder and decommissioning the portal are both tracked as pending actions in `WORKING_LOG.md`.
+**Built and live as of 2026-08-25.** It carries a hero visual (a tree growing out of a machine — "something is growing here", chosen over the originally-sketched dragon-under-construction idea), the wordmark and tagline, a social icon row, and a contact address. Social links are read from the `SocialLinks` CMS global rather than hardcoded, so they can be rotated without a deploy, and the fetch degrades gracefully — a CMS outage costs the icon row, not the page.
 
-Once the placeholder is up, all other routes stay unreachable until the prototype is ready to open up.
+The stale "Bunker Dreams" Weeztix portal it replaced is fully removed, widget script and bespoke CSS included.
+
+All nine interior routes are sealed off again via Next's `_`-prefix private-folder convention — the same mechanism described in [`ADR-0009`](../adr/0009-pretix-ticketing.md), which had previously been reverted. Their code is intact under the prefix; re-enabling one is a rename plus uncommenting its nav entry (see `WORKING_LOG.md`). They stay unreachable until the prototype is ready to open up.
 
 ---
 
