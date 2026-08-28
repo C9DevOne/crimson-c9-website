@@ -90,4 +90,30 @@ The `approve` step only updates the allowlist (see `allowScripts` in `package.js
 
 ---
 
+### A hand-spliced `DATABASE_URI` after a password reset (Aaron)
+
+**What happened:** Local `npm run dev`, and every Payload-backed route, failed with `password authentication failed for user "postgres"` (Postgres error `28P01`) — even after resetting the Supabase database password and updating `DATABASE_URI` in all three Vercel environments. The database itself was healthy and reachable the whole time; this was purely a credentials mismatch, and it took several reset attempts to actually land. Root cause: the connection string was being rebuilt by hand each time — grab the new password, splice it into an old copied string — rather than copying the complete, freshly-generated string straight from Supabase's own **Connect** button. That's an easy way to lose a character (a dropped `@`, a stale host, a leftover placeholder) without noticing, and resetting the password _again_ silently invalidates whatever was copied before, so two supposedly-current strings can quietly stop matching each other.
+
+**Why it's a trap:** Every piece of a hand-built connection string can look completely plausible — right username format, right host, right port — while the password itself is stale. The format doesn't tell you anything is wrong; only an actual connection attempt does.
+
+**Do this instead:** When `DATABASE_URI` needs a new password, reset it once, then copy the **entire connection string as a single block** from Supabase's Connect modal — never splice a new password into an old string by hand. Two diagnostics worth keeping around:
+
+```bash
+# Confirms the string's *shape* is right without ever printing the password itself
+node --env-file=.env.local -e "const u=new URL(process.env.DATABASE_URI);console.log('username:',u.username,'| host:',u.hostname,'| port:',u.port,'| password length:',u.password.length)"
+
+# Tests the raw credential in isolation, bypassing Payload entirely — narrows
+# "is this a Payload problem or a credentials problem" in one step
+node -e "
+const { Client } = require('pg');
+new Client({ connectionString: 'CONNECTION_STRING_HERE' }).connect()
+  .then(c => { console.log('CONNECTED OK'); return c.end(); })
+  .catch(e => console.log('CONNECT FAILED:', e.message));
+"
+```
+
+If the Direct and Pooler connection strings ever report a different password length despite supposedly being copied at the same time, the password's been reset again since one of them was grabbed — go back to the Connect modal and copy both fresh, together.
+
+---
+
 _Shit made you go grrr? Add it above — make the trap lore live on._
