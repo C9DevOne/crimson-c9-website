@@ -1,7 +1,9 @@
+"use cache";
+
 import Link from "next/link";
 import DevClient from "./dev-client";
 
-export default function DevPortalPage() {
+export default async function DevPortalPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <div className="mx-auto max-w-5xl px-6 py-8">

@@ -2,8 +2,6 @@ import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import ImprintClient from "./imprint-client";
 
-export const dynamic = "force-dynamic";
-
 export default async function ImprintPage() {
   const payload = await getPayload({ config: configPromise });
 

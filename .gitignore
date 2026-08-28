@@ -50,6 +50,7 @@ test
 .agents/
 .claudeignore
 .geminiignore
+skills-lock.json
 
 # Per-contributor preference files — personal, local only.
 # See docs/personal/README.md (the only file in there that is committed).

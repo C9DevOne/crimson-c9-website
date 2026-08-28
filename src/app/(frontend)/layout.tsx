@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Cinzel_Decorative, Philosopher, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -47,7 +48,9 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground flex h-svh overflow-hidden">
         <TooltipProvider>
-          <PageTracker />
+          <Suspense fallback={null}>
+            <PageTracker />
+          </Suspense>
           {isDev ? (
             <SidebarProvider>
               <AppSidebar />
