@@ -22,6 +22,8 @@ The prototype itself — compass navigation, the pages documented in `concepts/C
 
 Things that could cause real problems if left unresolved, roughly in order of how much they block.
 
+- **Preview/Production `DATABASE_URI` isolation is unconfirmed.** If Preview deployments share a database with Production, every PR preview build risks running migrations against live data. Must be resolved with whoever owns Supabase before migrate-on-build is re-enabled.
+- **B2 media storage wired in codebase; bucket setup & env vars pending.** `@payloadcms/storage-s3` is installed and configured on the `feat/backblaze-b2-storage` branch with `clientUploads: true` and `signedDownloads`. Bucket creation, CORS PUT/GET rules, and `S3_*` env vars on Vercel and local dev are documented in `docs/BACKBLAZE_SETUP.md` and need manual setup before production media uploads go live.
 - **One database is shared across Production, Preview, and local development — confirmed 2026-08-23, no longer a hypothesis.** `DATABASE_URI` now resolves to the same Supabase database in all three Vercel environments, and at least one contributor's local `.env.local` points at it too.
 
   The local-dev part is the sharp end. `payload.config.ts` sets `push: process.env.NODE_ENV === "development"`, so running `npm run dev` against this database lets Payload **alter the live schema directly**, with no migration and no prompt. That has already happened — see the migration-history risk below.
@@ -65,7 +67,9 @@ Known work, not yet done. Not decisions — just things somebody needs to actual
 - **Decommission the Weeztix portal** and restore real routes as prototype pages ship.
 - **Create `/docs/personal/` preference files** per contributor — agreed on as the pattern, none written yet.
 - **Backfill names on the three pre-dating entries in `TRAP_LORE.md`**, if whoever hit them wants to claim them. Minor, no rush.
-- **Provision Backblaze B2 bucket & credentials** — B2 storage is wired in the codebase (`feat/backblaze-b2-storage`). Create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment** and in `.env.local`. Full operational walkthrough in `docs/BACKBLAZE_SETUP.md`.
+- **`.env.local` needs `PAYLOAD_SECRET` for local dev to work at all**, not just for Supabase/external-API features as `CONTRIBUTING.md` currently implies — confirmed 2026-08-23, any page calling `getPayload()` (most of the site) hard-crashes without it, caught only by the error boundary. Setting the value in Vercel does not populate it locally; it's a separate step per contributor.
+- **Wire up B2 storage** — install `@payloadcms/storage-s3`, create the bucket-scoped application key (not the master key), set the CORS `PUT`+`GET` rules, and set `S3_*` env vars **per Vercel environment**. Full checklist in `concepts/CONCEPT_media-pipeline.md`.
+- **Take migrations out of the build command permanently.** `next build` should build. A failed build is harmless; a half-applied migration is not.
 - **Confirm Postgres backups are on, check the retention window, and run one actual restore.** An untested backup is a hypothesis. Schedule a restore test twice a year (DB + a sample file from B2).
 - **2FA on the org email**, with recovery codes stored somewhere a second person can reach them. 2FA living only on one phone is still a single point of failure.
 - **Protect Vercel preview deployments.** Preview URLs are public by default — unreleased content on a preview build is the most common way it leaks, because nobody thinks about previews.
