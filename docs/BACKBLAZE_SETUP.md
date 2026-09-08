@@ -76,16 +76,23 @@ Because `clientUploads: true` sends uploads directly from the user's browser to 
 
 #### Option A: Using the official `b2` CLI
 
-Install the B2 CLI (`brew install b2-tools` or `pip install b2`) and authorize:
+Install the B2 CLI:
+
+- **Via `uv` (Recommended):** `uv tool install b2`
+- **Via standalone binary (Linux):** `curl -LO https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux && chmod +x b2-linux && sudo mv b2-linux /usr/local/bin/b2`
+- **Via Homebrew (macOS):** `brew install b2-tools`
+- **Via pipx:** `pipx install b2`
+
+Authorize the CLI:
 
 ```bash
-b2 authorize-account <your-keyID> <your-applicationKey>
+b2 account authorize <your-keyID> <your-applicationKey>
 ```
 
-Apply the CORS rules to the bucket:
+Apply the CORS rules to the bucket (`--cors-rules` flag in B2 CLI v4+):
 
 ```bash
-b2 bucket update C9-Home-Storage --corsRules '[
+b2 bucket update C9-Home-Storage --cors-rules '[
   {
     "corsRuleName": "c9DirectClientUploadsAndPlayback",
     "allowedOrigins": [
