@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -40,4 +39,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPayload(nextConfig);
+/**
+ * `withPayload()` was removed when the CMS was decoupled for v1 — it only exists to wire
+ * Payload's admin routes and bundler aliases into the Next build, and there are no Payload
+ * routes to wire while `src/app/_payload` sits outside routing. The dependency is still
+ * installed, so restoring this is one import and one wrapper.
+ */
+export default nextConfig;

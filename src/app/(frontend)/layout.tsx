@@ -1,13 +1,10 @@
 import { Suspense } from "react";
 import { Philosopher, DM_Sans } from "next/font/google";
-import { getPayload } from "payload";
-import configPromise from "@payload-config";
 import "./globals.css";
 import { GrowthField } from "@/components/animations/GrowthField";
 import { Footer } from "@/components/layout/Footer";
 import { Lantern } from "@/components/layout/Lantern";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { PageTracker } from "@/components/analytics/PageTracker";
 import { resolveSocials } from "@/lib/socials";
 
 /**
@@ -54,31 +51,6 @@ function SuspendedFooter() {
   );
 }
 
-/**
- * Social links for the lantern menu come from the CMS, so the URLs can change without a
- * deploy. Isolated into its own async component so the database read sits behind a Suspense
- * boundary and doesn't force the whole shell to render dynamically.
- *
- * The fallback is a lantern with no socials rather than nothing at all — the lantern should
- * be on screen from the first paint, and since the panel starts closed nobody sees the
- * links fill in.
- */
-async function LanternWithSocials() {
-  // Only the fetch is guarded. Returning JSX from inside the try would be misleading —
-  // React renders the element later, so a render error could never reach this catch, and
-  // the `react-hooks/error-boundaries` lint rule correctly rejects that shape.
-  let social;
-  try {
-    const payload = await getPayload({ config: configPromise });
-    social = await payload.findGlobal({ slug: "social-links" });
-  } catch {
-    // CMS unreachable — resolveSocials falls back to the known URLs rather than dropping
-    // the social row entirely.
-  }
-
-  return <Lantern socials={resolveSocials(social)} />;
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -92,17 +64,15 @@ export default function RootLayout({
           behave differently inside one). */}
       <body className="bg-background text-foreground min-h-svh">
         <TooltipProvider>
-          <Suspense fallback={null}>
-            <PageTracker />
-          </Suspense>
-
           {/* Fixed, full-viewport, behind everything. Lives in the layout rather than the
               page so the legal routes get the same world instead of a flat black page. */}
           <GrowthField />
 
-          <Suspense fallback={<Lantern />}>
-            <LanternWithSocials />
-          </Suspense>
+          {/* Socials come from constants while the CMS is decoupled (see src/lib/socials.ts).
+              This used to be an async component reading the `social-links` global behind its
+              own Suspense boundary; with a synchronous source the boundary bought nothing,
+              so it went with it. Both come back together. */}
+          <Lantern socials={resolveSocials()} />
 
           <div className="relative z-10 flex min-h-svh flex-col">
             <main className="flex-1">{children}</main>

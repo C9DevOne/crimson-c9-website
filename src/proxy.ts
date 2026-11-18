@@ -11,7 +11,9 @@ import type { NextRequest } from "next/server";
  * failure mode worth knowing about: the folder can be un-prefixed and the page can build
  * perfectly, and this redirect would still quietly send every visitor back to `/`.
  */
-const PUBLIC_PREFIXES = ["/admin", "/api", "/imprint", "/terms"];
+// `/admin` was here for Payload's admin panel, which is out of routing for v1. `/api` has
+// to stay: it carries the collaboration form's endpoint.
+const PUBLIC_PREFIXES = ["/api", "/imprint", "/terms"];
 
 export function proxy(request: NextRequest) {
   const isProduction = process.env.NODE_ENV === "production";

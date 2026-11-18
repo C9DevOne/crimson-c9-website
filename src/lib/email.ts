@@ -1,17 +1,21 @@
 /**
- * Outbound email. Currently one job: tell us when somebody submits the landing page's
- * collaboration form, so an enquiry can't sit unread in the CMS indefinitely.
+ * Outbound email. Currently one job: deliver the landing page's collaboration enquiries.
  *
- * The hard rule in here is that **nothing in this file ever throws.** It's called from a
- * Payload `afterChange` hook, and an exception thrown there propagates out of the write
- * and fails the request — which would mean a transient mail outage made the form look
- * broken to the visitor, after their message had already been saved. A missed
- * notification is a small problem; a form that rejects submissions is a real one.
+ * **This used to be a notification; it is now the delivery mechanism.** While Payload was
+ * wired up, the enquiry was written to the `collaboration-requests` collection and this
+ * email was a convenience on top — so the rule was that nothing in here could ever throw,
+ * because a mail outage must not fail a write that had already succeeded.
+ *
+ * With the database decoupled for v1 there is no row. The email *is* the record, so a
+ * failure has to be reported rather than swallowed: the visitor needs to know their message
+ * did not arrive, so they can use the address printed under the form instead.
+ *
+ * It still never throws — it reports through its return value. That keeps it safe to call
+ * from a Payload `afterChange` hook unchanged when the collection comes back, where a thrown
+ * error would propagate out of the write.
  */
 
 import { Resend } from "resend";
-
-import type { CollaborationRequest } from "@/payload-types";
 
 /**
  * Sender address. Resend only accepts a `from` on a domain verified in the account, so
@@ -20,30 +24,65 @@ import type { CollaborationRequest } from "@/payload-types";
  */
 const FROM = process.env.RESEND_FROM || "CrimsonC9 <noreply@crimsonc9.com>";
 
-/** Where enquiries are sent. Overridable so a preview deploy can route mail elsewhere. */
+/** Where enquiries are sent. Overridable so a staging deploy can route mail elsewhere. */
 const NOTIFY = process.env.C9_NOTIFY_EMAIL || "hello@crimsonc9.com";
 
+export type EnquiryType = "booking" | "collaboration" | "volunteer" | "other";
+
+/**
+ * Deliberately structural rather than importing `CollaborationRequest` from
+ * `@/payload-types`: this file should not depend on the CMS being wired up. A Payload doc
+ * satisfies this shape as-is, so the `afterChange` hook keeps compiling either way.
+ */
+export type CollaborationSubmission = {
+  id?: string | number;
+  name: string;
+  email: string;
+  type: EnquiryType;
+  message: string;
+  submittedAt?: string | null;
+  createdAt?: string | null;
+};
+
+export type DeliveryResult = { ok: true } | { ok: false; reason: "not-configured" | "failed" };
+
 /** Human-readable enquiry labels for the subject line. */
-const TYPE_LABELS: Record<CollaborationRequest["type"], string> = {
+const TYPE_LABELS: Record<EnquiryType, string> = {
   booking: "Booking",
   collaboration: "Collaboration",
   volunteer: "Volunteer",
   other: "General",
 };
 
-export async function sendCollaborationNotification(doc: CollaborationRequest): Promise<void> {
+/**
+ * Logs an enquiry in full so it is recoverable from the container logs when mail fails.
+ * Without a database this is the only other copy that exists.
+ */
+function logUndelivered(submission: CollaborationSubmission, why: string): void {
+  console.error(
+    [
+      `[collaboration] UNDELIVERED (${why}) — recover this from the log:`,
+      `  name:    ${submission.name}`,
+      `  email:   ${submission.email}`,
+      `  type:    ${submission.type}`,
+      `  sent:    ${submission.submittedAt ?? submission.createdAt ?? new Date().toISOString()}`,
+      `  message: ${submission.message.replace(/\n/g, "\n           ")}`,
+    ].join("\n"),
+  );
+}
+
+export async function sendCollaborationNotification(
+  submission: CollaborationSubmission,
+): Promise<DeliveryResult> {
   const apiKey = process.env.RESEND_API_KEY;
 
-  // No key configured — local dev, or a deploy where the secret hasn't been set yet. Log
-  // loudly enough to be noticed and carry on; the submission is already stored either way.
   if (!apiKey) {
-    console.warn(
-      `[collaboration-requests] RESEND_API_KEY not set — no email sent for submission #${doc.id} from ${doc.name}. Read it in the CMS.`,
-    );
-    return;
+    logUndelivered(submission, "RESEND_API_KEY not set");
+    return { ok: false, reason: "not-configured" };
   }
 
-  const label = TYPE_LABELS[doc.type] ?? "Enquiry";
+  const label = TYPE_LABELS[submission.type] ?? "Enquiry";
+  const sent = submission.submittedAt ?? submission.createdAt ?? new Date().toISOString();
 
   try {
     const resend = new Resend(apiKey);
@@ -53,37 +92,35 @@ export async function sendCollaborationNotification(doc: CollaborationRequest): 
     const { error } = await resend.emails.send({
       from: FROM,
       to: NOTIFY,
-      replyTo: doc.email,
-      subject: `[${label}] New enquiry from ${doc.name}`,
+      replyTo: submission.email,
+      subject: `[${label}] New enquiry from ${submission.name}`,
       text: [
         `${label} enquiry via crimsonc9.com`,
         "",
-        `Name:    ${doc.name}`,
-        `Email:   ${doc.email}`,
-        `Type:    ${doc.type}`,
-        `Sent:    ${doc.submittedAt ?? doc.createdAt}`,
+        `Name:  ${submission.name}`,
+        `Email: ${submission.email}`,
+        `Type:  ${submission.type}`,
+        `Sent:  ${sent}`,
         "",
         "Message:",
-        doc.message,
+        submission.message,
         "",
         "—",
-        `Manage this enquiry in the CMS: /admin/collections/collaboration-requests/${doc.id}`,
+        "Reply directly to this email to answer the sender.",
       ].join("\n"),
     });
 
     // The SDK resolves with `{ data, error }` instead of rejecting, so an API-level
     // failure is invisible unless `error` is checked explicitly.
     if (error) {
-      console.error(
-        `[collaboration-requests] Resend rejected the notification for submission #${doc.id}:`,
-        error.message,
-      );
+      logUndelivered(submission, `Resend rejected it: ${error.message}`);
+      return { ok: false, reason: "failed" };
     }
+
+    return { ok: true };
   } catch (error) {
     // Network failure, DNS, a bad key shape — anything the SDK does throw on.
-    console.error(
-      `[collaboration-requests] Failed to send notification for submission #${doc.id}:`,
-      error instanceof Error ? error.message : error,
-    );
+    logUndelivered(submission, error instanceof Error ? error.message : String(error));
+    return { ok: false, reason: "failed" };
   }
 }

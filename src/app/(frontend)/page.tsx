@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getPayload } from "payload";
-import configPromise from "@payload-config";
 import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
 
 import { PagodaScene } from "@/components/animations/PagodaScene";
@@ -19,7 +17,11 @@ import { resolveSocials } from "@/lib/socials";
  * (§5), and the lantern from CONCEPT_page-universal-menu.md now carries navigation.
  */
 
-const FALLBACK_EMAIL = "hello@crimsonc9.com";
+/**
+ * Contact address. Was a `site-settings` CMS read with this as its fallback; it is now the
+ * single source while the CMS is decoupled, so changing it is a deploy.
+ */
+const CONTACT_EMAIL = "hello@crimsonc9.com";
 
 /**
  * Hero logo — the crimson dragon supplied 2026-10-02, replacing the black silhouette that
@@ -54,26 +56,12 @@ const CITIES = ["Aachen", "Berlin", "Cologne", "Aachen"];
 
 type SocialLink = { name: string; url: string; Icon: typeof RiInstagramLine };
 
-export default async function Page() {
-  let contactEmail = FALLBACK_EMAIL;
-  let socials = resolveSocials();
-
-  // A CMS hiccup must never take this page down — it's the only public page the site has
-  // right now. Both reads fall back to constants rather than to nothing: the channels are
-  // core content here, so hiding the section on a failed query would be worse than showing
-  // a URL that's one deploy out of date.
-  try {
-    const payload = await getPayload({ config: configPromise });
-    const [social, settings] = await Promise.all([
-      payload.findGlobal({ slug: "social-links" }),
-      payload.findGlobal({ slug: "site-settings" }),
-    ]);
-
-    contactEmail = settings?.contactEmail || FALLBACK_EMAIL;
-    socials = resolveSocials(social);
-  } catch {
-    // Intentionally silent for the visitor; the page still renders in full.
-  }
+export default function Page() {
+  // Both of these were CMS reads that already fell back to exactly these values, so the
+  // rendered page is unchanged by the decoupling — what changes is that editing them is a
+  // deploy rather than an admin login. See src/lib/socials.ts.
+  const contactEmail = CONTACT_EMAIL;
+  const socials = resolveSocials();
 
   const socialLinks: SocialLink[] = [
     { name: "Instagram", url: socials.instagram, Icon: RiInstagramLine },
