@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "20.x"
+    "node": ">=26"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "prepare": "husky",
     "migrate": "payload migrate"
   },

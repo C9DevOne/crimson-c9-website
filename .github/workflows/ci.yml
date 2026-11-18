@@ -1,0 +1,27 @@
+# Runs on every pull request and every push to main: lint, format, typecheck, production
+# build, Docker build. Merge only when this is green — Deploy is gated on it.
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run build
+      # Builds the real image. A Dockerfile that drifts from the app is otherwise only
+      # discovered at deploy time, when it is a production outage instead of a red check.
+      - name: Docker image builds
+        run: docker build -q -t crimson-c9-website:ci . >/dev/null

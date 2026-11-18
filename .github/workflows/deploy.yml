@@ -1,0 +1,80 @@
+# Builds the Docker image after CI passes on main, pushes it to ghcr.io and deploys it to
+# PRODUCTION — crimsonc9.com. There is no staging stage yet (see deploy/deploy.sh); the
+# safety net is the healthcheck-gated rollback in deploy.sh, not a second environment.
+#
+# Rollback: Actions → Deploy → Run workflow → the tag of the last good run.
+name: Deploy
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Where to deploy"
+        type: choice
+        options: [prod, staging]
+        default: prod
+      tag:
+        description: "Image tag, e.g. sha-1a2b3c4 (empty = build current main)"
+        required: false
+
+concurrency:
+  group: deploy-${{ inputs.stage || 'prod' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' && inputs.tag == '' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - id: tag
+        run: echo "tag=sha-$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/c9devone/crimson-c9-website:${{ steps.tag.outputs.tag }}
+          # deploy.sh prunes by this label, so it has to match the repo exactly.
+          labels: org.opencontainers.image.source=https://github.com/C9DevOne/crimson-c9-website
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    if: always() && (needs.build.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.tag != ''))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      packages: read # the token handed to the server can only pull
+    steps:
+      - name: Deploy over SSH (restricted key, runs deploy.sh only)
+        env:
+          STAGE: ${{ inputs.stage || 'prod' }}
+          TAG: ${{ inputs.tag || needs.build.outputs.tag }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$TOKEN" | ssh -i ~/.ssh/deploy -o BatchMode=yes "root@$HOST" "deploy $STAGE $TAG"
+          echo "### Deployed \`$TAG\` to $STAGE" >> "$GITHUB_STEP_SUMMARY"

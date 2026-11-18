@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Builds .next/standalone — a self-contained Node server, which is what the Dockerfile's
+  // final stage copies instead of installing node_modules again. Same choice as c9-tickets.
+  output: "standalone",
+
   reactCompiler: true,
   typedRoutes: true,
   cacheComponents: true,
