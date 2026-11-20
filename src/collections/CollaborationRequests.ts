@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { isAdminOrEditor } from "../access";
+import { sendCollaborationNotification } from "../lib/email";
 
 export const CollaborationRequests: CollectionConfig = {
   slug: "collaboration-requests",
@@ -19,20 +20,13 @@ export const CollaborationRequests: CollectionConfig = {
   hooks: {
     afterChange: [
       async ({ doc, operation }) => {
-        // Only send notification email on new submissions
+        // Only notify on new submissions — an admin editing the status of an existing
+        // enquiry shouldn't re-send the alert.
         if (operation !== "create") return;
 
-        // TODO: Wire up Nodemailer / Resend / similar to send email to hello@crimsonc9.com
-        // This hook fires on every new submission so submissions don't sit silently in the DB.
-        // Example implementation:
-        // await sendEmail({
-        //   to: "hello@crimsonc9.com",
-        //   subject: `New ${doc.type} enquiry from ${doc.name}`,
-        //   text: doc.message,
-        // });
-        console.log(
-          `[CollaborationRequests] New submission from ${doc.name} (${doc.type}) — notify hello@crimsonc9.com`,
-        );
+        // Safe to await: sendCollaborationNotification never throws, so a mail failure
+        // can't fail the write that already succeeded. See the note in src/lib/email.ts.
+        await sendCollaborationNotification(doc);
       },
     ],
   },

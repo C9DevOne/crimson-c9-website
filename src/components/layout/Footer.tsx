@@ -7,14 +7,16 @@ import DecryptedText from "@/components/ui/decrypted_text";
 // Only routes that actually exist may be listed here — Next's typed routes reject the
 // rest at build time, which is deliberate: a dead link can't ship unnoticed.
 //
-// All four are disabled during the placeholder phase (`_`-prefixed, see
-// docs/concepts/CONCEPT_site-structure.md §5). Imprint and Terms are legally required in
-// DE and must come back before the site is publicly launched — tracked in WORKING_LOG.md.
+// Imprint and Terms are live: they are legally required in DE, and the landing page now
+// collects personal data through its contact form. Contact and Support stay disabled
+// (`_`-prefixed, see docs/concepts/CONCEPT_site-structure.md §5) — uncomment each as it
+// ships, and add it to PUBLIC_PREFIXES in src/proxy.ts at the same time or it will
+// redirect to `/` in production regardless.
 const links: { name: string; href: Route }[] = [
+  { name: "Imprint", href: "/imprint" },
+  { name: "Terms & Conditions", href: "/terms" },
   // { name: "Contact", href: "/contact" },
-  // { name: "Imprint", href: "/imprint" },
   // { name: "Support", href: "/support" },
-  // { name: "Terms & Conditions", href: "/terms" },
 ];
 
 export function Footer() {

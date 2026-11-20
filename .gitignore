@@ -60,3 +60,6 @@ docs/personal/*
 # IDE — personal editor state, not project config
 .idea/
 .vscode/
+
+# local throwaway spike (P0) — not committed
+.spike/
