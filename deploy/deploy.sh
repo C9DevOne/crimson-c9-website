@@ -8,9 +8,8 @@
 # Deliberately does NOT git pull: compose files on the server only change when an admin pulls them,
 # so a commit to main can change the app image but never the container setup (mounts, ports, networks).
 #
-# "staging" is accepted so adding deploy/staging/ later is a directory and a Caddy block, not a
-# change to this script — but only deploy/prod exists today, and the .env check below is what
-# tells you so.
+# Two stages: prod (crimsonc9.com, public) and staging (staging.crimsonc9.com, behind the team
+# login). A stage that has no directory or no .env on this server fails before anything is pulled.
 set -eu
 
 # shellcheck disable=SC2086
