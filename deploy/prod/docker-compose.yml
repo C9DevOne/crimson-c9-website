@@ -1,0 +1,29 @@
+name: website-prod
+# Production: crimsonc9.com and www.crimsonc9.com (public, no login).
+# Lives on the server in /opt/c9-website/deploy/prod. Secrets + IMAGE_TAG in .env next to
+# this file (server-only). Deploys only swap IMAGE_TAG (see ../deploy.sh). Changes to this
+# file are applied by hand:
+#   cd /opt/c9-website && git pull && cd deploy/prod && docker compose up -d
+#
+# No `db` service and no `intern` network, unlike c9-tickets: v1 has no database. Nothing
+# in this stack holds state, so there is nothing here to back up — the only thing a
+# submitted form produces is an email.
+services:
+  app:
+    image: ghcr.io/c9devone/crimson-c9-website:${IMAGE_TAG:?set IMAGE_TAG in .env}
+    container_name: website-prod
+    restart: unless-stopped
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    mem_limit: 512m
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

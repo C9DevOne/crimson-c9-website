@@ -78,8 +78,9 @@ export default function TermsClient({ data }: { data: TermsData }) {
             <Section title="4. Privacy — what we collect">
               <p className="mb-4">
                 <strong className="text-foreground font-semibold">The contact form.</strong> When
-                you send us a message we store the name, email address, enquiry type and message you
-                entered. We use them for one thing: replying to you.
+                you send us a message, the name, email address, enquiry type and message you entered
+                are delivered to us as an email. They are not stored in any database. We use them
+                for one thing: replying to you.
               </p>
               <ul className="text-muted-foreground mb-4 space-y-1.5 text-sm">
                 <li>
@@ -87,8 +88,8 @@ export default function TermsClient({ data }: { data: TermsData }) {
                   6(1)(a) — which is why the form asks for it explicitly.
                 </li>
                 <li>
-                  <span className="text-foreground/90">Retention:</span> kept while we deal with
-                  your enquiry, then deleted once there&apos;s no reason to keep it.
+                  <span className="text-foreground/90">Retention:</span> kept in our mailbox while
+                  we deal with your enquiry, then deleted once there&apos;s no reason to keep it.
                 </li>
                 <li>
                   <span className="text-foreground/90">Sharing:</span> not sold, and not passed to
@@ -96,12 +97,9 @@ export default function TermsClient({ data }: { data: TermsData }) {
                 </li>
               </ul>
               <p>
-                <strong className="text-foreground font-semibold">Visitor counting.</strong> We
-                count unique daily visitors without identifying anyone. Your IP address and browser
-                string are combined with the current date and a secret value, then hashed — we store
-                only that hash, never your IP address itself, and because the date is part of it the
-                hash cannot be used to follow you from one day to the next. No cookies, no
-                third-party analytics, no advertising trackers.
+                <strong className="text-foreground font-semibold">Nothing else.</strong> We set no
+                cookies, run no analytics and use no third-party trackers or advertising. If you
+                never use the form, we collect nothing about you at all.
               </p>
             </Section>
           </div>
@@ -113,21 +111,23 @@ export default function TermsClient({ data }: { data: TermsData }) {
             </p>
             <ul className="text-muted-foreground space-y-1.5 text-sm">
               <li>
-                <span className="text-foreground/90">Vercel</span> — website hosting and delivery
+                <span className="text-foreground/90">Hetzner Online GmbH</span> — the server this
+                site runs on, located in Germany
               </li>
               <li>
-                <span className="text-foreground/90">Supabase</span> — database holding form
-                submissions
+                <span className="text-foreground/90">Cloudflare</span> — domain name service, which
+                tells your browser where to find this site
               </li>
               <li>
-                <span className="text-foreground/90">Resend</span> — sends us the notification email
-                when you submit the form
+                <span className="text-foreground/90">Zoho (ZeptoMail)</span> — delivers the
+                notification email when you submit the form, via its EU data centre
               </li>
             </ul>
             <p className="text-destructive-foreground bg-destructive/20 mt-4 rounded-xl px-4 py-3 text-xs leading-relaxed">
-              To be completed before launch: the hosting region for each provider above, and whether
-              a data processing agreement is in place with each. These determine whether any data
-              leaves the EU, which has to be stated here.
+              To be completed before launch: whether a data processing agreement is in place with
+              Hetzner, Cloudflare and Zoho. The regions above are stated; the agreements are what
+              still need confirming, and this section has to be reviewed by a human before it is
+              relied on.
             </p>
           </Section>
 

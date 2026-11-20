@@ -1,0 +1,30 @@
+name: website-staging
+# Staging: staging.crimsonc9.com — behind the team login in Caddy, noindex.
+# Lives on the server in /opt/c9-website/deploy/staging. Secrets + IMAGE_TAG in .env next to
+# this file (server-only). Deploys only swap IMAGE_TAG (see ../deploy.sh). Changes to this
+# file are applied by hand:
+#   cd /opt/c9-website && git pull && cd deploy/staging && docker compose up -d
+#
+# This is where a branch goes to be looked at before it is merged: Actions → Deploy → Run
+# workflow, pick the branch, stage "staging". Prod gets main automatically once CI is green.
+services:
+  app:
+    image: ghcr.io/c9devone/crimson-c9-website:${IMAGE_TAG:?set IMAGE_TAG in .env}
+    container_name: website-staging
+    restart: unless-stopped
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    # Smaller than prod on purpose: both stacks share one server with hub, Docmost, the
+    # ticket shop and PhenoQuest, and staging is only ever read by a handful of people.
+    mem_limit: 384m
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
