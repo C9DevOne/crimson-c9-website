@@ -6,13 +6,24 @@
   /* Brand tokens — VISION.md §4. Canonical values; everything below aliases these
      rather than repeating a hex code, so there is exactly one place each colour is
      actually defined. See docs/WORKING_LOG.md on the shadcn/brand token overlap. */
-  --background: #0a0a0a;
-  --foreground: #f5f5f5;
+  /* Near-black rather than #0a0a0a, and a warm off-white rather than near-pure white.
+     Both taken from the references Aaron gave (CRI-22): primal-instinct.net sits on #000,
+     raw-people.com on #050505 with #f4f4ef type. Pure white on pure black is the one
+     combination that reliably looks cheap on a large dark surface — it buzzes, and it
+     makes every antialiased edge show. */
+  --background: #050505;
+  --foreground: #f2f2ee;
   --brand-crimson: #510606;
   --brand-accent: #cc5500; /* fire accent — ember orange, exploratory */
   --glow-accent: #ff7e00; /* neon orange glow */
   --secondary: #1a1a1a;
-  --muted-foreground: #a1a1aa;
+  /* Dimmer than before (#a1a1aa). Micro-labels carry a lot of this page and they are
+     meant to recede until looked at; at the old value they competed with body text. */
+  --muted-foreground: #78787a;
+
+  /* Hairline. One value so every rule on the page is the same rule — the references use
+     these constantly and inconsistency in them is instantly visible. */
+  --hairline: color-mix(in srgb, var(--foreground) 11%, transparent);
 
   /* Bright crimson — the light that comes off the brand colour, rather than the brand
      colour itself. --brand-crimson (#510606) is a surface tone: far too dark to read as a
@@ -28,7 +39,11 @@
      rather than pointed straight at the font so --font-display keeps meaning "the heading
      face" at every call site; if a display face ever comes back, only this line changes.
      VISION.md §4's typography table still lists Cinzel and needs updating to match. */
-  --font-display: var(--font-body);
+  /* The display face is now the same grotesque as everything else. Philosopher — a
+     flared humanist face — reads mystical, which is the opposite of the brief (CRI-22).
+     Still aliased rather than pointed at the font, so bringing a display face back is one
+     line here and nothing at any call site. VISION.md §4 is out of date again. */
+  --font-display: var(--font-ui);
 
   /* Not a brand token — deliberately distinct from --brand-crimson. An error/destructive
      state reusing the brand colour would read as a brand accent, not a warning. */
@@ -61,13 +76,14 @@
   --border: var(--secondary);
   --input: var(--secondary);
   --ring: var(--brand-crimson);
-  --radius: 0.5rem;
+  --radius: 0.25rem;
 }
 
 @theme inline {
   --color-brand-crimson: var(--brand-crimson);
   --color-brand-accent: var(--brand-accent);
   --color-glow-crimson: var(--glow-crimson);
+  --color-hairline: var(--hairline);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -116,335 +132,271 @@
   }
   html {
     @apply font-ui;
+    /* The whole page is one typeface at several very different sizes, so the small sizes
+       have to hold up. Optical sizing and proper kerning do most of that work for free. */
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--glow-crimson) 35%, transparent);
+    color: var(--foreground);
   }
 }
 
-/* Soft white glow for supporting text */
-.glow-text {
-  text-shadow:
-    0 0 6px color-mix(in srgb, var(--foreground) 50%, transparent),
-    0 0 18px color-mix(in srgb, var(--foreground) 30%, transparent),
-    0 1px 3px var(--background);
+/* ══════════════════════════════════════════════════════════════════════════════════
+   TYPE SCALE
+   The page is one typeface used at two opposite registers, which is the move both
+   reference sites make. Large sizes get negative tracking and tight leading; small sizes
+   get wide tracking and uppercase. Anything in the middle is body copy and left alone.
+   Defined as classes rather than Tailwind soup at each call site so the scale stays a
+   scale — a one-off `tracking-[-0.03em]` somewhere is how it stops being one.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+/* Headline. clamp() rather than breakpoints: this type wants to scale continuously with
+   the viewport, and three fixed steps leave it wrong at most widths in between. */
+.type-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8.5vw, 6.5rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
 }
 
-/* Soft white glow for icons */
-.glow-icon {
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--foreground) 50%, transparent))
-    drop-shadow(0 1px 2px var(--background));
+.type-display-sm {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.028em;
 }
 
-/* ── Generative growth ─────────────────────────────────────────────────────────────
-   Drives the vines in components/animations/GrowthField.tsx. The whole thing is CSS on
-   top of server-rendered SVG, with no client JavaScript — which is only possible because
-   each path carries pathLength="1". That normalises every path to a dash length of 1
-   regardless of its real geometry, so one animation draws a 6px twig and a 200px trunk
-   correctly without anyone measuring either.
-   The stagger comes from a per-path --grow-delay set from the branch's depth, so the
-   structure unfurls outward from the trunk rather than appearing all at once. */
-.growth-path {
-  fill: none;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: growthDraw 1.5s ease-out var(--grow-delay, 0s) forwards;
+/* The micro-label. Carries almost all the structural information on the page: section
+   names, counts, the city line, form labels. */
+.type-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
-@keyframes growthDraw {
+.type-body {
+  font-size: clamp(1rem, 1.15vw, 1.125rem);
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+/* ── Hairlines ────────────────────────────────────────────────────────────────────
+   A plain 1px border would be a hard line all the way across. These fade at the ends,
+   which is what stops a full-width rule from cutting the page in half. */
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hairline) 12%,
+    var(--hairline) 88%,
+    transparent
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   STARFIELD — components/animations/Starfield.tsx
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+.starfield {
+  background: var(--background);
+}
+
+/* Each layer slides a long way over a very long time. The transform is on a <g>, so the
+   browser animates one composited element per layer rather than 300 circles. */
+.star-layer {
+  animation: starDrift var(--drift-duration, 300s) linear infinite alternate;
+  will-change: transform;
+}
+
+@keyframes starDrift {
+  from {
+    transform: translate3d(-1.2%, -0.8%, 0);
+  }
   to {
-    stroke-dashoffset: 0;
+    transform: translate3d(1.2%, 0.8%, 0);
   }
 }
 
-/* Tip nodes fade in just behind their branch, so a vine appears to bud as it finishes. */
-.growth-tip {
-  opacity: 0;
-  animation: growthTip 800ms ease-out var(--grow-delay, 0s) forwards;
+/* Only a minority of stars twinkle, and they fade rather than blink — the opacity floor
+   is deliberately high so a star never disappears, it just breathes. */
+.star-twinkle {
+  animation: starTwinkle 7s ease-in-out var(--twinkle-delay, 0s) infinite;
 }
 
-@keyframes growthTip {
-  to {
-    opacity: 0.7;
-  }
-}
-
-/* Drifting motes. Each one gets its own duration and a negative delay from the geometry
-   module, so the field is already mid-drift on load instead of every mote starting in
-   lockstep — the giveaway that would make it read as a loop. */
-.growth-spore {
-  opacity: 0.14;
-  animation: growthDrift var(--spore-duration, 18s) ease-in-out var(--grow-delay, 0s) infinite;
-}
-
-@keyframes growthDrift {
+@keyframes starTwinkle {
   0%,
   100% {
-    transform: translate(0, 0);
-    opacity: 0.1;
+    opacity: inherit;
   }
   50% {
-    transform: translate(var(--spore-drift, 12px), calc(var(--spore-drift, 12px) * -1));
-    opacity: 0.38;
+    opacity: 0.12;
   }
 }
 
-/* The hero mark earns a glow; the background field deliberately does not — stacking a
-   drop-shadow on ~200 low-opacity background paths is a lot of paint for an effect no
-   one can see at that contrast. */
-.growth-glow {
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--glow-crimson) 45%, transparent));
+/* Darkens the corners so the field reads as sky with depth rather than as a flat texture
+   tiled across the viewport. */
+.starfield-vignette {
+  background: radial-gradient(ellipse 120% 85% at 50% 42%, transparent 35%, var(--background) 100%);
 }
 
-/* Depth layers for the growth field. Three separate planes rather than one flat mass:
-   the background sits furthest back and barely registers, the midground reads as actual
-   foliage, and the foreground branches reach in from the edges almost at full strength to
-   frame the content. Opacity alone carries the depth — a blur on the near layer was tried
-   and just looked like a mistake at these stroke widths. */
-.growth-layer-back {
-  opacity: 0.16;
+/* The single piece of colour on the page that is not type: a crimson so faint it is felt
+   rather than seen, sitting low like light from somewhere off-screen. */
+.starfield-ember {
+  background: radial-gradient(
+    ellipse 90% 45% at 50% 108%,
+    color-mix(in srgb, var(--glow-crimson) 13%, transparent),
+    transparent 70%
+  );
 }
 
-.growth-layer-mid {
-  opacity: 0.4;
-}
+/* ══════════════════════════════════════════════════════════════════════════════════
+   MOTION
+   "Less playful, more aesthetic" (CRI-22). The old vocabulary was pops, sparkles and a
+   rolling city list — things that draw attention to themselves. This one is a single
+   gesture, used everywhere: come up a little, and fade in slowly.
+   ══════════════════════════════════════════════════════════════════════════════════ */
 
-.growth-layer-front {
-  opacity: 0.72;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--glow-crimson) 30%, transparent));
-}
-
-/* Entrance for flat filled shapes. The dash-draw used for line work has nothing to draw on
-   a solid triangle, so filled geometry rises and settles instead.
-   `transform-box: fill-box` is the part that's easy to miss: without it an SVG element's
-   transform-origin resolves against the whole SVG viewport, so "center bottom" would be the
-   bottom of the canvas rather than of the shape, and every piece would swing in from the
-   same spot. */
-.growth-pop {
+.reveal {
   opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  animation: growthPop 620ms cubic-bezier(0.22, 1, 0.36, 1) var(--grow-delay, 0s) forwards;
+  transform: translateY(14px);
+  animation: revealUp 1100ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s) forwards;
 }
 
-@keyframes growthPop {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.94);
-  }
+@keyframes revealUp {
   to {
     opacity: 1;
     transform: none;
   }
 }
 
-/* Sparkles pulse rather than spin — a four-point star rotating reads as a loading spinner,
-   which is the one association worth avoiding here. Scaling from the centre keeps the
-   points sharp through the whole cycle. */
-.twinkle {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: twinkle 4.5s ease-in-out infinite;
+/* A rule that draws itself rather than appearing. Scales from the left on a 1px element,
+   which the compositor handles without a repaint. */
+.rule-draw {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: ruleDraw 1400ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s) forwards;
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.35;
-    scale: 0.82;
-  }
-  50% {
-    opacity: 1;
-    scale: 1.08;
-  }
-}
-
-/* Orbital rings turn slowly in place. `transform-box: fill-box` matters here too: without
-   it the ring would orbit the SVG's origin instead of spinning about its own centre. */
-.orbit-slow {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: orbitSpin 26s linear infinite;
-}
-
-@keyframes orbitSpin {
+@keyframes ruleDraw {
   to {
-    rotate: 360deg;
+    transform: scaleX(1);
   }
 }
 
-/* The near layer drifts, very slowly and very slightly, so the foliage reads as alive
-   rather than painted on. Deliberately long and small — if you can consciously watch it
-   move, it's too much. */
-.growth-sway {
-  animation: growthSway 19s ease-in-out infinite alternate;
-  transform-origin: 50% 100%;
-}
-
-@keyframes growthSway {
-  from {
-    transform: rotate(-0.5deg) translateX(-4px);
-  }
-  to {
-    transform: rotate(0.5deg) translateX(4px);
-  }
-}
-
-/* ── Glass surfaces ───────────────────────────────────────────────────────────────
-   Frosted panels sitting over the growth field, with a lit crimson edge (reference:
-   insanefestival.com, already listed in VISION.md). Every value is mixed from an existing
-   token rather than being a new hex, so the glass follows the palette if a token changes
-   (VISION.md §4, and the hardcoded-colour entry in TRAP_LORE.md).
-
-   The panel is deliberately far more transparent than a conventional card — the growth
-   field behind it is the point, and a panel you can't see through would hide it. Contrast
-   for the text is carried by the backdrop blur and the page's dark base, not by an opaque
-   fill.
-
-   backdrop-filter is the one browser API in play, so the unsupported path is the default
-   and the blur is layered on behind @supports: without it the panel falls back to a more
-   opaque surface and stays perfectly readable. Plainer, never broken — VISION.md §5. */
-.glass-panel {
-  position: relative;
-  background: color-mix(in srgb, var(--secondary) 76%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, var(--foreground) 8%, transparent),
-    0 0 50px -18px color-mix(in srgb, var(--glow-crimson) 30%, transparent),
-    0 24px 60px -34px var(--background);
-}
-
-@supports (backdrop-filter: blur(1px)) {
-  .glass-panel {
-    background: color-mix(in srgb, var(--secondary) 22%, transparent);
-    backdrop-filter: blur(18px) saturate(150%);
-  }
-}
-
-/* The lit edge. A gradient border isn't expressible with `border-color`, so the standard
-   approach applies: paint the gradient on a pseudo-element inset to zero, then mask out
-   everything except a 1px rim. The two stacked masks cover border-box and content-box, and
-   compositing them with `exclude` leaves precisely the ring between the two.
-   `border-radius: inherit` means callers keep choosing their own rounding with a utility
-   class and the edge follows automatically. */
-.glass-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  /* 2px rather than 1px — the edge is a design element now, not a hairline. */
-  padding: 2px;
-  /* Crimson running into ember. This is where --brand-accent and --glow-accent earn their
-     place again after the crimson pass: the warm end stops the border reading as a flat
-     outline and gives it somewhere to travel. */
-  background: linear-gradient(
-    135deg,
-    var(--glow-crimson) 0%,
-    color-mix(in srgb, var(--glow-crimson) 55%, transparent) 22%,
-    color-mix(in srgb, var(--brand-accent) 75%, transparent) 50%,
-    color-mix(in srgb, var(--glow-accent) 60%, transparent) 68%,
-    var(--glow-crimson) 100%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* Interactive panels lift slightly and brighten their edge on hover — the main bit of
-   "this is a place, not a document" that the glass itself can carry. */
-.glass-interactive {
+/* ── Links ────────────────────────────────────────────────────────────────────────
+   An underline that grows from the left on hover, instead of a colour change. Uses a
+   background-image rather than a pseudo-element so it wraps correctly across lines. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
   transition:
-    transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 450ms ease-in-out;
+    background-size 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 300ms ease;
 }
 
-.glass-interactive:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in srgb, var(--foreground) 12%, transparent),
-    0 0 70px -14px color-mix(in srgb, var(--glow-crimson) 55%, transparent),
-    0 30px 60px -34px var(--background);
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1px;
 }
 
-/* ── Rolling city name ────────────────────────────────────────────────────────────
-   CONCEPT_page-homepage.md §4, as a vertical roll rather than a cross-fade — the names
-   travel upward like a split-flap board, holding on each city then snapping to the next.
-
-   The track repeats its first city as a fourth item. That's what makes the loop seamless:
-   the animation ends showing the duplicate, which is visually identical to the 0% frame,
-   so restarting is invisible. Without it the track would have to rewind through all three
-   names to get home.
-
-   Every offset is derived from --roll-step, so changing the line height in one place keeps
-   the stops aligned — hardcoding the translate distances is how this breaks the first time
-   someone changes the font size. */
-.city-roll {
-  --roll-step: 1.3em;
-  display: inline-flex;
-  height: var(--roll-step);
-  overflow: hidden;
-  vertical-align: bottom;
+/* ── Quiet rows ───────────────────────────────────────────────────────────────────
+   The channel list and anything else built as stacked rows separated by hairlines. The
+   row lifts its text on hover; nothing moves, nothing scales. */
+.row-link {
+  border-top: 1px solid var(--hairline);
+  transition: color 400ms ease;
 }
 
-.city-roll__track {
-  display: flex;
-  flex-direction: column;
-  animation: cityRoll 9s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+.row-link:last-child {
+  border-bottom: 1px solid var(--hairline);
 }
 
-.city-roll__track > span {
-  height: var(--roll-step);
-  line-height: var(--roll-step);
-  white-space: nowrap;
+.row-link:hover {
+  color: var(--foreground);
 }
 
-@keyframes cityRoll {
-  0%,
-  28% {
-    transform: translateY(0);
-  }
-  33.3%,
-  61.3% {
-    transform: translateY(calc(var(--roll-step) * -1));
-  }
-  66.6%,
-  94.6% {
-    transform: translateY(calc(var(--roll-step) * -2));
-  }
-  100% {
-    transform: translateY(calc(var(--roll-step) * -3));
-  }
+.row-link .row-arrow {
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── The lantern ──────────────────────────────────────────────────────────────────
-   CONCEPT_page-universal-menu.md. Idle breathing glow, hover grows and brightens, and
-   opening spins it a full turn with the panel unfurling out of that motion.
-   Hover and focus are styled separately and deliberately: §1 is explicit that reusing the
-   hover treatment for focus doesn't serve a keyboard user. */
+.row-link:hover .row-arrow {
+  transform: translateX(6px);
+}
+
+/* ── Form fields ──────────────────────────────────────────────────────────────────
+   Underlines, not boxes. A filled rounded input is a lot of visual weight for something
+   the page wants to feel like a continuation of the text. */
+.field-line {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  border-radius: 0;
+  padding-inline: 0;
+  transition:
+    border-color 400ms ease,
+    background-color 400ms ease;
+}
+
+.field-line:hover {
+  border-bottom-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+}
+
+.field-line:focus,
+.field-line:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: var(--glow-crimson);
+}
+
+.field-line[aria-invalid="true"] {
+  border-bottom-color: color-mix(in srgb, var(--destructive) 85%, var(--foreground));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   THE LANTERN — components/layout/Lantern.tsx
+   Redrawn with depth (CRI-22), which is what CONCEPT_page-universal-menu.md §1 asked for
+   in the first place: "glass texture, drop shadow, a sense of weight and light". The flat
+   geometric version was a deliberate detour (2026-10-02) and this returns from it.
+   The motion is kept but slowed: the spin is now a long ease rather than a springy
+   overshoot, which was the single most "playful" thing on the page.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
 .lantern-button {
   transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 420ms ease-in-out;
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 700ms ease;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / 0.6))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--glow-crimson) 22%, transparent));
 }
 
 .lantern-button:hover {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--glow-crimson) 75%, transparent));
+  /* 1.035, where this used to be 1.1. At the smaller size the lantern now sits at, a 10%
+     jump is a lurch; this reads as the object catching the light. */
+  transform: scale(1.035);
+  filter: drop-shadow(0 6px 16px rgb(0 0 0 / 0.65))
+    drop-shadow(0 0 22px color-mix(in srgb, var(--glow-crimson) 48%, transparent));
 }
 
 .lantern-button:focus-visible {
-  outline: 2px solid var(--glow-crimson);
-  outline-offset: 6px;
-  border-radius: 9999px;
+  outline: 1px solid var(--glow-crimson);
+  outline-offset: 8px;
+  border-radius: 2px;
 }
 
-/* The spin is on an inner element so it composes with the hover scale on the button
-   rather than fighting it — two transforms on one element would overwrite each other. */
+/* The spin stays on an inner element so it composes with the hover scale rather than
+   overwriting it. */
 .lantern-spin {
-  transition: rotate 700ms cubic-bezier(0.68, -0.2, 0.27, 1.2);
+  transition: rotate 1100ms cubic-bezier(0.16, 1, 0.3, 1);
   rotate: 0deg;
 }
 
@@ -452,32 +404,33 @@
   rotate: 360deg;
 }
 
-.lantern-flame {
-  animation: lanternBreathe 4.5s ease-in-out infinite;
+/* The light inside. Slower and shallower than the old 0.68→1 flicker — a candle settling,
+   not a bulb with a loose contact. */
+.lantern-core {
+  animation: lanternBreathe 7s ease-in-out infinite;
   transform-origin: center;
 }
 
 @keyframes lanternBreathe {
   0%,
   100% {
-    opacity: 0.68;
+    opacity: 0.82;
   }
   50% {
     opacity: 1;
   }
 }
 
-/* The panel stays mounted so it can animate both ways; `inert` on the React side keeps it
-   out of the tab order and the accessibility tree while closed, which pointer-events alone
-   would not do. */
+/* The panel stays mounted so it animates both ways; `inert` on the React side keeps it out
+   of the tab order and the accessibility tree while closed, which pointer-events cannot. */
 .lantern-panel {
   transform-origin: top left;
   opacity: 0;
-  transform: scaleY(0.3) translateY(-10px);
+  transform: translateY(-6px);
   pointer-events: none;
   transition:
-    opacity 300ms ease-out,
-    transform 430ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 420ms ease,
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .lantern-panel[data-open="true"] {
@@ -486,59 +439,45 @@
   pointer-events: auto;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   Entrance animations are removed rather than paused — an element frozen at opacity 0
+   never appears at all, which is worse than the motion was.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
-  .growth-path {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-  .growth-tip {
-    animation: none;
-    opacity: 0.7;
-  }
-  .growth-spore {
-    animation: none;
-    opacity: 0.2;
-  }
-  .growth-sway,
-  .lantern-flame,
-  .orbit-slow {
-    animation: none;
-  }
-  /* A sparkle parked mid-pulse would sit at 35% opacity and look like a mistake. */
-  .twinkle {
-    animation: none;
-    opacity: 1;
-    scale: 1;
-  }
-  /* Entrance animations are removed, not paused — a shape frozen at opacity 0 would simply
-     never appear. */
-  .growth-pop {
+  .reveal {
     animation: none;
     opacity: 1;
     transform: none;
   }
-  .growth-layer-front {
-    opacity: 0.6;
-  }
 
-  /* Rolling text can't simply be frozen — stopping mid-roll would leave two names sliced
-     in half in the window. Park the track at the first city and keep it there. */
-  .city-roll__track {
+  .rule-draw {
     animation: none;
-    transform: translateY(0);
+    transform: none;
   }
 
-  /* The spin and the unfurl are the menu opening, so they can't be removed outright
-     without the menu ceasing to appear — they're reduced to a plain fade instead. */
-  .lantern-spin,
-  .lantern-button {
+  .star-layer,
+  .star-twinkle,
+  .lantern-core {
+    animation: none;
+  }
+
+  .link-underline,
+  .row-link .row-arrow,
+  .lantern-button,
+  .lantern-spin {
     transition: none;
   }
+
+  /* The spin is the menu opening, so removing it outright would leave nothing happening.
+     It drops to a plain fade instead. */
   .lantern-button[data-open="true"] .lantern-spin {
     rotate: 0deg;
   }
+
   .lantern-panel {
     transform: none;
-    transition: opacity 200ms ease-out;
+    transition: opacity 200ms ease;
   }
 }

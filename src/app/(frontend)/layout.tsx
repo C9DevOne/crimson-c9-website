@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 import localFont from "next/font/local";
 import "./globals.css";
-import { GrowthField } from "@/components/animations/GrowthField";
+import Image from "next/image";
+import Link from "next/link";
+import { Starfield } from "@/components/animations/Starfield";
 import { Footer } from "@/components/layout/Footer";
 import { Lantern } from "@/components/layout/Lantern";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -67,6 +69,54 @@ function SuspendedFooter() {
   );
 }
 
+/**
+ * Fixed chrome, anchored to the edges of the viewport with an empty middle — the move both
+ * reference sites in CRI-22 make, and the reason the page reads as composed rather than as
+ * a stack of centred blocks.
+ *
+ * Three cells: the lantern left, the mark centred, a location line right. The grid is
+ * `1fr auto 1fr` so the mark is centred on the *viewport*, not on the space left over
+ * between its neighbours — with `justify-between` it would drift as the right-hand text
+ * changed length.
+ */
+function SiteHeader() {
+  return (
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* Scrim rather than a solid bar: the header has to stay readable over whatever
+          scrolls under it without drawing a box around itself. */}
+      <div className="from-background/90 pointer-events-none absolute inset-0 bg-gradient-to-b via-transparent to-transparent" />
+
+      <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-4 md:px-8 md:py-5">
+        <div className="justify-self-start">
+          <Lantern socials={resolveSocials()} />
+        </div>
+
+        {/* The mark is the home button. On the landing page that is a no-op, which is
+            correct — it is the affordance that matters, and it starts working the moment
+            there is a second route. */}
+        <Link
+          href="/"
+          aria-label="CrimsonC9 — home"
+          className="group justify-self-center transition-opacity duration-500 hover:opacity-80"
+        >
+          <Image
+            src="/crimson-logo.webp"
+            alt="CrimsonC9"
+            width={326}
+            height={400}
+            priority
+            className="h-8 w-auto brightness-[1.75] saturate-[1.1] md:h-9"
+          />
+        </Link>
+
+        {/* Balances the lantern and carries a real piece of information rather than being
+            filler. Hidden on phones, where there is no room for it beside the mark. */}
+        <p className="type-label hidden justify-self-end sm:block">Aachen · Berlin · Cologne</p>
+      </div>
+    </header>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,21 +124,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${philosopher.variable} ${dmSans.variable} antialiased`}>
-      {/* Ordinary document scrolling. This used to be a fixed-height body with an inner
-          scroll container, which the sidebar layout needed — with the sidebar gone, the
-          scroll container only got in the way (anchor links and scroll-into-view both
-          behave differently inside one). */}
       <body className="bg-background text-foreground min-h-svh">
         <TooltipProvider>
-          {/* Fixed, full-viewport, behind everything. Lives in the layout rather than the
-              page so the legal routes get the same world instead of a flat black page. */}
-          <GrowthField />
+          {/* Fixed, full-viewport, behind everything. In the layout rather than the page so
+              the legal routes get the same sky instead of a flat black page. */}
+          <Starfield />
 
-          {/* Socials come from constants while the CMS is decoupled (see src/lib/socials.ts).
-              This used to be an async component reading the `social-links` global behind its
-              own Suspense boundary; with a synchronous source the boundary bought nothing,
-              so it went with it. Both come back together. */}
-          <Lantern socials={resolveSocials()} />
+          <SiteHeader />
 
           <div className="relative z-10 flex min-h-svh flex-col">
             <main className="flex-1">{children}</main>

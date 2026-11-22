@@ -1,6 +1,5 @@
 "use client";
 
-import DecryptedText from "@/components/ui/decrypted_text";
 import { TermsData } from "@/types/cms";
 
 /**
@@ -23,26 +22,13 @@ import { TermsData } from "@/types/cms";
 export default function TermsClient({ data }: { data: TermsData }) {
   return (
     <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-4xl px-6 pt-16 pb-8 text-center">
-        <h1 className="text-brand-accent font-display mb-4 text-3xl tracking-[0.12em] uppercase md:text-5xl">
-          <DecryptedText
-            text="TERMS & PRIVACY"
-            speed={100}
-            maxIterations={20}
-            sequential={true}
-            animateOn="hover"
-            revealDirection="center"
-            className="text-brand-accent"
-            encryptedClassName="text-foreground/20"
-          />
-        </h1>
-        <p className="font-ui text-muted-foreground mx-auto max-w-lg text-xs tracking-widest uppercase">
-          Terms of use and data protection for {data.siteName}
-        </p>
+      <div className="mx-auto w-full max-w-3xl px-5 pt-36 pb-10 md:px-8">
+        <h1 className="type-display-sm mb-4">TERMS & PRIVACY</h1>
+        <p className="type-label">Terms of use and data protection for {data.siteName}</p>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl flex-1 px-6 pb-20">
-        <div className="glass-panel font-body text-foreground/80 space-y-7 rounded-3xl p-8 text-base md:p-12">
+      <div className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 md:px-8">
+        <div className="type-body space-y-7 pt-10">
           <Section title="1. General">
             <p>
               By using {data.siteName}&apos;s website and community channels you agree to the terms
@@ -56,10 +42,7 @@ export default function TermsClient({ data }: { data: TermsData }) {
               {data.siteName} has a zero-tolerance policy for discrimination, harassment, and unsafe
               behaviour, at our events and in our digital spaces alike. If something happens, tell
               us at{" "}
-              <a
-                href={`mailto:${data.contactEmail}`}
-                className="text-brand-accent font-medium hover:underline"
-              >
+              <a href={`mailto:${data.contactEmail}`} className="link-underline text-foreground">
                 {data.contactEmail}
               </a>
               .
@@ -88,8 +71,15 @@ export default function TermsClient({ data }: { data: TermsData }) {
                   6(1)(a) — which is why the form asks for it explicitly.
                 </li>
                 <li>
-                  <span className="text-foreground/90">Retention:</span> kept in our mailbox while
-                  we deal with your enquiry, then deleted once there&apos;s no reason to keep it.
+                  <span className="text-foreground/90">Retention:</span>
+                  {/* A brace-wrapped literal, not bare JSX text. The bare form lost its
+                      leading space between the server render and the client one here, which
+                      tripped a hydration mismatch on this page in production; a string
+                      literal is not subject to JSX whitespace trimming, and Prettier leaves
+                      it alone where it collapses {" "} back into the broken form. */}
+                  {
+                    " kept in our mailbox while we deal with your enquiry, then deleted once there\u2019s no reason to keep it."
+                  }
                 </li>
                 <li>
                   <span className="text-foreground/90">Sharing:</span> not sold, and not passed to
@@ -123,7 +113,7 @@ export default function TermsClient({ data }: { data: TermsData }) {
                 notification email when you submit the form, via its EU data centre
               </li>
             </ul>
-            <p className="text-destructive-foreground bg-destructive/20 mt-4 rounded-xl px-4 py-3 text-xs leading-relaxed">
+            <p className="border-glow-crimson/40 text-glow-crimson/90 mt-5 border-l px-4 py-2 text-xs leading-relaxed">
               To be completed before launch: whether a data processing agreement is in place with
               Hetzner, Cloudflare and Zoho. The regions above are stated; the agreements are what
               still need confirming, and this section has to be reviewed by a human before it is
@@ -140,10 +130,7 @@ export default function TermsClient({ data }: { data: TermsData }) {
             </p>
             <p>
               For any of the above, write to{" "}
-              <a
-                href={`mailto:${data.contactEmail}`}
-                className="text-brand-accent font-medium hover:underline"
-              >
+              <a href={`mailto:${data.contactEmail}`} className="link-underline text-foreground">
                 {data.contactEmail}
               </a>
               .
@@ -157,10 +144,8 @@ export default function TermsClient({ data }: { data: TermsData }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="border-foreground/10 border-t pt-6 first:border-t-0 first:pt-0">
-      <h2 className="text-brand-accent font-ui mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-        {title}
-      </h2>
+    <section className="border-hairline border-t pt-8 first:border-t-0 first:pt-0">
+      <h2 className="type-label mb-4">{title}</h2>
       <div className="leading-relaxed">{children}</div>
     </section>
   );

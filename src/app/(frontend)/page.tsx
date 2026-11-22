@@ -1,20 +1,32 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
+import {
+  RiArrowRightUpLine,
+  RiInstagramLine,
+  RiSoundcloudLine,
+  RiYoutubeLine,
+} from "react-icons/ri";
 
-import { PagodaScene } from "@/components/animations/PagodaScene";
 import { CollaborationForm } from "@/components/forms/CollaborationForm";
-import { GeoHeading } from "@/components/ui/geo-heading";
 import { resolveSocials } from "@/lib/socials";
 
 /**
  * The landing page — a single self-contained introduction to the collective, standing in
  * for the full site while the prototype is built behind it (WORKING_LOG.md).
  *
- * Deliberately not the homepage described in CONCEPT_page-homepage.md: that page's compass
- * navigation and dragon hero only make sense once the interior routes it points at exist.
- * It does borrow the rotating city line (§4) and the requirement for real page metadata
- * (§5), and the lantern from CONCEPT_page-universal-menu.md now carries navigation.
+ * Redesigned under CRI-22 against two references Aaron picked (primal-instinct.net,
+ * raw-people.com). The system those two share, and this now follows:
+ *
+ *  - everything is one typeface at two opposite registers — a very large headline with
+ *    negative tracking, and 11px uppercase labels at wide tracking. Nothing in between
+ *    except body copy
+ *  - sections are separated by hairlines and space, never by panels or cards
+ *  - content is left-aligned against a consistent edge rather than centred, so the page
+ *    has a spine
+ *  - one accent colour, used about four times in total
+ *
+ * The old version's glass panels, sparkle entrances and rolling city list are all gone;
+ * the city names now sit in the header, which is where a location belongs.
  */
 
 /**
@@ -22,17 +34,6 @@ import { resolveSocials } from "@/lib/socials";
  * single source while the CMS is decoupled, so changing it is a deploy.
  */
 const CONTACT_EMAIL = "hello@crimsonc9.com";
-
-/**
- * Hero logo — the crimson dragon supplied 2026-10-02, replacing the black silhouette that
- * was invisible on a dark background.
- *
- * The artwork's own red sits around #630200, which is still close enough to the page
- * background to read as a dark shape, so it gets a brightness/saturation lift and a glow
- * rather than being dropped in raw. That treatment is interim — see the note to Aaron about
- * filling the silhouette with the crimson→ember gradient instead.
- */
-const LOGO_SRC = "/crimson-logo.webp";
 
 export const metadata: Metadata = {
   title: "CrimsonC9 — Change Through Music",
@@ -47,14 +48,31 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Cities for the rolling line. The fourth entry repeats the first on purpose — the roll
- * animation ends on it, and because it's identical to the opening frame the loop restarts
- * invisibly. See `.city-roll` in globals.css.
- */
-const CITIES = ["Aachen", "Berlin", "Cologne", "Aachen"];
+type SocialLink = { name: string; url: string; handle: string; Icon: typeof RiInstagramLine };
 
-type SocialLink = { name: string; url: string; Icon: typeof RiInstagramLine };
+/**
+ * The handle, taken from the URL rather than written out beside it. Two reasons: it cannot
+ * drift out of step with the link the way a hardcoded string would, and it means the page
+ * states nothing about the accounts that is not already true of the URL it links to.
+ */
+function handleFromUrl(url: string): string {
+  const slug = url.replace(/\/+$/, "").split("/").pop() ?? "";
+  return slug.startsWith("@") ? slug : `@${slug}`;
+}
+
+/**
+ * Section heading: a numbered micro-label above a rule. The number is the only ornament on
+ * the page and it earns its place by saying where you are in a document with no navigation.
+ */
+function SectionLabel({ index, children }: { index: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-10 flex items-baseline gap-5 md:mb-14">
+      <span className="type-label text-foreground/35">{index}</span>
+      <span className="type-label">{children}</span>
+      <span className="rule rule-draw flex-1" />
+    </div>
+  );
+}
 
 export default function Page() {
   // Both of these were CMS reads that already fell back to exactly these values, so the
@@ -64,134 +82,157 @@ export default function Page() {
   const socials = resolveSocials();
 
   const socialLinks: SocialLink[] = [
-    { name: "Instagram", url: socials.instagram, Icon: RiInstagramLine },
-    { name: "YouTube", url: socials.youtube, Icon: RiYoutubeLine },
-    { name: "SoundCloud", url: socials.soundcloud, Icon: RiSoundcloudLine },
+    {
+      name: "Instagram",
+      url: socials.instagram,
+      handle: handleFromUrl(socials.instagram),
+      Icon: RiInstagramLine,
+    },
+    {
+      name: "SoundCloud",
+      url: socials.soundcloud,
+      handle: handleFromUrl(socials.soundcloud),
+      Icon: RiSoundcloudLine,
+    },
+    {
+      name: "YouTube",
+      url: socials.youtube,
+      handle: handleFromUrl(socials.youtube),
+      Icon: RiYoutubeLine,
+    },
   ];
 
   return (
-    <div className="relative z-10 flex flex-col items-center px-6">
-      {/* ── Hero ───────────────────────────────────────────────────────────────── */}
-      <header className="flex min-h-[92svh] flex-col items-center justify-center gap-7 text-center">
-        <Image
-          src={LOGO_SRC}
-          alt="CrimsonC9"
-          width={326}
-          height={400}
-          priority
-          className="h-40 w-auto brightness-[1.9] drop-shadow-[0_0_45px_color-mix(in_srgb,var(--glow-crimson)_55%,transparent)] saturate-[1.15] md:h-56"
-        />
-        {/* brightness lifts the artwork's own #630200 off the near-black background; without
-            it the dragon reads as a dark hole rather than a mark. The eye stays dark because
-            it's already near-black, so the detail survives the lift. */}
+    <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
+      {/* ── Hero ─────────────────────────────────────────────────────────────────
+          Full height, but the content sits low rather than dead-centre: the empty
+          upper half is what gives the starfield room to be the thing you notice first. */}
+      <header className="flex min-h-svh flex-col justify-end pb-20 md:pb-28">
+        <p
+          className="type-label reveal mb-7"
+          style={{ "--reveal-delay": "0.15s" } as React.CSSProperties}
+        >
+          Techno collective
+        </p>
 
-        <div className="flex flex-col gap-3">
-          {/* Tracking is reduced on narrow screens as well as the size: at 0.16em the
-              wordmark runs edge-to-edge on a 375px phone and the outer letters clip. */}
-          <h1 className="font-display text-3xl tracking-[0.08em] sm:text-5xl sm:tracking-[0.16em] md:text-7xl">
-            CrimsonC9
-          </h1>
-          <p className="glow-text font-body text-muted-foreground text-lg tracking-wide sm:text-xl md:text-2xl">
-            Change Through Music
-          </p>
+        {/* Two lines, hard-broken. At this size the break is a composition decision, not
+            something to leave to the container width. */}
+        <h1
+          className="type-display reveal max-w-5xl text-balance"
+          style={{ "--reveal-delay": "0.3s" } as React.CSSProperties}
+        >
+          Change
+          <br />
+          Through Music
+        </h1>
+
+        <p
+          className="type-body reveal mt-9 max-w-xl"
+          style={{ "--reveal-delay": "0.5s" } as React.CSSProperties}
+        >
+          A young techno collective across Aachen, Berlin and Cologne — a platform for emerging
+          artists, events for a growing community, and an upcoming label.
+        </p>
+
+        <div
+          className="reveal mt-16 flex items-center gap-4"
+          style={{ "--reveal-delay": "0.7s" } as React.CSSProperties}
+        >
+          <span className="type-label">Scroll</span>
+          <span className="rule w-24" />
         </div>
       </header>
 
-      {/* ── Welcome / the digital home ────────────────────────────────────────────
-          Off-centre on purpose: the scene sits right and slightly high, the text block runs
-          wider on the left and pulls past the container edge. The centred stack this
-          replaced was the main reason the page read as a column of boxes. */}
-      <section className="w-full max-w-6xl pt-6 pb-28" aria-labelledby="welcome">
-        <div className="flex flex-col items-center gap-12">
-          <GeoHeading
-            id="welcome"
-            topLeft="Welcome"
-            topRight="to our"
-            bottomLeft="Digital"
-            bottomRight="Home"
-            ornament={<PagodaScene className="h-44 w-auto sm:h-56 lg:h-72" />}
-            className="text-3xl leading-tight sm:text-4xl lg:text-6xl"
-          />
+      {/* ── The collective ───────────────────────────────────────────────────────── */}
+      <section className="pb-28 md:pb-40" aria-labelledby="collective">
+        <SectionLabel index="01">The collective</SectionLabel>
 
-          {/* Offset from centre rather than sitting under the heading's axis — the symmetry
-              of the heading is deliberate, the paragraph breaking out of it is what keeps
-              the section from reading as a centred stack. */}
-          <p className="font-body text-foreground/85 max-w-2xl text-lg leading-relaxed md:text-xl lg:ml-24 lg:self-start">
-            We are CrimsonC9, a young techno collective from{" "}
-            <span className="city-roll text-glow-crimson font-semibold">
-              <span className="city-roll__track">
-                {CITIES.map((city, i) => (
-                  <span key={`${city}-${i}`}>{city}</span>
-                ))}
-              </span>
-            </span>{" "}
-            — serving as a platform for emerging artists by hosting events for a growing community,
-            and releasing music as an upcoming label on SoundCloud.
-          </p>
+        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+          <h2 id="collective" className="type-display-sm col-span-full text-balance md:col-span-7">
+            A platform for emerging artists, and the events that put them in front of people.
+          </h2>
+
+          <div className="type-body col-span-full space-y-5 md:col-span-5">
+            <p>
+              We are CrimsonC9, a young techno collective from Aachen, Berlin and Cologne — serving
+              as a platform for emerging artists by hosting events for a growing community, and
+              releasing music as an upcoming label on SoundCloud.
+            </p>
+            <p>
+              You can see what we do on the channels below, or reach out directly if you want to
+              work with us.
+            </p>
+          </div>
         </div>
-      </section>
 
-      {/* ── What that looks like ────────────────────────────────────────────────── */}
-      <section className="w-full max-w-5xl pb-28" aria-label="A CrimsonC9 event">
-        <figure className="glass-panel glass-interactive overflow-hidden rounded-[2rem] p-2">
+        {/* Full-bleed within the container, no frame, no rounding. The image is the only
+            photograph on the page and it is allowed to simply be one. */}
+        <figure className="mt-16 md:mt-24">
           <Image
             src="/event-garden.webp"
             alt="A CrimsonC9 crowd dancing in a garden under a disco ball, hands in the air around the decks."
             width={1920}
             height={1080}
-            sizes="(max-width: 1024px) 100vw, 1024px"
-            className="h-auto w-full rounded-[1.6rem] object-cover"
+            sizes="(max-width: 1152px) 100vw, 1152px"
+            className="h-auto w-full"
           />
+          <figcaption className="type-label mt-5">A CrimsonC9 event</figcaption>
         </figure>
       </section>
 
-      {/* ── Channels ────────────────────────────────────────────────────────────── */}
-      <section
-        className="flex flex-col items-center gap-8 pb-28 text-center"
-        aria-labelledby="channels"
-      >
-        <h2 id="channels" className="font-body text-foreground/85 max-w-xl text-lg md:text-xl">
-          You can check out what we do on these channels
+      {/* ── Channels ─────────────────────────────────────────────────────────────
+          Rows separated by hairlines rather than three icon tiles. Each row carries the
+          platform, what is actually on it, and an arrow that moves on hover. */}
+      <section className="pb-28 md:pb-40" aria-labelledby="channels">
+        <SectionLabel index="02">Where to find us</SectionLabel>
+        <h2 id="channels" className="sr-only">
+          Our channels
         </h2>
 
-        <ul className="flex flex-wrap items-center justify-center gap-5">
-          {socialLinks.map(({ name, url, Icon }) => (
+        <ul>
+          {socialLinks.map(({ name, url, handle, Icon }) => (
             <li key={name}>
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={name}
-                className="glass-panel glass-interactive text-muted-foreground hover:text-glow-crimson flex size-16 items-center justify-center rounded-2xl transition-colors duration-300 md:size-20"
+                className="row-link text-muted-foreground group flex items-center gap-6 py-7 md:py-9"
               >
-                <Icon className="size-7 md:size-8" aria-hidden="true" />
+                <Icon className="size-5 shrink-0" aria-hidden="true" />
+                <span className="type-display-sm text-foreground flex-1">{name}</span>
+                <span className="type-label hidden sm:block">{handle}</span>
+                <RiArrowRightUpLine className="row-arrow size-5 shrink-0" aria-hidden="true" />
               </a>
             </li>
           ))}
         </ul>
       </section>
 
-      {/* ── Reach out ───────────────────────────────────────────────────────────── */}
-      <section className="w-full max-w-2xl pb-28" aria-labelledby="reach-out">
-        <h2
-          id="reach-out"
-          className="font-body text-foreground/85 mb-8 text-center text-lg md:text-xl"
-        >
-          Or reach out if you want to collaborate with us, or have any other enquiry
-        </h2>
+      {/* ── Contact ──────────────────────────────────────────────────────────────── */}
+      <section className="pb-28 md:pb-40" aria-labelledby="contact">
+        <SectionLabel index="03">Get in touch</SectionLabel>
 
-        <div className="glass-panel rounded-[2rem] p-7 md:p-10">
-          <CollaborationForm contactEmail={contactEmail} />
+        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+          <div className="col-span-full md:col-span-5">
+            <h2 id="contact" className="type-display-sm text-balance">
+              Collaborate with us, or ask us anything.
+            </h2>
+            <p className="type-body mt-7">
+              Booking, collaboration, volunteering, or something else entirely — this reaches us
+              directly.
+            </p>
+            <a
+              href={`mailto:${contactEmail}`}
+              className="link-underline type-label text-foreground mt-8 inline-block"
+            >
+              {contactEmail}
+            </a>
+          </div>
+
+          <div className="col-span-full md:col-span-7">
+            <CollaborationForm contactEmail={contactEmail} />
+          </div>
         </div>
-
-        <p className="mt-8 text-center">
-          <a
-            href={`mailto:${contactEmail}`}
-            className="font-ui text-muted-foreground hover:text-foreground text-sm tracking-wide transition-colors duration-300"
-          >
-            {contactEmail}
-          </a>
-        </p>
       </section>
     </div>
   );

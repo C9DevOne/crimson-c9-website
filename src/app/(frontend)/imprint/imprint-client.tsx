@@ -1,6 +1,5 @@
 "use client";
 
-import DecryptedText from "@/components/ui/decrypted_text";
 import { ImprintData } from "@/types/cms";
 
 /**
@@ -36,7 +35,7 @@ function Value({ children }: { children?: string }) {
   if (children && children.trim()) return <>{children}</>;
 
   return (
-    <span className="text-destructive-foreground bg-destructive/30 rounded px-1.5 py-0.5 text-xs font-bold tracking-widest uppercase">
+    <span className="border-glow-crimson/50 text-glow-crimson ml-1 border px-2 py-0.5 text-[0.65rem] font-semibold tracking-[0.18em] uppercase">
       Pending — to be completed
     </span>
   );
@@ -47,30 +46,15 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="mx-auto w-full max-w-4xl px-6 pt-16 pb-8 text-center">
-        <h1 className="text-brand-accent font-display mb-4 text-3xl tracking-[0.12em] uppercase md:text-5xl">
-          <DecryptedText
-            text="IMPRINT / IMPRESSUM"
-            speed={100}
-            maxIterations={20}
-            sequential={true}
-            animateOn="hover"
-            revealDirection="center"
-            className="text-brand-accent"
-            encryptedClassName="text-foreground/20"
-          />
-        </h1>
-        <p className="font-ui text-muted-foreground mx-auto max-w-lg text-xs tracking-widest uppercase">
-          Legal information according to § 5 DDG
-        </p>
+      <div className="mx-auto w-full max-w-3xl px-5 pt-36 pb-10 md:px-8">
+        <h1 className="type-display-sm mb-4">IMPRINT / IMPRESSUM</h1>
+        <p className="type-label">Legal information according to § 5 DDG</p>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl flex-1 px-6 pb-20">
-        <div className="glass-panel font-body text-foreground/80 space-y-7 rounded-3xl p-8 text-base md:p-12">
+      <div className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 md:px-8">
+        <div className="type-body space-y-7 pt-10">
           <section>
-            <h2 className="text-brand-accent font-ui mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-              Publisher
-            </h2>
+            <h2 className="type-label mb-4">Publisher</h2>
             <p className="text-foreground text-lg font-semibold">
               <Value>{PUBLISHER.legalName || data.siteName}</Value>
             </p>
@@ -86,7 +70,7 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
             </div>
           </section>
 
-          <section className="border-foreground/10 border-t pt-6">
+          <section className="border-hairline border-t pt-8">
             <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
               Responsible for content
             </h2>
@@ -95,16 +79,13 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
             </p>
           </section>
 
-          <section className="border-foreground/10 border-t pt-6">
+          <section className="border-hairline border-t pt-8">
             <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
               Contact
             </h2>
             <p className="text-sm">
               Email:{" "}
-              <a
-                href={`mailto:${data.contactEmail}`}
-                className="text-brand-accent font-medium hover:underline"
-              >
+              <a href={`mailto:${data.contactEmail}`} className="link-underline text-foreground">
                 {data.contactEmail}
               </a>
             </p>
@@ -114,7 +95,7 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
           </section>
 
           {(PUBLISHER.registerEntry || PUBLISHER.vatId) && (
-            <section className="border-foreground/10 border-t pt-6">
+            <section className="border-hairline border-t pt-8">
               <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
                 Registration
               </h2>
@@ -123,7 +104,7 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
             </section>
           )}
 
-          <section className="border-foreground/10 border-t pt-6">
+          <section className="border-hairline border-t pt-8">
             <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
               Dispute resolution
             </h2>
