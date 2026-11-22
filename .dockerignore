@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.github
+.env*
+!.env.example
+docs
+deploy
+.idea
+.vscode
+public/media

@@ -13,16 +13,14 @@
  * It still never throws — it reports through its return value. That keeps it safe to call
  * from a Payload `afterChange` hook unchanged when the collection comes back, where a thrown
  * error would propagate out of the write.
+ *
+ * Delivery goes through ZeptoMail (see `./zeptomail.ts`). This was Resend first; it moved
+ * because the ticket shop already sends through ZeptoMail with `crimsonc9.com` verified
+ * there, and a second provider on the same domain means a second set of DKIM/SPF records
+ * and a second place to look when mail does not arrive — for the one email this file sends.
  */
 
-import { Resend } from "resend";
-
-/**
- * Sender address. Resend only accepts a `from` on a domain verified in the account, so
- * this is env-driven — a wrong default here fails every send with a 403 that looks like a
- * code bug. See `.env.example`.
- */
-const FROM = process.env.RESEND_FROM || "CrimsonC9 <noreply@crimsonc9.com>";
+import { sendViaZeptoMail } from "./zeptomail";
 
 /** Where enquiries are sent. Overridable so a staging deploy can route mail elsewhere. */
 const NOTIFY = process.env.C9_NOTIFY_EMAIL || "hello@crimsonc9.com";
@@ -74,10 +72,8 @@ function logUndelivered(submission: CollaborationSubmission, why: string): void 
 export async function sendCollaborationNotification(
   submission: CollaborationSubmission,
 ): Promise<DeliveryResult> {
-  const apiKey = process.env.RESEND_API_KEY;
-
-  if (!apiKey) {
-    logUndelivered(submission, "RESEND_API_KEY not set");
+  if (!process.env.ZEPTOMAIL_TOKEN) {
+    logUndelivered(submission, "ZEPTOMAIL_TOKEN not set");
     return { ok: false, reason: "not-configured" };
   }
 
@@ -85,14 +81,11 @@ export async function sendCollaborationNotification(
   const sent = submission.submittedAt ?? submission.createdAt ?? new Date().toISOString();
 
   try {
-    const resend = new Resend(apiKey);
-
     // `replyTo` is the useful part: hitting reply in the inbox answers the sender directly,
     // rather than replying to our own noreply address.
-    const { error } = await resend.emails.send({
-      from: FROM,
+    await sendViaZeptoMail({
       to: NOTIFY,
-      replyTo: submission.email,
+      replyTo: { address: submission.email, name: submission.name },
       subject: `[${label}] New enquiry from ${submission.name}`,
       text: [
         `${label} enquiry via crimsonc9.com`,
@@ -110,16 +103,11 @@ export async function sendCollaborationNotification(
       ].join("\n"),
     });
 
-    // The SDK resolves with `{ data, error }` instead of rejecting, so an API-level
-    // failure is invisible unless `error` is checked explicitly.
-    if (error) {
-      logUndelivered(submission, `Resend rejected it: ${error.message}`);
-      return { ok: false, reason: "failed" };
-    }
-
     return { ok: true };
   } catch (error) {
-    // Network failure, DNS, a bad key shape — anything the SDK does throw on.
+    // Everything lands here: a non-2xx from ZeptoMail, a network failure, the 20s timeout.
+    // Unlike the Resend SDK this replaced, a rejected send actually rejects, so there is no
+    // second success path to check.
     logUndelivered(submission, error instanceof Error ? error.message : String(error));
     return { ok: false, reason: "failed" };
   }

@@ -12,7 +12,7 @@
  *  - A failed send returns an error instead of a cheerful 201. The visitor has to know the
  *    message did not arrive, because the mailto link under the form is their fallback.
  *  - The endpoint is rate limited. It sends mail on an unauthenticated POST, so without a
- *    limit it is a way to flood the inbox and burn the Resend quota.
+ *    limit it is a way to flood the inbox and burn the mail provider's quota.
  */
 
 import { NextResponse } from "next/server";
@@ -49,7 +49,7 @@ const hits = new Map<string, { count: number; resetAt: number }>();
  * Counting every request looks equivalent and is not: four typos in the email field would
  * then lock a genuine visitor out for the rest of the window, which is a worse failure than
  * the one being defended against. A request that never sends mail costs nothing worth
- * rationing, so only a request that reaches Resend is recorded — including a failed one,
+ * rationing, so only a request that reaches the mail provider is recorded — including a failed one,
  * since the outbound call is the cost being rationed.
  */
 function overSendLimit(ip: string): boolean {
