@@ -174,14 +174,18 @@ function MenuLink({
  *  3. `.orb-specular` a small hard highlight where the light source hits the surface
  *  4. `.orb-bloom`    the light thrown into the air around it, which is what animates
  *
- * Opening the menu pulses the orb rather than spinning it: there is no longer a lantern
- * body for a spin to be legible on, and a featureless sphere rotating is invisible. The
- * pulse is a flare and a quick scale, so the click has the same "the light reacts" logic
- * the hover does.
+ * Opening the menu turns the whole assembly a full revolution and flares the light at the
+ * same time. The rotation is on the outer element, not the sphere: a featureless sphere
+ * turning is invisible, but the two beams carry the motion perfectly well, so the mark
+ * reads as a hanging object swinging round while its light surges.
  */
 function LanternMark({ open }: { open: boolean }) {
   return (
-    <span className="flex flex-col items-center gap-[7px] md:gap-2" aria-hidden="true">
+    <span
+      className="lantern-spin flex flex-col items-center gap-[7px] md:gap-2"
+      data-open={open}
+      aria-hidden="true"
+    >
       <span className="orb-beam orb-beam-top" />
 
       {/* The sphere. A grid so all four shading layers stack in one cell without
