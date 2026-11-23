@@ -3,7 +3,12 @@
 import { ImprintData } from "@/types/cms";
 
 /**
- * Legally required publisher details (§ 5 DDG, formerly § 5 TMG; § 18 Abs. 2 MStV).
+ * Legally required publisher details (§ 5 DDG, formerly § 5 TMG).
+ *
+ * The § 18 Abs. 2 MStV "responsible for content" entry was removed at Aaron's request
+ * (CRI-22). That clause applies to journalistic-editorial offerings; a collective's own
+ * site publishing only its own information is not obviously one, and the representative
+ * named below carries the § 5 DDG duty either way. Worth confirming in TIC-31.
  *
  * **Source of truth: `c9-tickets/src/content/legal.ts`**, confirmed by Aaron on
  * 16 Nov 2026. Duplicated rather than imported because the two apps deploy independently
@@ -15,17 +20,15 @@ import { ImprintData } from "@/types/cms";
  * and these are the drafts from TIC-25. Accurate, but not reviewed.
  */
 const PUBLISHER = {
+  legalName: "CrimsonC9",
   /**
-   * An Einzelunternehmen has no company name of its own in the legal sense: § 5 DDG wants
-   * the natural person behind it, which is why this is the owner's name and not just
-   * "CrimsonC9".
+   * § 5 DDG wants the natural person behind the name. Naming them as the representative
+   * rather than folding them into the legal name satisfies that and reads better
+   * (Aaron, CRI-22).
    */
-  legalName: "Aaron Sergeev – CrimsonC9",
-  legalForm: "Einzelunternehmen",
+  representedBy: "Aaron Sergeev",
   /** Street, postcode + city, country — one entry per line. */
   addressLines: ["Gottschalkstr. 20", "13359 Berlin", "Deutschland"],
-  /** § 18 Abs. 2 MStV — person responsible for editorial content, at the address above. */
-  responsibleForContent: "Aaron Sergeev",
   /**
    * Deliberately none (Aaron, 16 Nov 2026). § 5 DDG requires a means of "fast electronic
    * contact and direct communication" — an answered email address satisfies that, and case
@@ -65,8 +68,7 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
   return (
     <div className="flex min-h-full flex-col">
       <div className="mx-auto w-full max-w-3xl px-5 pt-36 pb-10 md:px-8">
-        <h1 className="type-display-sm mb-4">IMPRINT / IMPRESSUM</h1>
-        <p className="type-label">Legal information according to § 5 DDG</p>
+        <h1 className="type-display-sm">IMPRINT / IMPRESSUM</h1>
       </div>
 
       <div className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 md:px-8">
@@ -74,10 +76,7 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
           <section>
             <h2 className="type-label mb-4">Publisher</h2>
             <p className="text-foreground text-lg font-semibold">
-              <Value>{PUBLISHER.legalName || data.siteName}</Value>
-            </p>
-            <p className="text-muted-foreground text-sm">
-              {data.tagline} · {PUBLISHER.legalForm}
+              <Value>{PUBLISHER.legalName}</Value>
             </p>
             <div className="mt-3 space-y-0.5">
               {hasAddress ? (
@@ -88,13 +87,8 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
                 </p>
               )}
             </div>
-          </section>
-
-          <section className="border-hairline border-t pt-8">
-            <h2 className="type-label mb-4">Responsible for content</h2>
-            <p className="text-sm">
-              § 18 Abs. 2 MStV — <Value>{PUBLISHER.responsibleForContent}</Value>, at the address
-              above
+            <p className="mt-4 text-sm">
+              Represented by: <Value>{PUBLISHER.representedBy}</Value>
             </p>
           </section>
 
