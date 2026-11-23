@@ -28,22 +28,19 @@
   /* Bright crimson — the light that comes off the brand colour, rather than the brand
      colour itself. --brand-crimson (#510606) is a surface tone: far too dark to read as a
      glow against a #0a0a0a background, so anything luminous needs its own value.
-     Confirmed with Aaron 2026-10-02. The value matches the crimson accent already cited in
-     GEMINI.md, which is why it was chosen over inventing a new one — note that conflicts
-     with VISION.md §4, which currently lists only the dark #510606. Worth reconciling in
-     VISION.md so the two docs stop disagreeing. */
+     Confirmed with Aaron 2026-10-02, and documented alongside --brand-crimson in
+     VISION.md §4 since 2026-11-23 — the two no longer disagree. */
   --glow-crimson: #dc143c;
 
   /* Display face is now Philosopher, not Cinzel Decorative (Aaron, 2026-10-02 — one
      readable face across the site rather than a decorative display layer on top). Aliased
      rather than pointed straight at the font so --font-display keeps meaning "the heading
-     face" at every call site; if a display face ever comes back, only this line changes.
-     VISION.md §4's typography table still lists Cinzel and needs updating to match. */
+     face" at every call site; if a display face ever comes back, only this line changes. */
   /* Philosopher carries headings and body (Aaron's pick, CRI-22). DM Sans is kept for the
      micro-labels only: Philosopher's flared stems lose definition at 11px with 0.22em
      tracking, which is most of the structural type on this page.
      The hero headline is neither — it is Cinzel Decorative, scoped to that one element
-     through --font-hero. VISION.md §4 is out of date again. */
+     through --font-hero. VISION.md §4 records all three. */
   --font-display: var(--font-body);
 
   /* Not a brand token — deliberately distinct from --brand-crimson. An error/destructive

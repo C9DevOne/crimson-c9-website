@@ -37,7 +37,9 @@ You'll need a `.env.local` file — the site won't run at all without it, not ju
 cp .env.example .env.local
 ```
 
-`.env.example` lists every variable, what it's for, and where to get a real value. Fastest path to real values: `vercel link` once, then `vercel env pull .env.local` any time — pulls current values straight from the team's Vercel project instead of asking a teammate to paste them somewhere. Never commit `.env.local`, it's already in `.gitignore`.
+`.env.example` lists every variable and what it's for. **Local dev needs none of them** — the site runs with an empty `.env.local`; without a mail token the contact form answers 502 and writes the enquiry to the console, which is enough to click through.
+
+Production values live in `/opt/c9-website/deploy/{prod,staging}/.env` **on the server** and nowhere else. There is no `vercel env pull` any more and no cloud copy to pull from; if you need a real value, ask, and it stays on the server. Never commit `.env.local` — it's already in `.gitignore`.
 
 ---
 
@@ -54,19 +56,17 @@ We use a simple feature branch workflow. `main` is protected — nobody pushes d
 4. Push your branch to GitHub
 5. Open a Pull Request
 6. Someone reviews and approves
-7. Merge into main — Vercel deploys automatically
+7. Merge into main — CI runs, then Deploy builds the image and ships it to `crimsonc9.com`
 ```
 
 ### Branch naming
 
-Name your branch after what it does, using the same prefixes as commits, and include the Linear issue ID:
+Use the branch name Linear generates for the issue — it's on the issue page, and it's what the team actually uses:
 
 ```
-feat/CRI-12-artist-roster
-fix/CRI-31-navbar-mobile-layout
-style/CRI-8-homepage-hero-spacing
-refactor/CRI-19-gsap-scroll-hook
-docs/CRI-45-adr-animation-library
+aaron/cri-12-artist-roster
+aaron/cri-31-navbar-mobile-layout
+aaron/cri-8-homepage-hero-spacing
 ```
 
 Keep it lowercase, hyphens not spaces or underscores.
@@ -78,7 +78,7 @@ Always branch off the latest version of main:
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feat/CRI-XX-your-feature-name
+git checkout -b <the branch name Linear gives you>
 ```
 
 Don't branch off someone else's feature branch unless you're explicitly building on their work and it hasn't merged yet.
@@ -105,13 +105,15 @@ docs: update VISION.md with symbiosis language
 
 When your branch is ready:
 
-1. Push it to GitHub: `git push origin feat/your-branch-name`
+1. Push it to GitHub: `git push -u origin <your-branch-name>`
 2. GitHub will prompt you to open a PR — click it, or go to the repo and click "Compare & pull request"
 3. Write a clear title (same format as a commit message)
 4. In the description, briefly explain what you built and any decisions you made
 5. Link the PR from its Linear issue so it's traceable
 
-Vercel automatically builds a **preview URL** for your branch within a couple of minutes of pushing. Include that link in your PR description so reviewers can see the changes live without pulling your branch locally.
+**There are no automatic preview URLs.** To put a branch somewhere a reviewer can click, deploy it to staging by hand: Actions → Deploy → Run workflow → pick your branch, stage `staging`. It appears at `staging.crimsonc9.com` behind the team login. Link it in the PR.
+
+Deploying a branch to `prod` is refused by the workflow — prod only ever runs `main`.
 
 ### PR size
 
@@ -133,7 +135,7 @@ If you're waiting on a review, a PR should get a first look within **24 hours**.
 
 ### What to look for when reviewing
 
-- Does it work? (Check the Vercel preview URL)
+- Does it work? (Deploy the branch to staging, or pull it and run it locally)
 - Does it match the design language in `VISION.md`? (colours via CSS variables, correct fonts, spacing)
 - TypeScript only — no plain `.js` files
 - No hardcoded colour values — always use CSS variables like `var(--brand-crimson)`

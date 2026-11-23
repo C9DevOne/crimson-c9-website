@@ -59,3 +59,13 @@ What was decided?
 
 What do we gain? What do we accept as a trade-off?
 ```
+
+---
+
+## Note — 2026-11-23: a one-off correction pass
+
+The rule below is that an Accepted ADR is never edited; a decision that changes gets a new ADR that supersedes it.
+
+On 2026-11-23 that rule was deliberately suspended once, with Aaron's agreement, to correct six ADRs (0002, 0003, 0004, 0005, 0006, 0008, 0009) that had drifted badly out of step with what runs. Each was given a dated `## Update` section appended to it rather than having its original text rewritten — so the original reasoning is still readable, and what changed since is recorded underneath it.
+
+**This was an exception, not a new convention.** The next decision that changes still gets its own ADR.

@@ -1,6 +1,6 @@
 # ADR-0002: Payload CMS Instead of Sanity
 
-**Status:** Accepted (supersedes earlier plan to use Sanity)
+**Status:** Accepted · **dormant in v1 since 2026-11-18**
 **Date:** 2026-05
 **Deciders:** Aaron, Nick
 
@@ -22,3 +22,13 @@ Use **Payload CMS**, self-hosted and code-first: collections are defined as Type
 
 - **Positive:** Full ownership of content data — nothing about the site's content depends on a third party staying in business or keeping pricing stable. Payload's native S3-compatible storage adapter directly enabled the Backblaze B2 media pipeline (ADR-0004).
 - **Negative:** Self-hosting a CMS means the team owns more of the operational surface — schema migrations, admin authentication, upgrades — that a managed SaaS CMS would otherwise handle. This trade was accepted as consistent with the project's ownership philosophy.
+
+---
+
+## Update — 2026-11-18: dormant, not reversed
+
+This decision still stands; it is simply not switched on. The landing page read exactly two values from the CMS, both of which already had constant fallbacks, so for a page with no editable content Payload was pure overhead.
+
+It is **unwired, not deleted**: `src/app/(payload)` became `src/app/_payload`, the admin and dev routes likewise, and `withPayload()` came out of `next.config.ts`. Collections, globals, access rules, generated types and the initial migration are untouched, and every removal is a git-tracked rename. Restoring it is a revert, not a rebuild.
+
+It comes back with the artist page, which is the first thing on the roadmap that genuinely needs editable content.
