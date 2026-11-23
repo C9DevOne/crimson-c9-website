@@ -5,32 +5,50 @@ import { ImprintData } from "@/types/cms";
 /**
  * Legally required publisher details (§ 5 DDG, formerly § 5 TMG; § 18 Abs. 2 MStV).
  *
- * ⚠️ INCOMPLETE — these must be filled in before the site can be considered compliant.
- * They are deliberately left blank rather than guessed: an Impressum with an invented or
- * approximated address is worse than an obviously unfinished one, because it reads as
- * compliant while not being so. "Aachen / Cologne / Berlin, Germany" (what this page said
- * previously) is not a valid address for this purpose — § 5 requires a full postal address
- * a letter could actually be delivered to.
+ * **Source of truth: `c9-tickets/src/content/legal.ts`**, confirmed by Aaron on
+ * 16 Nov 2026. Duplicated rather than imported because the two apps deploy independently
+ * and nothing is shared between them; if either changes, change both. The ticket shop's
+ * Impressum uses `tickets@crimsonc9.com` as its contact address, this one uses
+ * `hello@crimsonc9.com` — that difference is deliberate, not drift.
  *
- * Anything left empty renders as a visible PENDING marker. That is intentional and should
- * stay that way until the real values land — a silent dash would hide the gap.
+ * ⚠️ Still unchecked by a lawyer. TIC-31 ("Legal texts final + external check") is open,
+ * and these are the drafts from TIC-25. Accurate, but not reviewed.
  */
 const PUBLISHER = {
-  /** Full legal name. A person's name if unincorporated, or the registered entity name. */
-  legalName: "",
-  /** Street, postcode, city — one entry per line. */
-  addressLines: [] as string[],
-  /** § 18 Abs. 2 MStV — person responsible for editorial content, with their address. */
-  responsibleForContent: "",
-  /** Phone number. Not strictly mandatory alongside email, but standard practice. */
-  phone: "",
-  /** e.g. "Vereinsregister Aachen, VR 1234" — only if actually registered. */
+  /**
+   * An Einzelunternehmen has no company name of its own in the legal sense: § 5 DDG wants
+   * the natural person behind it, which is why this is the owner's name and not just
+   * "CrimsonC9".
+   */
+  legalName: "Aaron Sergeev – CrimsonC9",
+  legalForm: "Einzelunternehmen",
+  /** Street, postcode + city, country — one entry per line. */
+  addressLines: ["Gottschalkstr. 20", "13359 Berlin", "Deutschland"],
+  /** § 18 Abs. 2 MStV — person responsible for editorial content, at the address above. */
+  responsibleForContent: "Aaron Sergeev",
+  /**
+   * Deliberately none (Aaron, 16 Nov 2026). § 5 DDG requires a means of "fast electronic
+   * contact and direct communication" — an answered email address satisfies that, and case
+   * law has not read it as compelling a phone number. So this renders as nothing at all
+   * rather than as an unfinished marker.
+   */
+  phone: null as string | null,
+  /** Not registered — an Einzelunternehmen below the Kaufmann threshold has no HR entry. */
   registerEntry: "",
-  /** USt-IdNr., only if one has been issued. */
+  /** No USt-IdNr.: small-business rule below, § 19 UStG. */
   vatId: "",
+  /** Required on invoices and conventional in the Impressum where § 19 is claimed. */
+  smallBusinessNote: "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
 };
 
-/** Renders a value, or an unmistakable marker when it hasn't been supplied yet. */
+/**
+ * Renders a value, or an unmistakable marker when one is missing.
+ *
+ * Kept even though every field is now filled: it is what stops a future blank from
+ * shipping silently. A field that is absent *by design* (the phone) is not routed through
+ * this — it is simply not rendered, because marking a deliberate choice as "pending" is
+ * how a correct Impressum gets "fixed" into an incorrect one.
+ */
 function Value({ children }: { children?: string }) {
   if (children && children.trim()) return <>{children}</>;
 
@@ -58,7 +76,9 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
             <p className="text-foreground text-lg font-semibold">
               <Value>{PUBLISHER.legalName || data.siteName}</Value>
             </p>
-            <p className="text-muted-foreground text-sm">{data.tagline}</p>
+            <p className="text-muted-foreground text-sm">
+              {data.tagline} · {PUBLISHER.legalForm}
+            </p>
             <div className="mt-3 space-y-0.5">
               {hasAddress ? (
                 PUBLISHER.addressLines.map((line) => <p key={line}>{line}</p>)
@@ -71,43 +91,39 @@ export default function ImprintClient({ data }: { data: ImprintData }) {
           </section>
 
           <section className="border-hairline border-t pt-8">
-            <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-              Responsible for content
-            </h2>
+            <h2 className="type-label mb-4">Responsible for content</h2>
             <p className="text-sm">
-              § 18 Abs. 2 MStV — <Value>{PUBLISHER.responsibleForContent}</Value>
+              § 18 Abs. 2 MStV — <Value>{PUBLISHER.responsibleForContent}</Value>, at the address
+              above
             </p>
           </section>
 
           <section className="border-hairline border-t pt-8">
-            <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-              Contact
-            </h2>
+            <h2 className="type-label mb-4">Contact</h2>
             <p className="text-sm">
               Email:{" "}
               <a href={`mailto:${data.contactEmail}`} className="link-underline text-foreground">
                 {data.contactEmail}
               </a>
             </p>
-            <p className="mt-1 text-sm">
-              Phone: <Value>{PUBLISHER.phone}</Value>
-            </p>
+            {PUBLISHER.phone && <p className="mt-1 text-sm">Phone: {PUBLISHER.phone}</p>}
           </section>
 
           {(PUBLISHER.registerEntry || PUBLISHER.vatId) && (
             <section className="border-hairline border-t pt-8">
-              <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-                Registration
-              </h2>
+              <h2 className="type-label mb-4">Registration</h2>
               {PUBLISHER.registerEntry && <p className="text-sm">{PUBLISHER.registerEntry}</p>}
               {PUBLISHER.vatId && <p className="mt-1 text-sm">VAT ID: {PUBLISHER.vatId}</p>}
             </section>
           )}
 
           <section className="border-hairline border-t pt-8">
-            <h2 className="font-ui text-muted-foreground mb-3 text-xs font-semibold tracking-[0.25em] uppercase">
-              Dispute resolution
-            </h2>
+            <h2 className="type-label mb-4">VAT</h2>
+            <p className="text-sm">{PUBLISHER.smallBusinessNote}</p>
+          </section>
+
+          <section className="border-hairline border-t pt-8">
+            <h2 className="type-label mb-4">Dispute resolution</h2>
             <p className="text-muted-foreground text-sm leading-relaxed">
               The European Commission provides a platform for online dispute resolution. We are
               neither obliged nor willing to participate in dispute resolution proceedings before a
