@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
+import {
+  RiArrowRightUpLine,
+  RiInstagramLine,
+  RiSoundcloudLine,
+  RiYoutubeLine,
+} from "react-icons/ri";
 
 import { CollaborationForm } from "@/components/forms/CollaborationForm";
 import { ElectricHeadline } from "@/components/hero/ElectricHeadline";
@@ -56,22 +61,6 @@ function handleFromUrl(url: string): string {
   return slug.startsWith("@") ? slug : `@${slug}`;
 }
 
-/**
- * Section heading: a micro-label with a rule running off to the right.
- *
- * The 01/02/03 numbering was dropped at Aaron's request (CRI-22). It was defensible while
- * the page had no navigation, but it implied a sequence the content does not actually
- * have — these are three unrelated sections, not three steps.
- */
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-10 flex items-baseline gap-5 md:mb-14">
-      <span className="type-label">{children}</span>
-      <span className="rule rule-draw flex-1" />
-    </div>
-  );
-}
-
 export default function Page() {
   // Both of these were CMS reads that already fell back to exactly these values, so the
   // rendered page is unchanged by the decoupling — what changes is that editing them is a
@@ -122,35 +111,20 @@ export default function Page() {
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-5 pb-20 md:px-10 md:pb-28">
-          <p
-            className="type-label reveal mb-5 md:mb-7"
-            style={{ "--reveal-delay": "0.2s" } as React.CSSProperties}
-          >
-            Techno collective
-          </p>
-
           <h1
             className="type-hero reveal"
             style={{ "--reveal-delay": "0.35s" } as React.CSSProperties}
           >
-            {/* Two lines, hard-broken: at this size the break is a composition decision,
-                not something to leave to the container width. Each line is its own
-                headline so the ghosts register per line rather than smearing across the
-                gap between them. */}
-            <span className="block">
-              <ElectricHeadline>Change</ElectricHeadline>
-            </span>
-            <span className="block">
-              <ElectricHeadline>Through Music</ElectricHeadline>
-            </span>
+            <ElectricHeadline>Change Through Music</ElectricHeadline>
           </h1>
 
           <p
             className="type-body reveal mt-7 max-w-xl md:mt-9"
             style={{ "--reveal-delay": "0.55s" } as React.CSSProperties}
           >
-            A young techno collective across Aachen, Berlin and Cologne — a platform for emerging
-            artists, events for a growing community, and an upcoming label.
+            We are CrimsonC9, a young techno collective from Aachen, Berlin and Cologne — serving as
+            a platform for emerging artists by hosting events for a growing community, and releasing
+            music as an upcoming label on SoundCloud.
           </p>
 
           <div
@@ -164,34 +138,38 @@ export default function Page() {
       </header>
 
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
-        {/* ── The collective ─────────────────────────────────────────────────────── */}
-        <section className="pt-24 pb-24 md:pt-32 md:pb-40" aria-labelledby="collective">
-          <SectionLabel>The collective</SectionLabel>
-          <h2 id="collective" className="sr-only">
-            The collective
+        {/* ── Upcoming events ─────────────────────────────────────────────────────
+            Added CRI-22. Deliberately the bare minimum of words: Aaron asked that only his
+            own copy appear on the page, and there is none for this section yet, so this
+            says what it is and links out and nothing more. Once there is real event copy —
+            or, better, once the shop exposes the next date — this becomes a listing rather
+            than a door.
+
+            It links out to the shop rather than embedding it. ADR-0009 said the widget
+            would be embedded into /events to keep the visual identity through the purchase
+            flow; that ADR predates the shop being its own Next app on its own subdomain
+            and needs superseding either way. */}
+        <section className="pb-24 md:pb-40" aria-labelledby="events">
+          <h2 id="events" className="type-body mb-10 md:mb-14">
+            Upcoming events
           </h2>
 
-          {/* Two columns of running text on desktop, one on mobile. The copy is short
-              enough that a single wide measure would run past a comfortable line length at
-              this container width. */}
-          <div className="type-body grid gap-7 md:grid-cols-2 md:gap-16 lg:gap-24">
-            <p>
-              We are CrimsonC9, a young techno collective from Aachen, Berlin and Cologne — serving
-              as a platform for emerging artists by hosting events for a growing community, and
-              releasing music as an upcoming label on SoundCloud.
-            </p>
-            <p>
-              You can see what we do on the channels below, or reach out directly if you want to
-              work with us.
-            </p>
-          </div>
+          <a
+            href="https://tickets.crimsonc9.com"
+            className="glass-panel sheen text-muted-foreground hover:text-foreground flex flex-col gap-6 rounded-3xl p-6 transition-colors duration-500 sm:flex-row sm:items-center sm:justify-between md:p-10"
+          >
+            <span>
+              <span className="text-foreground block text-xl md:text-2xl">Tickets</span>
+              <span className="type-label mt-1 block">tickets.crimsonc9.com</span>
+            </span>
+            <RiArrowRightUpLine className="size-6 shrink-0" aria-hidden="true" />
+          </a>
         </section>
 
         {/* ── Channels ───────────────────────────────────────────────────────────── */}
         <section className="pb-24 md:pb-40" aria-labelledby="channels">
-          <SectionLabel>Where to find us</SectionLabel>
-          <h2 id="channels" className="sr-only">
-            Our channels
+          <h2 id="channels" className="type-body mb-10 md:mb-14">
+            You can check out what we do on these channels
           </h2>
 
           {/* Tiles rather than text rows (Aaron, CRI-22: the visual icons back). Three
@@ -204,7 +182,7 @@ export default function Page() {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glass-panel glass-interactive text-muted-foreground hover:text-foreground flex flex-col items-start gap-5 rounded-3xl p-6 transition-colors duration-500 md:gap-7 md:p-8"
+                  className="glass-panel sheen text-muted-foreground hover:text-foreground flex flex-col items-start gap-5 rounded-3xl p-6 transition-colors duration-500 md:gap-7 md:p-8"
                 >
                   <Icon className="text-glow-crimson size-7 md:size-8" aria-hidden="true" />
                   <span>
@@ -219,20 +197,15 @@ export default function Page() {
 
         {/* ── Contact ────────────────────────────────────────────────────────────── */}
         <section className="pb-24 md:pb-40" aria-labelledby="contact">
-          <SectionLabel>Get in touch</SectionLabel>
-          <h2 id="contact" className="sr-only">
-            Get in touch
+          <h2 id="contact" className="type-body mb-10 md:mb-14">
+            Or reach out if you want to collaborate with us, or have any other enquiry
           </h2>
 
           <div className="grid gap-10 md:grid-cols-12 md:gap-16">
             <div className="md:col-span-4">
-              <p className="type-body">
-                Booking, collaboration, volunteering, or something else entirely — this reaches us
-                directly.
-              </p>
               <a
                 href={`mailto:${contactEmail}`}
-                className="link-underline type-label text-foreground mt-6 inline-block"
+                className="link-underline type-label text-foreground inline-block"
               >
                 {contactEmail}
               </a>

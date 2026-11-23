@@ -89,7 +89,7 @@ export function Lantern({ socials }: { socials?: Socials }) {
         aria-label={open ? "Close menu" : "Open menu"}
         className="lantern-button block cursor-pointer"
       >
-        <LanternMark />
+        <LanternMark open={open} />
       </button>
 
       <div
@@ -159,30 +159,41 @@ function MenuLink({
 }
 
 /**
- * The lantern, as a sphere of light suspended between two beams.
+ * The lantern: a shaded sphere of light suspended between two short beams.
  *
- * Aaron, CRI-22: "more of a glowing sphere of light with the glow increasing when hovering
- * … two dark or wooden rectangle shapes sitting above and beneath it (even with a little
- * space, making it a little dream like)".
+ * Aaron, CRI-22 — "a more realistic shader on it", the beams "should not span the whole
+ * width but be a little smaller", and the click animation back.
  *
- * The gap is the whole idea, so it is built with layout rather than drawing: three
- * elements in a column with space between them, and nothing joining the beams to the orb.
- * Suspending a light between two pieces of timber with no visible support is the thing
- * that reads as a dream, and any strut or cord would undo it.
+ * The shading is four stacked layers rather than one radial gradient, which is the
+ * difference between a glowing disc and something spherical:
  *
- * The beams are narrower than the orb is wide, which keeps them reading as beams rather
- * than as a frame enclosing it.
+ *  1. `.orb-body`     the sphere's own surface, lit from the upper left and falling to a
+ *                     dark terminator on the lower right
+ *  2. `.orb-rim`      a thin crescent of light on the shadow side — reflected light, the
+ *                     thing that most reliably reads as roundness
+ *  3. `.orb-specular` a small hard highlight where the light source hits the surface
+ *  4. `.orb-bloom`    the light thrown into the air around it, which is what animates
  *
- * Drawn in DOM rather than SVG: the glow is three animated box-shadows (see `.orb-core` in
- * globals.css), and box-shadow on an HTML element is cheaper to animate than the
- * equivalent SVG filter, which would re-rasterise every frame.
+ * Opening the menu pulses the orb rather than spinning it: there is no longer a lantern
+ * body for a spin to be legible on, and a featureless sphere rotating is invisible. The
+ * pulse is a flare and a quick scale, so the click has the same "the light reacts" logic
+ * the hover does.
  */
-function LanternMark({ className }: { className?: string }) {
+function LanternMark({ open }: { open: boolean }) {
   return (
-    <span className={`flex flex-col items-center ${className ?? ""}`} aria-hidden="true">
-      <span className="orb-beam orb-beam-top h-[5px] w-[26px] rounded-[1px] md:h-[6px] md:w-[30px]" />
-      <span className="orb-core my-[7px] block size-[22px] rounded-full md:my-2 md:size-[26px]" />
-      <span className="orb-beam orb-beam-bottom h-[5px] w-[26px] rounded-[1px] md:h-[6px] md:w-[30px]" />
+    <span className="flex flex-col items-center gap-[7px] md:gap-2" aria-hidden="true">
+      <span className="orb-beam orb-beam-top" />
+
+      {/* The sphere. A grid so all four shading layers stack in one cell without
+          absolute positioning, which would need a fixed size in pixels. */}
+      <span className="orb-shell grid" data-open={open}>
+        <span className="orb-bloom" />
+        <span className="orb-body" />
+        <span className="orb-rim" />
+        <span className="orb-specular" />
+      </span>
+
+      <span className="orb-beam orb-beam-bottom" />
     </span>
   );
 }

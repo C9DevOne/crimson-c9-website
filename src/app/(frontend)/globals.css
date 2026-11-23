@@ -438,8 +438,15 @@
   /* Cinzel Decorative is wide and tightly countered, so it needs more room per character
      and far less size than a grotesque would at the same impact. Positive tracking, not
      the negative tracking the rest of the scale uses — a display serif falls apart when
-     its letters touch. */
-  font-size: clamp(2rem, 6.2vw, 5.1rem);
+     its letters touch.
+
+     The size is viewport-derived rather than a clamp with a comfortable floor, because
+     "Change Through Music" has to stay on ONE line (Aaron, CRI-22) and in this face at
+     this tracking the line measures 14.5× the font size. 5.8vw keeps it inside the
+     gutters down to a 320px phone with room to spare; the 5rem cap stops it outgrowing
+     the max-w-7xl container on a wide display. A larger floor would be more readable on a
+     phone and would also wrap, which is the thing we were asked not to do. */
+  font-size: min(5.8vw, 5rem);
   line-height: 1.06;
   letter-spacing: 0.012em;
 }
@@ -544,27 +551,74 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════════
-   THE LANTERN, as a sphere of light held between two beams
+   THE LANTERN — components/layout/Lantern.tsx
+   A shaded sphere between two short beams. See the component for what each layer is for.
    ══════════════════════════════════════════════════════════════════════════════════ */
 
-.orb-core {
-  /* Lit from the upper left so the sphere has a direction, like everything else here. */
+.orb-shell {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  isolation: isolate;
+}
+
+@media (min-width: 768px) {
+  .orb-shell {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.orb-shell > * {
+  grid-area: 1 / 1;
+  border-radius: 50%;
+}
+
+/* 1 — the surface. Off-centre light source, a warm core falling through crimson to an
+   almost-black terminator. The second gradient darkens the lower right further, which is
+   the shadow the first one cannot express on its own. */
+.orb-body {
+  background:
+    radial-gradient(
+      circle at 34% 30%,
+      #fff6e4 0%,
+      #ffd79a 12%,
+      var(--glow-accent) 30%,
+      var(--glow-crimson) 58%,
+      #5c0a16 82%,
+      #2b0309 100%
+    ),
+    radial-gradient(circle at 78% 82%, rgba(0, 0, 0, 0.55), transparent 55%);
+  background-blend-mode: normal, multiply;
+}
+
+/* 2 — reflected light on the shadow side. Inset, not a border, so it hugs the curve. */
+.orb-rim {
+  box-shadow:
+    inset -1.5px -1.5px 2.5px color-mix(in srgb, var(--glow-accent) 42%, transparent),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* 3 — the specular. Small, tight and offset towards the light; this is the single detail
+   that stops the sphere reading as a flat gradient. */
+.orb-specular {
   background: radial-gradient(
-    circle at 38% 34%,
-    #fff3e0 0%,
-    var(--glow-accent) 26%,
-    var(--glow-crimson) 62%,
-    #4a0612 100%
+    ellipse 26% 20% at 32% 26%,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.25) 45%,
+    transparent 70%
   );
+}
+
+/* 4 — the light in the air. The only layer that animates, so the sphere itself stays
+   stable while its glow breathes. Three radii out of phase on a 9s cycle. */
+.orb-bloom {
   animation: orbGlow 9s ease-in-out infinite;
   transition:
     box-shadow 700ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* The live glow. Three shadows at different radii rather than one: the tight ring reads as
-   the surface of the sphere, the wide one as light in the air around it, and animating
-   them out of phase is what keeps it from looking like a simple opacity fade. */
 @keyframes orbGlow {
   0%,
   100% {
@@ -587,43 +641,88 @@
   }
 }
 
-.lantern-button:hover .orb-core,
-.lantern-button:focus-visible .orb-core {
-  transform: scale(1.07);
+.lantern-button:hover .orb-bloom,
+.lantern-button:focus-visible .orb-bloom {
+  transform: scale(1.06);
   box-shadow:
     0 0 18px color-mix(in srgb, var(--glow-accent) 92%, transparent),
     0 0 52px color-mix(in srgb, var(--glow-crimson) 72%, transparent),
     0 0 120px color-mix(in srgb, var(--glow-crimson) 44%, transparent);
-  /* Hover takes the animation over completely, otherwise the keyframes keep overwriting
-     the box-shadow and the hover state flickers against them. */
+  /* Hover takes the animation over completely; leaving the keyframes running makes the
+     hover state flicker against them. */
   animation: none;
 }
 
-/* The two beams. Dark timber above and below with a gap either side, so the light appears
-   to be suspended between them rather than attached to anything. */
-.orb-beam {
-  background: linear-gradient(177deg, #2e241c 0%, #1a130e 46%, #0d0907 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 2px 7px rgba(0, 0, 0, 0.6);
+/* The click. A flare that overshoots and settles, replacing the spin the paper lantern
+   had — a featureless sphere rotating is invisible, so the light reacts instead. The
+   attribute flips on every open, and `animation` restarts because the selector changes. */
+.orb-shell[data-open="true"] .orb-bloom {
+  animation: orbFlare 900ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Each beam catches a little of the light facing the orb — the edge nearest the sphere is
-   warmed, which is what makes the gap read as air rather than as a missing piece. */
+.orb-shell[data-open="true"] .orb-body {
+  animation: orbFlareBody 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes orbFlare {
+  0% {
+    transform: scale(1);
+  }
+  22% {
+    transform: scale(1.5);
+    box-shadow:
+      0 0 26px color-mix(in srgb, #fff3e0 85%, transparent),
+      0 0 70px color-mix(in srgb, var(--glow-accent) 80%, transparent),
+      0 0 150px color-mix(in srgb, var(--glow-crimson) 55%, transparent);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* The surface brightens with the flare, otherwise only the halo reacts and the sphere
+   looks like it is being lit from outside rather than from within. */
+@keyframes orbFlareBody {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  22% {
+    filter: brightness(1.75) saturate(1.1);
+  }
+}
+
+/* The beams. Short — they read as something the light hangs between, not as a frame
+   around it — and narrower than the sphere is wide. */
+.orb-beam {
+  width: 16px;
+  height: 4px;
+  border-radius: 1px;
+  background: linear-gradient(177deg, #30251d 0%, #1b140f 46%, #0d0907 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 768px) {
+  .orb-beam {
+    width: 19px;
+    height: 5px;
+  }
+}
+
+/* Each beam catches a little of the light on the face turned towards the orb, which is
+   what makes the gap read as air rather than as a missing piece. */
 .orb-beam-top {
-  border-bottom: 1px solid color-mix(in srgb, var(--glow-accent) 26%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--glow-accent) 30%, transparent);
 }
 
 .orb-beam-bottom {
-  border-top: 1px solid color-mix(in srgb, var(--glow-accent) 26%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--glow-accent) 30%, transparent);
 }
 
 .lantern-button {
   transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.lantern-button:hover {
-  transform: translateY(-1px);
 }
 
 .lantern-button:focus-visible {
@@ -637,7 +736,9 @@
     animation: none;
     transition: none;
   }
-  .orb-core {
+  .orb-bloom,
+  .orb-shell[data-open="true"] .orb-bloom,
+  .orb-shell[data-open="true"] .orb-body {
     animation: none;
     box-shadow:
       0 0 10px color-mix(in srgb, var(--glow-crimson) 70%, transparent),
@@ -717,4 +818,121 @@
     inset 0 1px 0 0 color-mix(in srgb, var(--foreground) 12%, transparent),
     0 0 70px -14px color-mix(in srgb, var(--glow-crimson) 55%, transparent),
     0 30px 60px -34px var(--background);
+}
+
+/* ── Constellations and meteors ───────────────────────────────────────────────────
+   Both are deliberately rare. Each element spends 95%+ of its cycle invisible, and the
+   cycles are long and mutually prime-ish, so two almost never fire together. The brief
+   was "very subtle from time to time" — the restraint is the feature, and the first
+   version of this that fired every few seconds read as a screensaver. */
+
+.star-link {
+  stroke: color-mix(in srgb, var(--foreground) 70%, var(--glow-crimson));
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  opacity: 0;
+  /* Starts past the end of the line so the point enters from the first star. */
+  stroke-dashoffset: var(--link-length, 200);
+  animation: linkTravel var(--link-duration, 60s) linear var(--link-delay, 0s) infinite;
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--foreground) 60%, transparent));
+}
+
+@keyframes linkTravel {
+  /* Three per cent of a 60s cycle is under two seconds of travel. */
+  0% {
+    opacity: 0;
+    stroke-dashoffset: var(--link-length, 200);
+  }
+  0.4% {
+    opacity: 0.85;
+  }
+  2.6% {
+    opacity: 0.85;
+  }
+  3% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+.star-meteor {
+  stroke: url(#meteor-fade);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: fill-box;
+  animation: meteorFall var(--meteor-duration, 70s) ease-in var(--meteor-delay, 0s) infinite;
+}
+
+@keyframes meteorFall {
+  0% {
+    opacity: 0;
+    translate: -40px -16px;
+  }
+  0.5% {
+    opacity: 0.9;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  2.8% {
+    opacity: 0;
+    translate: 150px 60px;
+  }
+  100% {
+    opacity: 0;
+    translate: 150px 60px;
+  }
+}
+
+/* ── Channel tiles ────────────────────────────────────────────────────────────────
+   A sheen crossing the panel instead of the panel lifting (Aaron, CRI-22: "doesn't move
+   the object up but rather lets it sit in place and moves a glow across it").
+
+   The sweep is a pseudo-element rather than an animated background-position on the tile
+   itself: the tile already carries the glass gradient and its lit border, and animating
+   its background would fight both. */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    color-mix(in srgb, var(--foreground) 11%, transparent) 47%,
+    color-mix(in srgb, var(--glow-crimson) 26%, transparent) 50%,
+    color-mix(in srgb, var(--foreground) 11%, transparent) 53%,
+    transparent 62%
+  );
+  /* Parked off the left edge; hover walks it across and it stays at the far side until
+     the pointer leaves, so re-entering never replays it mid-sweep. */
+  translate: -130% 0;
+  transition: translate 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sheen:hover::after,
+.sheen:focus-visible::after {
+  translate: 130% 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-link,
+  .star-meteor {
+    animation: none;
+    opacity: 0;
+  }
+  .sheen::after {
+    transition: none;
+  }
 }

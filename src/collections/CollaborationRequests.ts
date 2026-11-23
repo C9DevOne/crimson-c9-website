@@ -49,9 +49,10 @@ export const CollaborationRequests: CollectionConfig = {
       required: true,
       label: "Enquiry Type",
       options: [
-        { label: "Booking", value: "booking" },
         { label: "Collaboration", value: "collaboration" },
-        { label: "Volunteer", value: "volunteer" },
+        { label: "Music / Label", value: "music-label" },
+        { label: "Booking", value: "booking" },
+        { label: "Support", value: "support" },
         { label: "Other", value: "other" },
       ],
     },
