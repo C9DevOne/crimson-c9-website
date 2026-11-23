@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
 
-import { sparklePath } from "@/components/animations/shapes";
-
 /**
  * The Lantern — the universal menu, per CONCEPT_page-universal-menu.md.
  *
@@ -80,7 +78,7 @@ export function Lantern({ socials }: { socials?: Socials }) {
   ].flatMap(({ name, url, Icon }) => (url ? [{ name, url, Icon }] : []));
 
   return (
-    <div ref={containerRef} className="fixed top-5 left-5 z-50 md:top-7 md:left-7">
+    <div ref={containerRef} className="relative">
       <button
         ref={buttonRef}
         type="button"
@@ -91,14 +89,14 @@ export function Lantern({ socials }: { socials?: Socials }) {
         aria-label={open ? "Close menu" : "Open menu"}
         className="lantern-button block cursor-pointer"
       >
-        <LanternMark className="h-14 w-auto md:h-16" />
+        <LanternMark open={open} />
       </button>
 
       <div
         id="lantern-menu"
         data-open={open}
         inert={!open}
-        className="lantern-panel glass-panel absolute top-full left-0 mt-3 w-60 rounded-3xl p-5"
+        className="lantern-panel border-hairline bg-background/95 absolute top-full left-0 mt-4 w-56 border p-5"
       >
         <nav aria-label="Site">
           <ul className="flex flex-col gap-1">
@@ -117,8 +115,8 @@ export function Lantern({ socials }: { socials?: Socials }) {
 
         {socialLinks.length > 0 && (
           <>
-            <div className="via-glow-crimson/40 my-4 h-px bg-gradient-to-r from-transparent to-transparent" />
-            <ul className="flex items-center gap-5 px-3">
+            <div className="rule my-5" />
+            <ul className="flex items-center gap-5">
               {socialLinks.map(({ name, url, Icon }) => (
                 <li key={name}>
                   <a
@@ -126,9 +124,9 @@ export function Lantern({ socials }: { socials?: Socials }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={name}
-                    className="text-muted-foreground hover:text-glow-crimson inline-block transition-colors duration-300"
+                    className="text-muted-foreground hover:text-foreground inline-block transition-colors"
                   >
-                    <Icon className="size-5" aria-hidden="true" />
+                    <Icon className="size-4" aria-hidden="true" />
                   </a>
                 </li>
               ))}
@@ -153,7 +151,7 @@ function MenuLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className="font-ui text-muted-foreground hover:text-foreground hover:bg-foreground/5 block rounded-xl px-3 py-2 text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-300"
+      className="type-label hover:text-foreground block py-2 transition-colors"
     >
       {children}
     </Link>
@@ -161,84 +159,41 @@ function MenuLink({
 }
 
 /**
- * The lantern, as flat geometry — a chōchin reduced to a circle, two bars and three chords.
+ * The lantern: a shaded sphere of light suspended between two short beams.
  *
- * This replaces an earlier dimensional drawing with glass gradients and a highlight.
- * CONCEPT_page-universal-menu.md §1 still specifies "realistic, not pixel-art… glass
- * texture, drop shadow, a sense of weight and light", which this deliberately no longer
- * follows: the site moved to flat 2D geometry (Aaron, 2026-10-02). **That section of the
- * concept doc needs updating** — as written it would send the next person back to the
- * dimensional version.
+ * Aaron, CRI-22 — "a more realistic shader on it", the beams "should not span the whole
+ * width but be a little smaller", and the click animation back.
  *
- * Everything is built from the same vocabulary the rest of the page now uses: circles,
- * straight bars, thick strokes, flat fills. The ribs are chords of the body circle, with
- * their half-widths derived from the radius rather than eyeballed, so the shape stays
- * correct if the circle is ever resized.
+ * The shading is four stacked layers rather than one radial gradient, which is the
+ * difference between a glowing disc and something spherical:
+ *
+ *  1. `.orb-body`     the sphere's own surface, lit from the upper left and falling to a
+ *                     dark terminator on the lower right
+ *  2. `.orb-rim`      a thin crescent of light on the shadow side — reflected light, the
+ *                     thing that most reliably reads as roundness
+ *  3. `.orb-specular` a small hard highlight where the light source hits the surface
+ *  4. `.orb-bloom`    the light thrown into the air around it, which is what animates
+ *
+ * Opening the menu pulses the orb rather than spinning it: there is no longer a lantern
+ * body for a spin to be legible on, and a featureless sphere rotating is invisible. The
+ * pulse is a flare and a quick scale, so the click has the same "the light reacts" logic
+ * the hover does.
  */
-const LANTERN_R = 19;
-const LANTERN_CX = 32;
-const LANTERN_CY = 46;
-
-/** Rib chords, as vertical offsets from the circle's centre. */
-const RIB_OFFSETS = [-9, 0, 9];
-
-function LanternMark({ className }: { className?: string }) {
-  const ribs = RIB_OFFSETS.map((dy) => {
-    // Chord half-width at this height, inset slightly so it stops short of the outline.
-    const halfWidth = Math.sqrt(LANTERN_R ** 2 - dy ** 2) * 0.86;
-    return { y: LANTERN_CY + dy, halfWidth: Math.round(halfWidth * 10) / 10 };
-  });
-
+function LanternMark({ open }: { open: boolean }) {
   return (
-    <svg viewBox="0 0 64 80" className={className} aria-hidden="true" focusable="false">
-      {/* Cord. Outside the spin group — a hanging lantern turns under its cord. */}
-      <path
-        d="M32 4 L32 18"
-        stroke="var(--muted-foreground)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+    <span className="flex flex-col items-center gap-[7px] md:gap-2" aria-hidden="true">
+      <span className="orb-beam orb-beam-top" />
 
-      <g
-        className="lantern-spin"
-        style={{ transformOrigin: `${LANTERN_CX}px ${LANTERN_CY}px` }}
-        strokeLinecap="round"
-      >
-        {/* Top and bottom caps — plain bars, no taper. */}
-        <rect x="23" y="16" width="18" height="5" rx="2.5" fill="var(--glow-crimson)" />
-        <rect x="25" y="70" width="14" height="5" rx="2.5" fill="var(--glow-crimson)" />
+      {/* The sphere. A grid so all four shading layers stack in one cell without
+          absolute positioning, which would need a fixed size in pixels. */}
+      <span className="orb-shell grid" data-open={open}>
+        <span className="orb-bloom" />
+        <span className="orb-body" />
+        <span className="orb-rim" />
+        <span className="orb-specular" />
+      </span>
 
-        {/* Body: one circle doing all the work. */}
-        <circle
-          cx={LANTERN_CX}
-          cy={LANTERN_CY}
-          r={LANTERN_R}
-          fill="color-mix(in srgb, var(--brand-crimson) 70%, transparent)"
-          stroke="var(--glow-crimson)"
-          strokeWidth="3.5"
-        />
-
-        {/* Ribs. */}
-        {ribs.map((rib, i) => (
-          <path
-            key={i}
-            d={`M ${LANTERN_CX - rib.halfWidth} ${rib.y} L ${LANTERN_CX + rib.halfWidth} ${rib.y}`}
-            stroke="var(--glow-crimson)"
-            strokeOpacity="0.55"
-            strokeWidth="2"
-          />
-        ))}
-
-        {/* The light inside, as a four-point sparkle rather than a plain dot — it shares the
-            ornament vocabulary used across the page, and reads as light rather than as a
-            bulb. */}
-        <path
-          className="lantern-flame"
-          d={sparklePath(9, 0.13)}
-          transform={`translate(${LANTERN_CX} ${LANTERN_CY})`}
-          fill="var(--glow-accent)"
-        />
-      </g>
-    </svg>
+      <span className="orb-beam orb-beam-bottom" />
+    </span>
   );
 }

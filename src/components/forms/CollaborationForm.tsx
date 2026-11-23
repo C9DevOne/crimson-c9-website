@@ -13,11 +13,15 @@ import { cn } from "@/components/ui/utils";
  * `collaboration-requests` collection exactly — Payload validates against them and rejects
  * anything else, so a friendlier label goes in `label`, never in `value`.
  */
+// Aaron's list, CRI-22. The values are what the API whitelists and what the email's
+// subject line is built from — changing a label here is cosmetic, changing a value is not:
+// it has to match ENQUIRY_TYPES in the route and EnquiryType in src/lib/email.ts.
 const ENQUIRY_TYPES = [
-  { value: "booking", label: "Booking an artist" },
   { value: "collaboration", label: "Collaboration" },
-  { value: "volunteer", label: "Volunteering / joining in" },
-  { value: "other", label: "Something else" },
+  { value: "music-label", label: "Music / Label" },
+  { value: "booking", label: "Booking" },
+  { value: "support", label: "Support" },
+  { value: "other", label: "Other" },
 ] as const;
 
 /** Payload's REST endpoint for the collection — public `create`, no auth needed. */
@@ -258,10 +262,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label
-        htmlFor={id}
-        className="font-ui text-muted-foreground text-[0.7rem] font-semibold tracking-[0.22em] uppercase"
-      >
+      <label htmlFor={id} className="type-label">
         {label}
       </label>
       {children}

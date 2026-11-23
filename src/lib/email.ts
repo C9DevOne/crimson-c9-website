@@ -25,7 +25,7 @@ import { sendViaZeptoMail } from "./zeptomail";
 /** Where enquiries are sent. Overridable so a staging deploy can route mail elsewhere. */
 const NOTIFY = process.env.C9_NOTIFY_EMAIL || "hello@crimsonc9.com";
 
-export type EnquiryType = "booking" | "collaboration" | "volunteer" | "other";
+export type EnquiryType = "collaboration" | "music-label" | "booking" | "support" | "other";
 
 /**
  * Deliberately structural rather than importing `CollaborationRequest` from
@@ -46,10 +46,11 @@ export type DeliveryResult = { ok: true } | { ok: false; reason: "not-configured
 
 /** Human-readable enquiry labels for the subject line. */
 const TYPE_LABELS: Record<EnquiryType, string> = {
-  booking: "Booking",
   collaboration: "Collaboration",
-  volunteer: "Volunteer",
-  other: "General",
+  "music-label": "Music / Label",
+  booking: "Booking",
+  support: "Support",
+  other: "Other",
 };
 
 /**

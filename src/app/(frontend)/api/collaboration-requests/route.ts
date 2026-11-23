@@ -23,7 +23,13 @@ import {
   type EnquiryType,
 } from "@/lib/email";
 
-const ENQUIRY_TYPES: readonly EnquiryType[] = ["booking", "collaboration", "volunteer", "other"];
+const ENQUIRY_TYPES: readonly EnquiryType[] = [
+  "collaboration",
+  "music-label",
+  "booking",
+  "support",
+  "other",
+];
 
 /**
  * Field caps. The form itself is bounded, so anything past these is a direct POST rather
