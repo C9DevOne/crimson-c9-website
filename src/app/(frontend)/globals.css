@@ -936,3 +936,27 @@
     transition: none;
   }
 }
+
+/* The spin, back by request (CRI-22). It sits on the outer assembly rather than on the
+   sphere, because a featureless sphere rotating is invisible — the beams above and below
+   are what make the revolution legible, so turning the whole mark works where turning the
+   orb did not. It runs alongside the flare on `.orb-bloom`, which is why this is a
+   transition on `rotate` rather than another keyframe animation: two animations on nested
+   elements with the same duration drift against each other. */
+.lantern-spin {
+  transition: rotate 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  rotate: 0deg;
+}
+
+.lantern-spin[data-open="true"] {
+  rotate: 360deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lantern-spin {
+    transition: none;
+  }
+  .lantern-spin[data-open="true"] {
+    rotate: 0deg;
+  }
+}
