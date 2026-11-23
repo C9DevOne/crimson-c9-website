@@ -120,7 +120,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
   const submitting = status === "submitting";
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
       {/* Honeypot. Positioned off-screen rather than display:none — some bots skip fields
           that are outright hidden, but fill ones that are merely out of view. */}
       <div className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -128,7 +128,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="grid gap-8 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field id="name" label="Name" error={errors.name}>
           <Input
             id="name"
@@ -137,7 +137,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
             disabled={submitting}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "name-error" : undefined}
-            className="field-line h-12"
+            className="h-12 rounded-2xl border-white/10 bg-white/5 px-4"
           />
         </Field>
 
@@ -150,7 +150,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
             disabled={submitting}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "email-error" : undefined}
-            className="field-line h-12"
+            className="h-12 rounded-2xl border-white/10 bg-white/5 px-4"
           />
         </Field>
       </div>
@@ -168,7 +168,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
             aria-invalid={Boolean(errors.type)}
             aria-describedby={errors.type ? "type-error" : undefined}
             className={cn(
-              "field-line h-12 w-full appearance-none pr-8 text-base disabled:pointer-events-none disabled:opacity-50 md:text-sm",
+              "focus-visible:border-glow-crimson focus-visible:ring-glow-crimson/40 aria-invalid:border-destructive aria-invalid:ring-destructive/20 h-12 w-full appearance-none rounded-2xl border border-white/10 bg-white/5 px-4 pr-11 text-base transition-colors outline-none focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-3 md:text-sm",
               "[&>option]:bg-secondary [&>option]:text-foreground",
             )}
           >
@@ -182,7 +182,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
             ))}
           </select>
           <ChevronDown
-            className="text-muted-foreground pointer-events-none absolute top-1/2 right-1 size-4 -translate-y-1/2"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2"
             aria-hidden="true"
           />
         </div>
@@ -196,11 +196,11 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
           disabled={submitting}
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? "message-error" : undefined}
-          className="field-line min-h-32 py-3"
+          className="min-h-32 rounded-2xl border-white/10 bg-white/5 px-4 py-3"
         />
       </Field>
 
-      <div className="mt-2 flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {/* Deliberately quiet: an outlined button that fills in on hover, rather than a
             solid glowing slab. The form is the end of a calm page, not a call to action
             competing with it. */}
@@ -208,7 +208,7 @@ export function CollaborationForm({ contactEmail }: { contactEmail: string }) {
           type="submit"
           size="lg"
           disabled={submitting}
-          className="border-hairline text-foreground hover:border-foreground/45 hover:bg-foreground/5 type-label h-12 self-start rounded-none border bg-transparent px-9 transition-colors duration-500"
+          className="border-glow-crimson/40 text-foreground hover:border-glow-crimson/70 hover:bg-glow-crimson/15 h-12 self-start rounded-full border bg-transparent px-9 text-sm font-medium tracking-wide transition-colors duration-300"
         >
           {submitting ? (
             <>

@@ -1,32 +1,28 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import {
-  RiArrowRightUpLine,
-  RiInstagramLine,
-  RiSoundcloudLine,
-  RiYoutubeLine,
-} from "react-icons/ri";
+import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
 
 import { CollaborationForm } from "@/components/forms/CollaborationForm";
+import { ElectricHeadline } from "@/components/hero/ElectricHeadline";
 import { resolveSocials } from "@/lib/socials";
 
 /**
  * The landing page — a single self-contained introduction to the collective, standing in
  * for the full site while the prototype is built behind it (WORKING_LOG.md).
  *
- * Redesigned under CRI-22 against two references Aaron picked (primal-instinct.net,
- * raw-people.com). The system those two share, and this now follows:
+ * Design direction is CRI-22. The structure still follows the two reference sites — one
+ * ground, hairlines instead of panels, micro-labels carrying the structure — with three
+ * decisions Aaron made on top:
  *
- *  - everything is one typeface at two opposite registers — a very large headline with
- *    negative tracking, and 11px uppercase labels at wide tracking. Nothing in between
- *    except body copy
- *  - sections are separated by hairlines and space, never by panels or cards
- *  - content is left-aligned against a consistent edge rather than centred, so the page
- *    has a spine
- *  - one accent colour, used about four times in total
+ *  - the headline is the centrepiece, set in Cinzel Decorative over the event photograph,
+ *    with the chromatic-displacement treatment and pointer parallax
+ *  - the contact form and the channels keep the glass treatment, which is why glass is
+ *    back in globals.css for those two places and nowhere else
+ *  - the statement headings that used to open sections 01 and 03 are gone
  *
- * The old version's glass panels, sparkle entrances and rolling city list are all gone;
- * the city names now sit in the header, which is where a location belongs.
+ * Desktop and mobile are deliberately not the same composition. Desktop fills the width
+ * and keeps type proportionally small; mobile drops to one column and sizes up, because
+ * the desktop proportions are unreadable at 375px rather than merely tighter.
  */
 
 /**
@@ -61,13 +57,15 @@ function handleFromUrl(url: string): string {
 }
 
 /**
- * Section heading: a numbered micro-label above a rule. The number is the only ornament on
- * the page and it earns its place by saying where you are in a document with no navigation.
+ * Section heading: a micro-label with a rule running off to the right.
+ *
+ * The 01/02/03 numbering was dropped at Aaron's request (CRI-22). It was defensible while
+ * the page had no navigation, but it implied a sequence the content does not actually
+ * have — these are three unrelated sections, not three steps.
  */
-function SectionLabel({ index, children }: { index: string; children: React.ReactNode }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-10 flex items-baseline gap-5 md:mb-14">
-      <span className="type-label text-foreground/35">{index}</span>
       <span className="type-label">{children}</span>
       <span className="rule rule-draw flex-1" />
     </div>
@@ -103,56 +101,80 @@ export default function Page() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-      {/* ── Hero ─────────────────────────────────────────────────────────────────
-          Full height, but the content sits low rather than dead-centre: the empty
-          upper half is what gives the starfield room to be the thing you notice first. */}
-      <header className="flex min-h-svh flex-col justify-end pb-20 md:pb-28">
-        <p
-          className="type-label reveal mb-7"
-          style={{ "--reveal-delay": "0.15s" } as React.CSSProperties}
-        >
-          Techno collective
-        </p>
+    <>
+      {/* ── Hero ───────────────────────────────────────────────────────────────────
+          Breaks out of the page container to run full-bleed. The photograph is the only
+          thing on the site that fills a viewport, which is what makes the headline over it
+          read as the centrepiece rather than as one more block. */}
+      <header className="relative flex min-h-svh flex-col justify-end overflow-hidden">
+        <div className="hero-photo absolute inset-0 -z-10">
+          <Image
+            src="/event-garden.webp"
+            alt=""
+            fill
+            // The hero image is the largest thing on the page and the first thing painted,
+            // so it is the one image worth the priority hint.
+            priority
+            sizes="100vw"
+            className="h-full w-full"
+          />
+          <div className="hero-scrim absolute inset-0" />
+        </div>
 
-        {/* Two lines, hard-broken. At this size the break is a composition decision, not
-            something to leave to the container width. */}
-        <h1
-          className="type-display reveal max-w-5xl text-balance"
-          style={{ "--reveal-delay": "0.3s" } as React.CSSProperties}
-        >
-          Change
-          <br />
-          Through Music
-        </h1>
+        <div className="mx-auto w-full max-w-7xl px-5 pb-20 md:px-10 md:pb-28">
+          <p
+            className="type-label reveal mb-5 md:mb-7"
+            style={{ "--reveal-delay": "0.2s" } as React.CSSProperties}
+          >
+            Techno collective
+          </p>
 
-        <p
-          className="type-body reveal mt-9 max-w-xl"
-          style={{ "--reveal-delay": "0.5s" } as React.CSSProperties}
-        >
-          A young techno collective across Aachen, Berlin and Cologne — a platform for emerging
-          artists, events for a growing community, and an upcoming label.
-        </p>
+          <h1
+            className="type-hero reveal"
+            style={{ "--reveal-delay": "0.35s" } as React.CSSProperties}
+          >
+            {/* Two lines, hard-broken: at this size the break is a composition decision,
+                not something to leave to the container width. Each line is its own
+                headline so the ghosts register per line rather than smearing across the
+                gap between them. */}
+            <span className="block">
+              <ElectricHeadline>Change</ElectricHeadline>
+            </span>
+            <span className="block">
+              <ElectricHeadline>Through Music</ElectricHeadline>
+            </span>
+          </h1>
 
-        <div
-          className="reveal mt-16 flex items-center gap-4"
-          style={{ "--reveal-delay": "0.7s" } as React.CSSProperties}
-        >
-          <span className="type-label">Scroll</span>
-          <span className="rule w-24" />
+          <p
+            className="type-body reveal mt-7 max-w-xl md:mt-9"
+            style={{ "--reveal-delay": "0.55s" } as React.CSSProperties}
+          >
+            A young techno collective across Aachen, Berlin and Cologne — a platform for emerging
+            artists, events for a growing community, and an upcoming label.
+          </p>
+
+          <div
+            className="reveal mt-10 flex items-center gap-4 md:mt-16"
+            style={{ "--reveal-delay": "0.75s" } as React.CSSProperties}
+          >
+            <span className="type-label">Scroll</span>
+            <span className="rule w-16 md:w-24" />
+          </div>
         </div>
       </header>
 
-      {/* ── The collective ───────────────────────────────────────────────────────── */}
-      <section className="pb-28 md:pb-40" aria-labelledby="collective">
-        <SectionLabel index="01">The collective</SectionLabel>
-
-        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
-          <h2 id="collective" className="type-display-sm col-span-full text-balance md:col-span-7">
-            A platform for emerging artists, and the events that put them in front of people.
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
+        {/* ── The collective ─────────────────────────────────────────────────────── */}
+        <section className="pt-24 pb-24 md:pt-32 md:pb-40" aria-labelledby="collective">
+          <SectionLabel>The collective</SectionLabel>
+          <h2 id="collective" className="sr-only">
+            The collective
           </h2>
 
-          <div className="type-body col-span-full space-y-5 md:col-span-5">
+          {/* Two columns of running text on desktop, one on mobile. The copy is short
+              enough that a single wide measure would run past a comfortable line length at
+              this container width. */}
+          <div className="type-body grid gap-7 md:grid-cols-2 md:gap-16 lg:gap-24">
             <p>
               We are CrimsonC9, a young techno collective from Aachen, Berlin and Cologne — serving
               as a platform for emerging artists by hosting events for a growing community, and
@@ -163,77 +185,68 @@ export default function Page() {
               work with us.
             </p>
           </div>
-        </div>
+        </section>
 
-        {/* Full-bleed within the container, no frame, no rounding. The image is the only
-            photograph on the page and it is allowed to simply be one. */}
-        <figure className="mt-16 md:mt-24">
-          <Image
-            src="/event-garden.webp"
-            alt="A CrimsonC9 crowd dancing in a garden under a disco ball, hands in the air around the decks."
-            width={1920}
-            height={1080}
-            sizes="(max-width: 1152px) 100vw, 1152px"
-            className="h-auto w-full"
-          />
-          <figcaption className="type-label mt-5">A CrimsonC9 event</figcaption>
-        </figure>
-      </section>
+        {/* ── Channels ───────────────────────────────────────────────────────────── */}
+        <section className="pb-24 md:pb-40" aria-labelledby="channels">
+          <SectionLabel>Where to find us</SectionLabel>
+          <h2 id="channels" className="sr-only">
+            Our channels
+          </h2>
 
-      {/* ── Channels ─────────────────────────────────────────────────────────────
-          Rows separated by hairlines rather than three icon tiles. Each row carries the
-          platform, what is actually on it, and an arrow that moves on hover. */}
-      <section className="pb-28 md:pb-40" aria-labelledby="channels">
-        <SectionLabel index="02">Where to find us</SectionLabel>
-        <h2 id="channels" className="sr-only">
-          Our channels
-        </h2>
+          {/* Tiles rather than text rows (Aaron, CRI-22: the visual icons back). Three
+              across on desktop, stacked on mobile where three 20rem tiles in a row would
+              each be too small to read. */}
+          <ul className="grid gap-4 sm:grid-cols-3 md:gap-6">
+            {socialLinks.map(({ name, url, handle, Icon }) => (
+              <li key={name}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-panel glass-interactive text-muted-foreground hover:text-foreground flex flex-col items-start gap-5 rounded-3xl p-6 transition-colors duration-500 md:gap-7 md:p-8"
+                >
+                  <Icon className="text-glow-crimson size-7 md:size-8" aria-hidden="true" />
+                  <span>
+                    <span className="text-foreground block text-lg md:text-xl">{name}</span>
+                    <span className="type-label mt-1 block">{handle}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        <ul>
-          {socialLinks.map(({ name, url, handle, Icon }) => (
-            <li key={name}>
+        {/* ── Contact ────────────────────────────────────────────────────────────── */}
+        <section className="pb-24 md:pb-40" aria-labelledby="contact">
+          <SectionLabel>Get in touch</SectionLabel>
+          <h2 id="contact" className="sr-only">
+            Get in touch
+          </h2>
+
+          <div className="grid gap-10 md:grid-cols-12 md:gap-16">
+            <div className="md:col-span-4">
+              <p className="type-body">
+                Booking, collaboration, volunteering, or something else entirely — this reaches us
+                directly.
+              </p>
               <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="row-link text-muted-foreground group flex items-center gap-6 py-7 md:py-9"
+                href={`mailto:${contactEmail}`}
+                className="link-underline type-label text-foreground mt-6 inline-block"
               >
-                <Icon className="size-5 shrink-0" aria-hidden="true" />
-                <span className="type-display-sm text-foreground flex-1">{name}</span>
-                <span className="type-label hidden sm:block">{handle}</span>
-                <RiArrowRightUpLine className="row-arrow size-5 shrink-0" aria-hidden="true" />
+                {contactEmail}
               </a>
-            </li>
-          ))}
-        </ul>
-      </section>
+            </div>
 
-      {/* ── Contact ──────────────────────────────────────────────────────────────── */}
-      <section className="pb-28 md:pb-40" aria-labelledby="contact">
-        <SectionLabel index="03">Get in touch</SectionLabel>
-
-        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
-          <div className="col-span-full md:col-span-5">
-            <h2 id="contact" className="type-display-sm text-balance">
-              Collaborate with us, or ask us anything.
-            </h2>
-            <p className="type-body mt-7">
-              Booking, collaboration, volunteering, or something else entirely — this reaches us
-              directly.
-            </p>
-            <a
-              href={`mailto:${contactEmail}`}
-              className="link-underline type-label text-foreground mt-8 inline-block"
-            >
-              {contactEmail}
-            </a>
+            {/* The form in its panel, as it was before the redesign. */}
+            <div className="md:col-span-8">
+              <div className="glass-panel rounded-[2rem] p-6 md:p-10">
+                <CollaborationForm contactEmail={contactEmail} />
+              </div>
+            </div>
           </div>
-
-          <div className="col-span-full md:col-span-7">
-            <CollaborationForm contactEmail={contactEmail} />
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

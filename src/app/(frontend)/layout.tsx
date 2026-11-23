@@ -37,13 +37,35 @@ const philosopher = localFont({
 });
 
 /**
- * One variable file covers the whole 400–700 range, so the four weights the UI uses come
- * from a single 61 KB download instead of four separate ones.
+ * One variable file covers the whole 400–700 range, so the weights the micro-labels use
+ * come from a single 61 KB download instead of four.
  */
 const dmSans = localFont({
   variable: "--font-ui",
   display: "swap",
   src: [{ path: "../../fonts/DMSans-Variable-latin.woff2", weight: "400 700", style: "normal" }],
+});
+
+/**
+ * Cinzel Decorative, back for the hero headline only (CRI-22, Aaron).
+ *
+ * It was retired on 2026-10-02 in favour of one readable face across the site, and that
+ * reasoning still holds for everything that is *read* — it is a display face with flared
+ * serifs and tight counters, unreadable below about 24px. So it is scoped to a single
+ * element rather than wired to `--font-display`: the hero is the one place on the site
+ * where type is the image rather than the information.
+ *
+ * `preload` is off deliberately. It is used once, below the fold on nothing, and
+ * preloading a third family would cost the first paint more than it buys.
+ */
+const cinzelDecorative = localFont({
+  variable: "--font-hero",
+  display: "swap",
+  preload: false,
+  src: [
+    { path: "../../fonts/CinzelDecorative-Regular-latin.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/CinzelDecorative-Bold-latin.woff2", weight: "700", style: "normal" },
+  ],
 });
 
 export const metadata = {
@@ -123,7 +145,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${philosopher.variable} ${dmSans.variable} antialiased`}>
+    <html
+      lang="en"
+      className={`${philosopher.variable} ${dmSans.variable} ${cinzelDecorative.variable} antialiased`}
+    >
       <body className="bg-background text-foreground min-h-svh">
         <TooltipProvider>
           {/* Fixed, full-viewport, behind everything. In the layout rather than the page so
