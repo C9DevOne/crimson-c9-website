@@ -66,3 +66,36 @@ Per-item descriptions (a hover/focus blurb explaining each section) were conside
 ## 5. Open questions
 
 None outstanding — this doc reflects confirmed decisions as of 2026-08-18.
+
+---
+
+## Appendix — what is actually built, as of 2026-11-23
+
+**This section records the current implementation only. It deliberately does not revise the direction above** — Aaron is revisiting the lantern's design in a later session, and the sections above should be read as the open question, not as a description of the site.
+
+Where the two disagree, the code is what ships and §1 is what is still being decided.
+
+### The mark
+
+Not a paper lantern. It is a **sphere of light suspended between two short dark beams**, with a gap above and below it and nothing joining them — the absence of any visible support is the point, and a cord or strut would undo it.
+
+The sphere is shaded in four layers rather than drawn as one gradient: the lit surface with its terminator, a crescent of reflected light on the shadow side, a small hard specular, and a bloom thrown into the air around it. Only the bloom animates, so the object stays stable while its light moves.
+
+Built in DOM and CSS, not SVG — the glow is three animated `box-shadow`s, which composite far more cheaply than the equivalent SVG filter.
+
+### States
+
+- **Idle** — the bloom breathes on a 9s cycle, three radii out of phase so it reads as light rather than as a fade.
+- **Hover** — the glow swells and warms towards ember; hover takes the animation over completely, because leaving the keyframes running makes the hover state flicker against them.
+- **Focus** — a crimson outline at 8px offset. Still its own state, per §1.
+- **Open** — the whole assembly turns a full revolution _and_ the light flares. The rotation is on the outer element: a featureless sphere turning is invisible, but the beams carry the motion plainly.
+
+§2's "the spin _is_ the menu opening" therefore still holds, on a different object.
+
+### Position and contents
+
+Top-left of a fixed header, beside a centred wordmark that links home. Contents are live links only — Imprint, Terms & Privacy, and the three social channels. The seven sections §1 anticipates go back in as each route ships.
+
+### What has not changed
+
+Shift+Enter to open, Escape to close with focus returned to the button, outside-pointer-down to dismiss, `inert` on the panel while closed, and the reduced-motion fallbacks. All as specified.

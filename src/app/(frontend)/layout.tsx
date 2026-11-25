@@ -24,8 +24,7 @@ import { resolveSocials } from "@/lib/socials";
  * DM Sans carries body and UI text — `body` is `@apply font-ui`.
  *
  * (The comment this replaces said Philosopher carried body text too. It does not, and has
- * not since `body` moved to `font-ui`. VISION.md §4's typography table still lists Cinzel
- * and also needs updating.)
+ * not since `body` moved to `font-ui`.)
  */
 const philosopher = localFont({
   variable: "--font-body",
@@ -69,6 +68,15 @@ const cinzelDecorative = localFont({
 });
 
 export const metadata = {
+  /**
+   * Required for `src/app/opengraph-image.jpg` to resolve to an absolute URL. Without it
+   * Next emits a relative `og:image`, which every social platform ignores — the preview
+   * then falls back to no image at all, which is exactly the bug this was added to fix.
+   *
+   * Hardcoded rather than read from an env var: there is one public origin, and a wrong
+   * value here is invisible until someone shares a link.
+   */
+  metadataBase: new URL("https://crimsonc9.com"),
   title: "CrimsonC9",
   description:
     "Change Through Music. CrimsonC9 is a young Techno collective, label and event curator that serves as a platform for emerging artists to showcase their unique talent and passion for music to the world",

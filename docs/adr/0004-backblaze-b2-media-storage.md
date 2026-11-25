@@ -1,6 +1,6 @@
 # ADR-0004: Backblaze B2 for Media Storage
 
-**Status:** Accepted
+**Status:** Accepted · **never implemented; no upload path exists in v1**
 **Date:** 2026-05
 **Deciders:** Aaron, Nick
 
@@ -43,3 +43,11 @@ sequenceDiagram
     App-->>Browser: Signed download URL
     Browser->>B2: Direct download
 ```
+
+---
+
+## Update — 2026-11-18: still unbuilt, and now harmless
+
+`@payloadcms/storage-s3` has never been installed and no bucket is wired. With Payload dormant (ADR-0002) there is no upload path at all, so the old warning — that media uploaded in production is lost on the next deploy — cannot currently bite. The container filesystem is still ephemeral, so it applies again the moment uploads return.
+
+One premise of this ADR is also gone: it was shaped partly by Vercel's 4.5 MB serverless body limit, and the site no longer runs on Vercel (ADR-0005). The presigned-upload design is still the right one — it keeps large files off the application server entirely — but that particular constraint is no longer the reason.

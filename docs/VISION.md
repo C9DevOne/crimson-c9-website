@@ -1,6 +1,6 @@
 # CrimsonC9 — Vision & Foundations
 
-_Status: Current — 2026-08-23_
+_Status: Current — 2026-11-23_
 
 This document sets down the ground principles the prototype — and future versions of the site — are anchored around: what CrimsonC9 is, how it should look and feel, and the engineering foundations everything else is built on. It supersedes `AI_CONTEXT.md` and the earlier `C9 Website Project Vision.txt`, both retired.
 
@@ -49,28 +49,39 @@ Reference implementation of the above. Never hardcode these values — always re
 **Colour**
 
 ```css
---background: #0a0a0a; /* near-black, primary background */
---foreground: #f5f5f5; /* off-white, primary text */
---brand-crimson: #510606; /* primary accent — deep crimson/burgundy */
---secondary: #1a1a1a; /* surface colour */
---muted-foreground: #a1a1aa; /* subdued text */
+--background: #050505; /* near-black, primary background */
+--foreground: #f2f2ee; /* warm off-white, primary text */
+--brand-crimson: #510606; /* surface tone — deep crimson/burgundy */
+--glow-crimson: #dc143c; /* the light that comes off the brand colour */
 --brand-accent: #cc5500; /* ember orange — fire accent */
+--glow-accent: #ff7e00; /* neon orange glow */
+--secondary: #1a1a1a; /* surface colour */
+--muted-foreground: #78787a; /* subdued text, carries the micro-labels */
+--hairline: /* foreground at 11% — every rule on the site */;
 ```
+
+Three of these changed on 2026-11-23 and the reasoning is worth keeping: the background went from `#0a0a0a` to `#050505` and the foreground from `#f5f5f5` to a **warm** off-white, because pure white on pure black is the one combination that reliably looks cheap on a large dark surface — it buzzes, and every antialiased edge shows. `--muted-foreground` was darkened because the micro-labels carry most of the page's structure and are meant to recede until looked at.
+
+**`--brand-crimson` is a surface tone, not a glow.** At `#510606` it is far too dark to read as light against the background, so anything luminous uses `--glow-crimson`. Using the wrong one is the most common token mistake on this project.
 
 **Typography**
 
-| Role               | Font              | Usage                                             |
-| ------------------ | ----------------- | ------------------------------------------------- |
-| Display / Artistic | Cinzel Decorative | Hero text, section titles, brand moments          |
-| Body / Reading     | Philosopher       | Article text, artist bios, longer content         |
-| UI / Interface     | DM Sans           | Nav items, buttons, labels, captions, form fields |
+| Role           | Font              | Usage                                                       |
+| -------------- | ----------------- | ----------------------------------------------------------- |
+| Hero           | Cinzel Decorative | The hero headline, and nothing else                         |
+| Display / Body | Philosopher       | Section headings, article text, artist bios, longer content |
+| UI / Interface | DM Sans           | Micro-labels, buttons, captions, form fields                |
 
-CSS variables: `--font-display`, `--font-body`, `--font-ui`. All three load via `next/font` in the root layout.
+CSS variables: `--font-hero`, `--font-display`, `--font-body`, `--font-ui`. `--font-display` is an alias of `--font-body`, so "the heading face" has a name at every call site even though it is currently Philosopher.
+
+**All three are self-hosted** in `src/fonts/`, not fetched from Google. `next/font/google` downloads font files at _build_ time, which made every CI run and Docker build depend on `fonts.googleapis.com` — a dependency that failed on 2026-11-22 and cost a deploy. See `src/fonts/README.md`.
+
+**Cinzel Decorative is scoped to one element.** It is a display face, unreadable below about 24px, which is why it is wired to `--font-hero` rather than to `--font-display`. The hero is the one place on the site where type is the image rather than the information.
 
 **Spacing & Shape**
 
 - Direction is generous — sections breathe, content is never crowded. When in doubt, add more whitespace, not less.
-- Rounded corners are the default: `rounded-2xl`/`rounded-3xl` for cards and media containers, `rounded-full`/`rounded-xl` for buttons and inputs. Sharp corners are reserved for intentional exceptions.
+- **Square edges and hairlines are the default** (changed 2026-11-23). Sections are separated by a 1px rule that fades at both ends, not by a panel. Rounding is now the exception, and it means something: it marks the two places on the landing page that are objects you act on — the contact form and the channel tiles, which keep `rounded-3xl` and the glass treatment. The earlier default was the reverse, and the reason it changed is that rounding everything made the page read as a column of boxes.
 
 **Motion Personality**
 

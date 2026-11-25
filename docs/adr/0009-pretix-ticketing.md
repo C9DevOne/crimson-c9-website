@@ -1,6 +1,6 @@
 # ADR-0009: Pretix as Ticketing Platform (Replacing Weeztix)
 
-**Status:** Proposed — leading candidate, not yet accepted
+**Status:** Rejected 2026-11 — **superseded by a custom Stripe shop**
 **Date:** 2026-06 (context corrected 2026-08)
 **Deciders:** Aaron, Nick
 
@@ -24,3 +24,17 @@ It was always understood as a stopgap rather than a platform choice. With the ev
 
 - **Positive:** GDPR-native, self-hosted, no per-ticket platform fee, and the embedded widget keeps the purchase flow visually consistent with the rest of the site.
 - **Negative:** Requires standing up and maintaining a separate server — genuine operational surface a managed SaaS wouldn't require. Deployment isn't complete yet. There's no urgency pressure from a ticketing standpoint (the last event sold successfully without this infrastructure existing), but the site can't return to full multi-page operation until either Pretix is live or another interim step covers the gap.
+
+---
+
+## Update — 2026-11: Pretix was not chosen
+
+Ticketing is a **custom Next.js application** at `tickets.crimsonc9.com`, repo `C9DevOne/c9-tickets`, taking payment through Stripe Checkout. The go/no-go against a Pretix fallback was TIC-17; the custom shop won and is built.
+
+Two parts of this ADR did survive, and one did not:
+
+- **Self-hosted and GDPR-native** — held. The shop runs on the same Hetzner box, with its own Postgres.
+- **A separate subdomain** — held, `tickets.crimsonc9.com`.
+- **"The ticket widget will be embedded into `/events` rather than linking out"** — **not held.** The shop is a separate application on a separate subdomain, so there is no widget to embed. `crimsonc9.com` links out to it. The visual-consistency goal behind that sentence is being met instead by building the shop in the C9 look (TIC-7), which is a better answer than an iframe would have been.
+
+The deployment-target question this ADR left open (Railway / Hetzner / DigitalOcean) was settled by the same move: Hetzner.

@@ -1,6 +1,6 @@
 # ADR-0008: Animation Library — Framer Motion vs. GSAP
 
-**Status:** Proposed (open — no final decision yet)
+**Status:** Resolved 2026-11-23 — **neither; the motion system is CSS**
 **Date:** 2026-06
 **Deciders:** Aaron (pending)
 
@@ -22,3 +22,15 @@ Both Framer Motion and GSAP are installed. They have different strengths and the
 ## Consequences
 
 Until this is formally resolved, contributors should default to Framer Motion for isolated component transitions and flag any new GSAP usage for discussion, so the codebase doesn't drift into inconsistent conventions before the decision is locked in. **This ADR should be updated to Status: Accepted once the decision is confirmed** — at that point, a new dated entry should be added rather than silently editing this one.
+
+---
+
+## Update — 2026-11-23: answered by not needing either
+
+The question this ADR framed — how to split work between Framer Motion and GSAP — was answered by the redesign needing neither.
+
+Every piece of motion on the live site is CSS: the staggered reveals, the starfield drift and its constellations, the lantern's glow and rotation, the sheen across the channel tiles, and the hero's chromatic displacement (which takes pointer coordinates from a small client component and does all the rendering in CSS).
+
+A check on 2026-11-23 found **zero imports** of `gsap`, `lenis`, `three` or `@react-three/fiber` anywhere in the repo. All four were removed from `package.json` that day. `framer-motion` survives, used by `DecryptedText` alone.
+
+This is not a ban. If a timeline genuinely needs scrubbing or sequencing beyond what CSS can express, reopen it — but add the dependency for that specific job, not as a default.
