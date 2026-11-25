@@ -135,7 +135,7 @@ function SiteHeader() {
             width={326}
             height={400}
             priority
-            className="h-8 w-auto brightness-[1.75] saturate-[1.1] md:h-9"
+            className="h-11 w-auto brightness-[1.75] saturate-[1.1] md:h-14"
           />
         </Link>
 
