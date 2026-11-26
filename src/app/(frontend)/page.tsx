@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import {
-  RiArrowRightUpLine,
-  RiInstagramLine,
-  RiSoundcloudLine,
-  RiYoutubeLine,
-} from "react-icons/ri";
+import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri";
 
+import { PortalCard } from "@/components/events/PortalCard";
 import { CollaborationForm } from "@/components/forms/CollaborationForm";
 import { ElectricHeadline } from "@/components/hero/ElectricHeadline";
+import { ScrollCue } from "@/components/hero/ScrollCue";
+import { SocialBlock } from "@/components/social/SocialBlock";
 import { resolveSocials } from "@/lib/socials";
 
 /**
@@ -128,95 +126,82 @@ export default function Page() {
           </p>
 
           <div
-            className="reveal mt-10 flex items-center gap-4 md:mt-16"
+            className="reveal mt-10 md:mt-16"
             style={{ "--reveal-delay": "0.75s" } as React.CSSProperties}
           >
-            <span className="type-label">Scroll</span>
-            <span className="rule w-16 md:w-24" />
+            <ScrollCue targetId="events" />
           </div>
         </div>
       </header>
 
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
         {/* ── Upcoming events ─────────────────────────────────────────────────────
-            Added CRI-22. Deliberately the bare minimum of words: Aaron asked that only his
-            own copy appear on the page, and there is none for this section yet, so this
-            says what it is and links out and nothing more. Once there is real event copy —
-            or, better, once the shop exposes the next date — this becomes a listing rather
-            than a door.
+            The section has its own heading again (Aaron, CRI-23) — with the card's own
+            layout now putting the date and venue in the corners rather than an eyebrow
+            above the name, there is nothing left inside the card that doubles as a
+            section title. Event details are props, not baked in: the shop's own rule is
+            that no event name is ever hardcoded, and the second event will prove why.
 
-            It links out to the shop rather than embedding it. ADR-0009 said the widget
-            would be embedded into /events to keep the visual identity through the purchase
-            flow; that ADR predates the shop being its own Next app on its own subdomain
-            and needs superseding either way. */}
+            Date is written `15.1` as Aaron asked. The full `Fr 15.01.2027 · Musikbunker
+            Aachen` lives on the shop; this is a teaser, and the venue line below carries
+            enough to place it. */}
         <section className="pb-24 md:pb-40" aria-labelledby="events">
-          <h2 id="events" className="type-body mb-10 md:mb-14">
+          <h2 id="events" className="type-statement mb-12 max-w-3xl md:mb-16">
             Upcoming events
           </h2>
-
-          <a
+          <PortalCard
+            name="Bunker Dreams 2"
+            date="15.1"
+            venue="Musikbunker Aachen"
             href="https://tickets.crimsonc9.com"
-            className="glass-panel sheen text-muted-foreground hover:text-foreground flex flex-col gap-6 rounded-3xl p-6 transition-colors duration-500 sm:flex-row sm:items-center sm:justify-between md:p-10"
-          >
-            <span>
-              <span className="text-foreground block text-xl md:text-2xl">Tickets</span>
-              <span className="type-label mt-1 block">tickets.crimsonc9.com</span>
-            </span>
-            <RiArrowRightUpLine className="size-6 shrink-0" aria-hidden="true" />
-          </a>
+          />
         </section>
 
         {/* ── Channels ───────────────────────────────────────────────────────────── */}
         <section className="pb-24 md:pb-40" aria-labelledby="channels">
-          <h2 id="channels" className="type-body mb-10 md:mb-14">
+          <h2 id="channels" className="type-statement mb-12 max-w-3xl md:mb-16">
             You can check out what we do on these channels
           </h2>
 
           {/* Tiles rather than text rows (Aaron, CRI-22: the visual icons back). Three
               across on desktop, stacked on mobile where three 20rem tiles in a row would
               each be too small to read. */}
-          <ul className="grid gap-4 sm:grid-cols-3 md:gap-6">
+          <ul className="grid gap-10 sm:grid-cols-3 sm:gap-6">
             {socialLinks.map(({ name, url, handle, Icon }) => (
               <li key={name}>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass-panel sheen text-muted-foreground hover:text-foreground flex flex-col items-start gap-5 rounded-3xl p-6 transition-colors duration-500 md:gap-7 md:p-8"
-                >
-                  <Icon className="text-glow-crimson size-7 md:size-8" aria-hidden="true" />
-                  <span>
-                    <span className="text-foreground block text-lg md:text-xl">{name}</span>
-                    <span className="type-label mt-1 block">{handle}</span>
-                  </span>
-                </a>
+                <SocialBlock name={name} handle={handle} url={url} Icon={Icon} />
               </li>
             ))}
           </ul>
         </section>
 
-        {/* ── Contact ────────────────────────────────────────────────────────────── */}
+        {/* ── Contact ──────────────────────────────────────────────────────────────
+            Centred and narrower than the rest of the page (Aaron, CRI-23). The width is
+            the point as much as the alignment: a form that runs the full container reads
+            as a database screen, and this one is meant to read as a counter you walk up
+            to. */}
         <section className="pb-24 md:pb-40" aria-labelledby="contact">
-          <h2 id="contact" className="type-body mb-10 md:mb-14">
-            Or reach out if you want to collaborate with us, or have any other enquiry
-          </h2>
+          <div className="mx-auto w-full max-w-3xl text-center">
+            <h2 id="contact" className="type-statement mx-auto max-w-2xl">
+              Or reach out if you want to collaborate with us, or have any other enquiry
+            </h2>
 
-          <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-            <div className="md:col-span-4">
-              <a
-                href={`mailto:${contactEmail}`}
-                className="link-underline type-label text-foreground inline-block"
-              >
-                {contactEmail}
-              </a>
+            {/* "Post Office" is the form's own title, inside the panel (Aaron, CRI-23) —
+                it names the thing you are standing at rather than labelling the section
+                from outside it. */}
+            <div className="glass-panel mt-12 rounded-[2rem] p-6 text-left md:mt-16 md:p-10">
+              <p className="font-display text-foreground mb-8 text-center text-2xl font-bold md:mb-10 md:text-3xl">
+                Post Office
+              </p>
+              <CollaborationForm contactEmail={contactEmail} />
             </div>
 
-            {/* The form in its panel, as it was before the redesign. */}
-            <div className="md:col-span-8">
-              <div className="glass-panel rounded-[2rem] p-6 md:p-10">
-                <CollaborationForm contactEmail={contactEmail} />
-              </div>
-            </div>
+            <a
+              href={`mailto:${contactEmail}`}
+              className="link-underline type-label text-foreground mt-10 inline-block"
+            >
+              {contactEmail}
+            </a>
           </div>
         </section>
       </div>

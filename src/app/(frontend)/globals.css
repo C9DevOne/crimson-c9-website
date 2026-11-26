@@ -164,17 +164,30 @@
 
 .type-display-sm {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 500;
-  line-height: 1.04;
+  font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.02;
   letter-spacing: -0.028em;
+}
+
+/* The section statements — "You can check out what we do on these channels" and the one
+   above the contact form. These were set at body size, which made them read as captions;
+   at this size they are what you land on when you stop scrolling, which is what Aaron
+   meant by "bam" (CRI-23). Below the display sizes, well above body. */
+.type-statement {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 /* The micro-label. Carries almost all the structural information on the page: section
    names, counts, the city line, form labels. */
 .type-label {
   font-family: var(--font-ui);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0.22em;
@@ -184,14 +197,31 @@
 
 .type-body {
   font-family: var(--font-body);
-  font-size: clamp(1rem, 1.15vw, 1.125rem);
-  line-height: 1.65;
+  font-size: clamp(1.0625rem, 1.5vw, 1.3125rem);
+  line-height: 1.6;
   color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 /* ── Hairlines ────────────────────────────────────────────────────────────────────
    A plain 1px border would be a hard line all the way across. These fade at the ends,
    which is what stops a full-width rule from cutting the page in half. */
+/* The city tag in the header. Cinzel Decorative, bold (Aaron, CRI-23) — the one place
+   besides the hero where the display face appears, which ties the two corners of the
+   header together.
+
+   It needs its own class rather than a `font-hero` utility beside `type-label`: that
+   class sets `font-family` itself, and unlayered CSS beats Tailwind's utility layer, so
+   the utility would silently lose. Slightly larger and a touch less tracked than a plain
+   label, because Cinzel's flared serifs close up at 12px with 0.22em between them. */
+.city-tag {
+  font-family: var(--font-hero);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 62%, transparent);
+}
+
 .rule {
   height: 1px;
   background: linear-gradient(
@@ -955,5 +985,404 @@
   }
   .lantern-spin[data-open="true"] {
     rotate: 0deg;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   THE PORTAL CARD — components/events/PortalCard.tsx
+   A miniature of the ticket shop's own front page, used as the door to it (CRI-23).
+
+   Everything here is lifted from c9-tickets' design language rather than invented:
+   black ground, the 夢 watermark, the cold --dream blue that only ever appears inside a
+   glow, and an icy wash rising from the bottom edge. The shop's own globals.css notes
+   that the website has a crimson glow in the same place — so the card inverts the
+   relationship deliberately: this is the one spot on this site where the blue shows,
+   which is what makes it read as a window into somewhere else.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+.portal {
+  --dream: #82c3ff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  transition:
+    border-color 700ms ease,
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal:hover,
+.portal:focus-visible {
+  border-color: color-mix(in srgb, var(--dream) 45%, transparent);
+}
+
+/* The icy wash from the bottom edge, exactly where the shop puts it. */
+/* The polar lights, from components/events/Aurora.tsx. The canvas is 240×120 and gets
+   stretched across the whole card and blurred — the same trick the shop uses, and the
+   reason this costs almost nothing. `screen` so the light adds over the black ground
+   instead of covering it, and the mask fades the curtains out before they reach the
+   bottom edge, so they hang rather than fill. */
+.portal-aurora {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(10px) saturate(1.25);
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+
+.portal:hover .portal-aurora,
+.portal:focus-visible .portal-aurora {
+  opacity: 1;
+}
+
+.portal-wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 85% 55% at 50% 112%,
+    color-mix(in srgb, var(--dream) 26%, transparent),
+    transparent 72%
+  );
+  transition: opacity 900ms ease;
+}
+
+.portal:hover .portal-wash {
+  opacity: 1.35;
+}
+
+/* 夢 — "dream". Decoration only, and aria-hidden in the markup: it is never the sole
+   label for anything clickable, which is the shop's own rule. */
+.portal-kanji {
+  /* A CJK stack, not --font-display. All three of our faces are latin-subset only, so
+     setting a display font here makes the browser fall back glyph-by-glyph and 夢 renders
+     in whatever bitmap-ish default it finds — which looked broken rather than faint.
+     Mincho first: a serif form suits the watermark better than a gothic one. */
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", "Songti SC", serif;
+  position: absolute;
+  right: -0.08em;
+  bottom: -0.3em;
+  font-size: clamp(9rem, 26vw, 17rem);
+  line-height: 1;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--foreground) 5%, transparent);
+  user-select: none;
+  pointer-events: none;
+  transition:
+    color 900ms ease,
+    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal:hover .portal-kanji {
+  color: color-mix(in srgb, var(--dream) 11%, transparent);
+  transform: scale(1.04);
+}
+
+/* The holographic sheen. Two gradients at different angles and speeds, so the surface
+   shifts hue as it moves rather than just brightening — a single white sweep reads as
+   glass, and the ask was holographic. */
+.portal-holo {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      62deg,
+      transparent 38%,
+      color-mix(in srgb, var(--dream) 32%, transparent) 46%,
+      color-mix(in srgb, #c9a2ff 28%, transparent) 50%,
+      color-mix(in srgb, var(--glow-crimson) 26%, transparent) 54%,
+      transparent 62%
+    ),
+    linear-gradient(
+      -24deg,
+      transparent 44%,
+      color-mix(in srgb, #8fffe4 18%, transparent) 50%,
+      transparent 57%
+    );
+  background-size:
+    220% 220%,
+    180% 180%;
+  background-position:
+    0% 50%,
+    100% 50%;
+  /* Cut right back now that the aurora is behind it. At its old strength the sheen read
+     as the surface of the card; the point now is that the card has no surface worth
+     looking at — the sheen is just the glass catching light on this side. */
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  animation: portalHolo 14s ease-in-out infinite;
+  transition: opacity 700ms ease;
+}
+
+.portal:hover .portal-holo {
+  opacity: 0.45;
+}
+
+@keyframes portalHolo {
+  0%,
+  100% {
+    background-position:
+      0% 50%,
+      100% 50%;
+  }
+  50% {
+    background-position:
+      100% 50%,
+      0% 50%;
+  }
+}
+
+/* The orb. The shop draws its glow sphere on a canvas with tumbling rings; this is the
+   still, cheap echo of it — a card on another site does not need a paint loop. */
+
+/* One ring, tilted — enough to quote the shop's three tumbling rings without the canvas. */
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   SOCIAL BOXES — see-through 3D blocks with the icon turning inside (CRI-23)
+   "a bit like in mario bros": the block sits still and the thing inside rotates, and
+   knocking it (hover) makes it jump once and spin faster.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+.sblock-scene {
+  perspective: 620px;
+  perspective-origin: 50% 42%;
+}
+
+/* The box itself. Named `sblock`, not `block`: Tailwind ships a `block` display utility,
+   and a custom class of the same name silently merges with it wherever both are applied.
+   Tilted a few degrees off-axis so it reads as a solid with depth even
+   before anything moves — face-on it would just be a square. */
+.sblock {
+  position: relative;
+  transform-style: preserve-3d;
+  /* The fixed tilt is now the starting pose of a continuous spin about Z (Aaron,
+     CRI-23: the boxes "rotate around themselves … around the y axis"). The block
+     revolves, so you see the studded front panel come round, then a side, then the
+     back — which is what makes the box read as a solid you could walk around rather
+     than as a flat panel with edges drawn on. */
+  transform: rotateX(9deg) rotateY(-13deg);
+  animation: sblockTumble 18s linear infinite;
+}
+
+@keyframes sblockTumble {
+  to {
+    rotate: y 360deg;
+  }
+}
+
+/* Hover swells the block slightly and does nothing else (Aaron, CRI-23: "only make them
+   slightly bigger but not speed up the turning … very smooth"). The revolution keeps its
+   own steady pace, so hovering never produces a lurch as the animation re-times.
+
+   `scale` is its own CSS property, which is the only reason this composes: `transform`
+   carries the tilt, the keyframes carry `rotate`, and this carries the swell. Put any two
+   of them on `transform` and they overwrite each other. */
+.sblock {
+  scale: 1;
+  transition: scale 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sblock-link:hover .sblock,
+.sblock-link:focus-visible .sblock {
+  scale: 1.07;
+}
+
+/* Each face is drawn separately so the box is genuinely see-through: you look through
+   the front face, past the icon, and out through the back. */
+.sblock-face {
+  position: absolute;
+  inset: 0;
+  /* Every face is styled identically (Aaron, CRI-23). Previously the front carried the
+     bevel and the studs while the other five were plain glass, so whichever side came
+     round looked like a different object — which is the opposite of what a revolving
+     block should do. Now the box looks the same from every angle, and the rotation reads
+     as one solid turning rather than as faces swapping.
+
+     Crimson rather than neutral white: this is the site's accent, and the blocks were the
+     one interactive thing on the page still drawn in plain grey. */
+  border: 1px solid color-mix(in srgb, var(--glow-crimson) 50%, transparent);
+  border-radius: 6px;
+  background:
+    radial-gradient(
+      circle at 11px 11px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at calc(100% - 11px) 11px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at 11px calc(100% - 11px),
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at calc(100% - 11px) calc(100% - 11px),
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--glow-crimson) 12%, transparent),
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--brand-crimson) 16%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--glow-crimson) 14%, transparent);
+  backface-visibility: visible;
+  transition: border-color 900ms ease;
+}
+
+/* The front face catches a little more light, which is what gives the glass a near side. */
+
+.sblock-link:hover .sblock-face,
+.sblock-link:focus-visible .sblock-face {
+  border-color: color-mix(in srgb, var(--glow-crimson) 85%, transparent);
+}
+
+.sblock-face,
+.sblock-icon {
+  transition:
+    border-color 600ms ease,
+    color 600ms ease;
+}
+
+/* The icon, suspended in the middle of the box and turning on its own axis. */
+.sblock-icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  /* Counter-spin on the same axis, exactly opposite the box. The icon rides inside the
+     revolving block but keeps facing the viewer — left to turn with it, a flat icon goes
+     edge-on and vanishes for a quarter of every cycle, which reads as a glitch. The box
+     turns around the icon instead. */
+  animation: sblockCounter 18s linear infinite;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+.sblock-link:hover .sblock-icon,
+.sblock-link:focus-visible .sblock-icon {
+  color: var(--glow-crimson);
+}
+
+@keyframes sblockCounter {
+  to {
+    rotate: y -360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-holo,
+  .sblock,
+  .sblock-icon {
+    animation: none;
+  }
+  .sblock,
+  .sblock-link:hover .sblock {
+    transition: none;
+    scale: 1;
+    transform: rotateX(9deg) rotateY(-13deg);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   THE SCROLL CUE — components/hero/ScrollCue.tsx
+   A control, not a caption. A dot travels down a short track on a loop, which says
+   "scroll" far better than the word did, and the whole thing is a button that takes you
+   to the next section.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+.scroll-cue {
+  background: none;
+  border: 0;
+  padding: 0;
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fades out once the page has moved. `inert` is set in the component at the same time —
+   opacity alone leaves it clickable and in the tab order. */
+.scroll-cue[data-hidden="true"] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.scroll-cue:focus-visible {
+  outline: 1px solid var(--glow-crimson);
+  outline-offset: 10px;
+}
+
+.scroll-cue-track {
+  position: relative;
+  display: block;
+  width: 4rem;
+  height: 1px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .scroll-cue-track {
+    width: 6rem;
+  }
+}
+
+/* The travelling light. A short bright segment crossing a hairline — the same vocabulary
+   as the constellation lines in the starfield, so the page has one idea about what a
+   moving point of light means. */
+.scroll-cue-dot {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 1.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--glow-crimson),
+    color-mix(in srgb, var(--foreground) 80%, transparent),
+    transparent
+  );
+  animation: scrollCueTravel 5.2s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+}
+
+@keyframes scrollCueTravel {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  /* Most of the cycle is the pause after it arrives, not the travel — a dot crossing
+     continuously reads as a loading bar. Slower and it fades out at the far end rather
+     than snapping back, so there is no hard reset to catch the eye (CRI-23: "more
+     chill"). Hover deliberately does not speed it up. */
+  38% {
+    opacity: 1;
+  }
+  48%,
+  100% {
+    transform: translateX(420%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-dot {
+    animation: none;
+    transform: translateX(120%);
+  }
+  .scroll-cue {
+    transition: none;
   }
 }
