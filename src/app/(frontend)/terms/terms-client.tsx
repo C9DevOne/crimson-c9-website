@@ -58,38 +58,18 @@ export default function TermsClient({ data }: { data: TermsData }) {
 
           {/* Anchor target for the consent checkbox on the landing page form. */}
           <div id="privacy" className="scroll-mt-8">
-            <Section title="4. Privacy — what we collect">
-              <p className="mb-4">
-                <strong className="text-foreground font-semibold">The contact form.</strong> When
-                you send us a message, the name, email address, enquiry type and message you entered
-                are delivered to us as an email. They are not stored in any database. We use them
-                for one thing: replying to you.
-              </p>
-              <ul className="text-muted-foreground mb-4 space-y-1.5 text-sm">
-                <li>
-                  <span className="text-foreground/90">Legal basis:</span> your consent, GDPR Art.
-                  6(1)(a) — which is why the form asks for it explicitly.
-                </li>
-                <li>
-                  <span className="text-foreground/90">Retention:</span>
-                  {/* A brace-wrapped literal, not bare JSX text. The bare form lost its
-                      leading space between the server render and the client one here, which
-                      tripped a hydration mismatch on this page in production; a string
-                      literal is not subject to JSX whitespace trimming, and Prettier leaves
-                      it alone where it collapses {" "} back into the broken form. */}
-                  {
-                    " kept in our mailbox while we deal with your enquiry, then deleted once there\u2019s no reason to keep it."
-                  }
-                </li>
-                <li>
-                  <span className="text-foreground/90">Sharing:</span> not sold, and not passed to
-                  anyone beyond the service providers listed below.
-                </li>
-              </ul>
+            <Section title="4. Privacy / Data Collection">
+              {/* Shortened to this single statement at Aaron's request, 2026-11-26. What
+                  it replaced set out the contact form's legal basis (GDPR Art. 6(1)(a)),
+                  its retention and the sharing position — the Art. 13 information duty
+                  that applies because the form does collect personal data, even though
+                  nothing is stored in a database. Section 6 still carries the rights, and
+                  section 5 still names the processors, so that duty is partly met
+                  elsewhere; the specifics of the form are not. Flagged to Aaron and
+                  tracked with the external legal check, TIC-31. */}
               <p>
-                <strong className="text-foreground font-semibold">Nothing else.</strong> We set no
-                cookies, run no analytics and use no third-party trackers or advertising. If you
-                never use the form, we collect nothing about you at all.
+                We don&apos;t use any third-party trackers or cookies and don&apos;t store any of
+                your information in our database.
               </p>
             </Section>
           </div>
@@ -113,12 +93,6 @@ export default function TermsClient({ data }: { data: TermsData }) {
                 notification email when you submit the form, via its EU data centre
               </li>
             </ul>
-            <p className="border-glow-crimson/40 text-glow-crimson/90 mt-5 border-l px-4 py-2 text-xs leading-relaxed">
-              To be completed before launch: whether a data processing agreement is in place with
-              Hetzner, Cloudflare and Zoho. The regions above are stated; the agreements are what
-              still need confirming, and this section has to be reviewed by a human before it is
-              relied on.
-            </p>
           </Section>
 
           <Section title="6. Your rights">
