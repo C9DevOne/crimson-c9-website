@@ -181,12 +181,17 @@ export default function Page() {
             to. */}
         <section className="pb-24 md:pb-40" aria-labelledby="contact">
           <div className="mx-auto w-full max-w-3xl text-center">
-            <p className="type-label mb-5">Post Office</p>
             <h2 id="contact" className="type-statement mx-auto max-w-2xl">
               Or reach out if you want to collaborate with us, or have any other enquiry
             </h2>
 
+            {/* "Post Office" is the form's own title, inside the panel (Aaron, CRI-23) —
+                it names the thing you are standing at rather than labelling the section
+                from outside it. */}
             <div className="glass-panel mt-12 rounded-[2rem] p-6 text-left md:mt-16 md:p-10">
+              <p className="font-display text-foreground mb-8 text-center text-2xl font-bold md:mb-10 md:text-3xl">
+                Post Office
+              </p>
               <CollaborationForm contactEmail={contactEmail} />
             </div>
 

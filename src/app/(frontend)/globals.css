@@ -1001,6 +1001,29 @@
 }
 
 /* The icy wash from the bottom edge, exactly where the shop puts it. */
+/* The polar lights, from components/events/Aurora.tsx. The canvas is 240×120 and gets
+   stretched across the whole card and blurred — the same trick the shop uses, and the
+   reason this costs almost nothing. `screen` so the light adds over the black ground
+   instead of covering it, and the mask fades the curtains out before they reach the
+   bottom edge, so they hang rather than fill. */
+.portal-aurora {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(10px) saturate(1.25);
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+
+.portal:hover .portal-aurora,
+.portal:focus-visible .portal-aurora {
+  opacity: 1;
+}
+
 .portal-wash {
   position: absolute;
   inset: 0;
@@ -1050,7 +1073,6 @@
   position: absolute;
   inset: -40%;
   pointer-events: none;
-  opacity: 0.5;
   background:
     linear-gradient(
       62deg,
@@ -1072,13 +1094,17 @@
   background-position:
     0% 50%,
     100% 50%;
+  /* Cut right back now that the aurora is behind it. At its old strength the sheen read
+     as the surface of the card; the point now is that the card has no surface worth
+     looking at — the sheen is just the glass catching light on this side. */
+  opacity: 0.22;
   mix-blend-mode: screen;
   animation: portalHolo 14s ease-in-out infinite;
   transition: opacity 700ms ease;
 }
 
 .portal:hover .portal-holo {
-  opacity: 0.9;
+  opacity: 0.45;
 }
 
 @keyframes portalHolo {
@@ -1160,7 +1186,7 @@
 .sblock {
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(12deg) rotateY(-16deg);
+  transform: rotateX(9deg) rotateY(-13deg);
   transition: transform 650ms cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
@@ -1168,7 +1194,7 @@
 .sblock-link:focus-visible .sblock {
   /* The bump. Up and slightly straighter, then it settles — the overshoot in the easing
      is what makes it feel struck rather than lifted. */
-  transform: rotateX(6deg) rotateY(-8deg) translateY(-10px);
+  transform: rotateX(4deg) rotateY(-6deg) translateY(-12px);
 }
 
 /* Each face is drawn separately so the box is genuinely see-through: you look through
@@ -1176,34 +1202,57 @@
 .sblock-face {
   position: absolute;
   inset: 0;
-  /* Stronger than the hairline the rest of the site uses. At hairline weight a 1px edge
-     over a starfield reads as noise rather than as an object — the box disappeared and
-     left three icons floating in space. The edges are the box. */
-  border: 1px solid color-mix(in srgb, var(--foreground) 30%, transparent);
-  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  /* The back and side faces are deliberately faint. Drawn at the same weight as the front
+     they all read equally, and a tilted cube of six equal translucent planes looks like a
+     random arrangement of glass rather than like a block — which is exactly what Aaron
+     saw. One dominant front panel plus five hints of depth is what makes it a block. */
+  border: 1px solid color-mix(in srgb, var(--foreground) 11%, transparent);
+  background: color-mix(in srgb, var(--foreground) 1.5%, transparent);
+  border-radius: 4px;
   backface-visibility: visible;
 }
 
 /* The front face catches a little more light, which is what gives the glass a near side. */
 .sblock-face-front {
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--foreground) 62%, transparent);
+  border-radius: 6px;
   background:
+    radial-gradient(
+      circle at 11px 11px,
+      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at calc(100% - 11px) 11px,
+      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at 11px calc(100% - 11px),
+      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at calc(100% - 11px) calc(100% - 11px),
+      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      transparent 3.2px
+    ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--foreground) 14%, transparent),
+      color-mix(in srgb, var(--foreground) 13%, transparent),
       transparent 58%
     ),
-    color-mix(in srgb, var(--foreground) 4%, transparent);
-  border-color: color-mix(in srgb, var(--foreground) 52%, transparent);
-  /* A lit top-left edge and a shadow in the far corner: the cheapest way to say which
-     face is nearest, without painting a highlight onto the glass. */
+    color-mix(in srgb, var(--foreground) 3%, transparent);
   box-shadow:
-    inset 1px 1px 0 color-mix(in srgb, var(--foreground) 18%, transparent),
-    inset -10px -10px 22px color-mix(in srgb, #000 55%, transparent);
+    inset 2px 2px 0 color-mix(in srgb, var(--foreground) 22%, transparent),
+    inset -2px -2px 0 color-mix(in srgb, #000 45%, transparent),
+    inset -12px -12px 26px color-mix(in srgb, #000 42%, transparent);
 }
 
-.sblock-link:hover .sblock-face,
-.sblock-link:focus-visible .sblock-face {
-  border-color: color-mix(in srgb, var(--glow-crimson) 42%, transparent);
+.sblock-link:hover .sblock-face-front,
+.sblock-link:focus-visible .sblock-face-front {
+  border-color: color-mix(in srgb, var(--glow-crimson) 70%, transparent);
 }
 
 .sblock-face,
@@ -1246,6 +1295,6 @@
   .sblock,
   .sblock-link:hover .sblock {
     transition: none;
-    transform: rotateX(12deg) rotateY(-16deg);
+    transform: rotateX(9deg) rotateY(-13deg);
   }
 }

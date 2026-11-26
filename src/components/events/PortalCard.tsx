@@ -1,5 +1,7 @@
 import { RiArrowRightUpLine } from "react-icons/ri";
 
+import { Aurora } from "./Aurora";
+
 /**
  * The door to the ticket shop, built as a miniature of the shop's own front page.
  *
@@ -17,9 +19,10 @@ import { RiArrowRightUpLine } from "react-icons/ri";
  * cold blue appears, and that is what makes it read as a window into somewhere else rather
  * than as another panel.
  *
- * Static by design. The shop animates its orb on a canvas with three tumbling rings; a
- * teaser card on another site does not need a paint loop, so the orb here is CSS and the
- * rings are reduced to one.
+ * The aurora is a real canvas, ported from the shop (see `./Aurora.tsx`) — that one is
+ * worth the paint loop, because it is the thing you are looking *through*. The orb stays
+ * CSS with a single ring rather than the shop's three tumbling ones: it is a detail inside
+ * the view, not the view itself.
  *
  * Everything event-specific is a prop. The shop's own rule is that no event name is ever
  * hardcoded, and the same should hold here the moment there is a second event.
@@ -47,7 +50,14 @@ export function PortalCard({
       <span className="portal-kanji" aria-hidden="true">
         夢
       </span>
+      {/* The sky on the other side. This is the ticket shop's own aurora, ported
+          unchanged — what makes the card a portal rather than a button is that you are
+          looking at the actual background of the place it leads to. */}
+      <Aurora className="portal-aurora" />
       <span className="portal-wash" aria-hidden="true" />
+      {/* Reflection on the glass, over the aurora rather than instead of it: the sheen is
+          this side of the window, the lights are the far side. Much fainter than it was
+          when it had the card to itself. */}
       <span className="portal-holo" aria-hidden="true" />
 
       <span className="relative z-10 flex flex-col items-center gap-7 text-center md:gap-9">
