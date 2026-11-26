@@ -144,7 +144,7 @@ function SiteHeader() {
             filler. One city at a time, changing (CRI-23) — see CityCycle for why that is a
             cross-fade and not the vertical roll this site used to have. Hidden on phones,
             where there is no room for it beside the mark. */}
-        <CityCycle className="type-label hidden justify-self-end sm:block" />
+        <CityCycle className="city-tag hidden justify-self-end sm:block" />
       </div>
     </header>
   );

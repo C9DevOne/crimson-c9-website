@@ -46,9 +46,10 @@ export function SocialBlock({
               element with the faces invisible — the icons kept rendering, so it looked
               like a styling miss rather than a layout one. */}
         <span className="sblock relative block size-full">
-          {/* Back first, then the sides, then the front. Painting order matters here:
-              with real 3D faces and no z-index juggling, the browser sorts them by depth,
-              and the front face must be the one catching the light. */}
+          {/* All six faces are styled identically, so there is no "front" any more — the
+              box looks the same from every angle, which is what lets it revolve without
+              appearing to change into a different object. Order here is just back, sides,
+              then front; the browser sorts them by depth. */}
           <span
             className="sblock-face"
             style={{ transform: `translateZ(-${DEPTH}px) rotateY(180deg)` }}
@@ -81,7 +82,7 @@ export function SocialBlock({
           </span>
 
           <span
-            className="sblock-face sblock-face-front"
+            className="sblock-face"
             style={{ transform: `translateZ(${DEPTH}px)` }}
             aria-hidden="true"
           />

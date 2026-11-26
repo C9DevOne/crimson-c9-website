@@ -205,6 +205,23 @@
 /* ── Hairlines ────────────────────────────────────────────────────────────────────
    A plain 1px border would be a hard line all the way across. These fade at the ends,
    which is what stops a full-width rule from cutting the page in half. */
+/* The city tag in the header. Cinzel Decorative, bold (Aaron, CRI-23) — the one place
+   besides the hero where the display face appears, which ties the two corners of the
+   header together.
+
+   It needs its own class rather than a `font-hero` utility beside `type-label`: that
+   class sets `font-family` itself, and unlayered CSS beats Tailwind's utility layer, so
+   the utility would silently lose. Slightly larger and a touch less tracked than a plain
+   label, because Cinzel's flared serifs close up at 12px with 0.22em between them. */
+.city-tag {
+  font-family: var(--font-hero);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 62%, transparent);
+}
+
 .rule {
   height: 1px;
   background: linear-gradient(
@@ -1159,19 +1176,21 @@
   }
 }
 
-/* Hover knocks it: the tumble speeds up and the block jumps. The jump is `translate`,
-   not `transform` — `transform` carries the tilt and the keyframes carry `rotate`, so
-   using a third property keeps all three composable instead of overwriting each other.
-   This is why the tilt, the spin and the bump are on different properties at all. */
-.sblock-link:hover .sblock,
-.sblock-link:focus-visible .sblock {
-  animation-duration: 4s;
-  translate: 0 -12px;
+/* Hover swells the block slightly and does nothing else (Aaron, CRI-23: "only make them
+   slightly bigger but not speed up the turning … very smooth"). The revolution keeps its
+   own steady pace, so hovering never produces a lurch as the animation re-times.
+
+   `scale` is its own CSS property, which is the only reason this composes: `transform`
+   carries the tilt, the keyframes carry `rotate`, and this carries the swell. Put any two
+   of them on `transform` and they overwrite each other. */
+.sblock {
+  scale: 1;
+  transition: scale 900ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sblock {
-  translate: 0 0;
-  transition: translate 650ms cubic-bezier(0.34, 1.4, 0.5, 1);
+.sblock-link:hover .sblock,
+.sblock-link:focus-visible .sblock {
+  scale: 1.07;
 }
 
 /* Each face is drawn separately so the box is genuinely see-through: you look through
@@ -1179,57 +1198,53 @@
 .sblock-face {
   position: absolute;
   inset: 0;
-  /* The back and side faces are deliberately faint. Drawn at the same weight as the front
-     they all read equally, and a tilted cube of six equal translucent planes looks like a
-     random arrangement of glass rather than like a block — which is exactly what Aaron
-     saw. One dominant front panel plus five hints of depth is what makes it a block. */
-  border: 1px solid color-mix(in srgb, var(--foreground) 11%, transparent);
-  background: color-mix(in srgb, var(--foreground) 1.5%, transparent);
-  border-radius: 4px;
-  backface-visibility: visible;
-}
+  /* Every face is styled identically (Aaron, CRI-23). Previously the front carried the
+     bevel and the studs while the other five were plain glass, so whichever side came
+     round looked like a different object — which is the opposite of what a revolving
+     block should do. Now the box looks the same from every angle, and the rotation reads
+     as one solid turning rather than as faces swapping.
 
-/* The front face catches a little more light, which is what gives the glass a near side. */
-.sblock-face-front {
-  border-width: 2px;
-  border-color: color-mix(in srgb, var(--foreground) 62%, transparent);
+     Crimson rather than neutral white: this is the site's accent, and the blocks were the
+     one interactive thing on the page still drawn in plain grey. */
+  border: 1px solid color-mix(in srgb, var(--glow-crimson) 50%, transparent);
   border-radius: 6px;
   background:
     radial-gradient(
       circle at 11px 11px,
-      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
       transparent 3.2px
     ),
     radial-gradient(
       circle at calc(100% - 11px) 11px,
-      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
       transparent 3.2px
     ),
     radial-gradient(
       circle at 11px calc(100% - 11px),
-      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
       transparent 3.2px
     ),
     radial-gradient(
       circle at calc(100% - 11px) calc(100% - 11px),
-      color-mix(in srgb, var(--foreground) 62%, transparent) 0 2.5px,
+      color-mix(in srgb, var(--glow-crimson) 85%, transparent) 0 2.5px,
       transparent 3.2px
     ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--foreground) 13%, transparent),
-      transparent 58%
+      color-mix(in srgb, var(--glow-crimson) 12%, transparent),
+      transparent 60%
     ),
-    color-mix(in srgb, var(--foreground) 3%, transparent);
-  box-shadow:
-    inset 2px 2px 0 color-mix(in srgb, var(--foreground) 22%, transparent),
-    inset -2px -2px 0 color-mix(in srgb, #000 45%, transparent),
-    inset -12px -12px 26px color-mix(in srgb, #000 42%, transparent);
+    color-mix(in srgb, var(--brand-crimson) 16%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--glow-crimson) 14%, transparent);
+  backface-visibility: visible;
+  transition: border-color 900ms ease;
 }
 
-.sblock-link:hover .sblock-face-front,
-.sblock-link:focus-visible .sblock-face-front {
-  border-color: color-mix(in srgb, var(--glow-crimson) 70%, transparent);
+/* The front face catches a little more light, which is what gives the glass a near side. */
+
+.sblock-link:hover .sblock-face,
+.sblock-link:focus-visible .sblock-face {
+  border-color: color-mix(in srgb, var(--glow-crimson) 85%, transparent);
 }
 
 .sblock-face,
@@ -1256,7 +1271,6 @@
 
 .sblock-link:hover .sblock-icon,
 .sblock-link:focus-visible .sblock-icon {
-  animation-duration: 4s;
   color: var(--glow-crimson);
 }
 
@@ -1275,7 +1289,7 @@
   .sblock,
   .sblock-link:hover .sblock {
     transition: none;
-    translate: 0 0;
+    scale: 1;
     transform: rotateX(9deg) rotateY(-13deg);
   }
 }
@@ -1338,22 +1352,28 @@
     color-mix(in srgb, var(--foreground) 80%, transparent),
     transparent
   );
-  animation: scrollCueTravel 2.6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
-}
-
-.scroll-cue:hover .scroll-cue-dot {
-  animation-duration: 1.2s;
+  animation: scrollCueTravel 5.2s cubic-bezier(0.45, 0, 0.3, 1) infinite;
 }
 
 @keyframes scrollCueTravel {
   0% {
     transform: translateX(-100%);
+    opacity: 0;
   }
-  /* Most of the cycle is the pause after it arrives, not the travel. A dot crossing
-     continuously reads as a loading bar. */
-  55%,
+  12% {
+    opacity: 1;
+  }
+  /* Most of the cycle is the pause after it arrives, not the travel — a dot crossing
+     continuously reads as a loading bar. Slower and it fades out at the far end rather
+     than snapping back, so there is no hard reset to catch the eye (CRI-23: "more
+     chill"). Hover deliberately does not speed it up. */
+  38% {
+    opacity: 1;
+  }
+  48%,
   100% {
     transform: translateX(420%);
+    opacity: 0;
   }
 }
 
