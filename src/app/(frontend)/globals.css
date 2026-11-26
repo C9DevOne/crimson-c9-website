@@ -1123,50 +1123,8 @@
 
 /* The orb. The shop draws its glow sphere on a canvas with tumbling rings; this is the
    still, cheap echo of it — a card on another site does not need a paint loop. */
-.portal-orb {
-  position: relative;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 36% 32%,
-    #ffffff 0%,
-    color-mix(in srgb, var(--dream) 80%, #fff) 22%,
-    var(--dream) 48%,
-    #0d2740 82%,
-    #04101c 100%
-  );
-  box-shadow:
-    0 0 12px color-mix(in srgb, var(--dream) 60%, transparent),
-    0 0 34px color-mix(in srgb, var(--dream) 32%, transparent),
-    0 0 70px color-mix(in srgb, var(--dream) 14%, transparent);
-  animation: portalBreathe 7s ease-in-out infinite;
-}
 
 /* One ring, tilted — enough to quote the shop's three tumbling rings without the canvas. */
-.portal-orb::after {
-  content: "";
-  position: absolute;
-  inset: -34%;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--dream) 42%, transparent);
-  transform: rotateX(72deg);
-  animation: portalRing 12s linear infinite;
-}
-
-@keyframes portalBreathe {
-  0%,
-  100% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes portalRing {
-  to {
-    transform: rotateX(72deg) rotate(360deg);
-  }
-}
 
 /* ══════════════════════════════════════════════════════════════════════════════════
    SOCIAL BOXES — see-through 3D blocks with the icon turning inside (CRI-23)
@@ -1186,15 +1144,34 @@
 .sblock {
   position: relative;
   transform-style: preserve-3d;
+  /* The fixed tilt is now the starting pose of a continuous spin about Z (Aaron,
+     CRI-23: the boxes "rotate around themselves … around the y axis"). The block
+     revolves, so you see the studded front panel come round, then a side, then the
+     back — which is what makes the box read as a solid you could walk around rather
+     than as a flat panel with edges drawn on. */
   transform: rotateX(9deg) rotateY(-13deg);
-  transition: transform 650ms cubic-bezier(0.34, 1.4, 0.5, 1);
+  animation: sblockTumble 18s linear infinite;
 }
 
+@keyframes sblockTumble {
+  to {
+    rotate: y 360deg;
+  }
+}
+
+/* Hover knocks it: the tumble speeds up and the block jumps. The jump is `translate`,
+   not `transform` — `transform` carries the tilt and the keyframes carry `rotate`, so
+   using a third property keeps all three composable instead of overwriting each other.
+   This is why the tilt, the spin and the bump are on different properties at all. */
 .sblock-link:hover .sblock,
 .sblock-link:focus-visible .sblock {
-  /* The bump. Up and slightly straighter, then it settles — the overshoot in the easing
-     is what makes it feel struck rather than lifted. */
-  transform: rotateX(4deg) rotateY(-6deg) translateY(-12px);
+  animation-duration: 4s;
+  translate: 0 -12px;
+}
+
+.sblock {
+  translate: 0 0;
+  transition: translate 650ms cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
 /* Each face is drawn separately so the box is genuinely see-through: you look through
@@ -1269,32 +1246,123 @@
   display: grid;
   place-items: center;
   transform-style: preserve-3d;
-  animation: sblockSpin 9s linear infinite;
+  /* Counter-spin on the same axis, exactly opposite the box. The icon rides inside the
+     revolving block but keeps facing the viewer — left to turn with it, a flat icon goes
+     edge-on and vanishes for a quarter of every cycle, which reads as a glitch. The box
+     turns around the icon instead. */
+  animation: sblockCounter 18s linear infinite;
   color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 .sblock-link:hover .sblock-icon,
 .sblock-link:focus-visible .sblock-icon {
-  animation-duration: 2.6s;
+  animation-duration: 4s;
   color: var(--glow-crimson);
 }
 
-@keyframes sblockSpin {
+@keyframes sblockCounter {
   to {
-    transform: rotateY(360deg);
+    rotate: y -360deg;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .portal-holo,
-  .portal-orb,
-  .portal-orb::after,
+  .sblock,
   .sblock-icon {
     animation: none;
   }
   .sblock,
   .sblock-link:hover .sblock {
     transition: none;
+    translate: 0 0;
     transform: rotateX(9deg) rotateY(-13deg);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════
+   THE SCROLL CUE — components/hero/ScrollCue.tsx
+   A control, not a caption. A dot travels down a short track on a loop, which says
+   "scroll" far better than the word did, and the whole thing is a button that takes you
+   to the next section.
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+.scroll-cue {
+  background: none;
+  border: 0;
+  padding: 0;
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fades out once the page has moved. `inert` is set in the component at the same time —
+   opacity alone leaves it clickable and in the tab order. */
+.scroll-cue[data-hidden="true"] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.scroll-cue:focus-visible {
+  outline: 1px solid var(--glow-crimson);
+  outline-offset: 10px;
+}
+
+.scroll-cue-track {
+  position: relative;
+  display: block;
+  width: 4rem;
+  height: 1px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .scroll-cue-track {
+    width: 6rem;
+  }
+}
+
+/* The travelling light. A short bright segment crossing a hairline — the same vocabulary
+   as the constellation lines in the starfield, so the page has one idea about what a
+   moving point of light means. */
+.scroll-cue-dot {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 1.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--glow-crimson),
+    color-mix(in srgb, var(--foreground) 80%, transparent),
+    transparent
+  );
+  animation: scrollCueTravel 2.6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+}
+
+.scroll-cue:hover .scroll-cue-dot {
+  animation-duration: 1.2s;
+}
+
+@keyframes scrollCueTravel {
+  0% {
+    transform: translateX(-100%);
+  }
+  /* Most of the cycle is the pause after it arrives, not the travel. A dot crossing
+     continuously reads as a loading bar. */
+  55%,
+  100% {
+    transform: translateX(420%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-dot {
+    animation: none;
+    transform: translateX(120%);
+  }
+  .scroll-cue {
+    transition: none;
   }
 }

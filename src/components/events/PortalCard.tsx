@@ -19,10 +19,13 @@ import { Aurora } from "./Aurora";
  * cold blue appears, and that is what makes it read as a window into somewhere else rather
  * than as another panel.
  *
- * The aurora is a real canvas, ported from the shop (see `./Aurora.tsx`) — that one is
- * worth the paint loop, because it is the thing you are looking *through*. The orb stays
- * CSS with a single ring rather than the shop's three tumbling ones: it is a detail inside
- * the view, not the view itself.
+ * The aurora is a real canvas, ported from the shop (see `./Aurora.tsx`) — worth the paint
+ * loop, because it is the thing you are looking *through*.
+ *
+ * There is no orb any more (Aaron, CRI-23). It was the shop's glow-sphere motif quoted in
+ * miniature, but with the real aurora behind it there were two light sources competing in
+ * one small frame, and the orb was the one that was only a reference to something rather
+ * than the thing itself.
  *
  * Everything event-specific is a prop. The shop's own rule is that no event name is ever
  * hardcoded, and the same should hold here the moment there is a second event.
@@ -60,24 +63,23 @@ export function PortalCard({
           when it had the card to itself. */}
       <span className="portal-holo" aria-hidden="true" />
 
-      <span className="relative z-10 flex flex-col items-center gap-7 text-center md:gap-9">
-        <span className="portal-orb block size-14 md:size-16" aria-hidden="true" />
-
-        <span className="flex flex-col items-center gap-3">
-          <span className="type-label">CrimsonC9 präsentiert</span>
-          <span className="type-display-sm block">{name}</span>
-        </span>
-
-        <span className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-          {/* The date is the loudest thing after the name: it is the single fact somebody
-              scanning this card is looking for. */}
-          <span className="font-display text-foreground text-3xl leading-none md:text-4xl">
+      {/* Date and venue sit in the top corners, the name in the middle (Aaron, CRI-23).
+          The corners are where a poster puts the facts and the middle is where it puts
+          the name, which is the layout this is borrowing — and it leaves the aurora
+          uninterrupted across the centre of the card, where the curtains actually hang. */}
+      <span className="relative z-10 flex min-h-56 flex-col md:min-h-72">
+        <span className="flex items-start justify-between gap-4">
+          <span className="font-display text-foreground text-2xl leading-none md:text-3xl">
             {date}
           </span>
-          <span className="type-label">{venue}</span>
+          <span className="type-label text-right">{venue}</span>
         </span>
 
-        <span className="type-label text-foreground inline-flex items-center gap-2">
+        <span className="flex flex-1 items-center justify-center py-10">
+          <span className="type-display-sm block text-center">{name}</span>
+        </span>
+
+        <span className="type-label text-foreground inline-flex items-center justify-center gap-2">
           Tickets
           <RiArrowRightUpLine className="row-arrow size-4" aria-hidden="true" />
         </span>

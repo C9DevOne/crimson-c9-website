@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Starfield } from "@/components/animations/Starfield";
 import { Footer } from "@/components/layout/Footer";
+import { CityCycle } from "@/components/layout/CityCycle";
 import { Lantern } from "@/components/layout/Lantern";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { resolveSocials } from "@/lib/socials";
@@ -140,8 +141,10 @@ function SiteHeader() {
         </Link>
 
         {/* Balances the lantern and carries a real piece of information rather than being
-            filler. Hidden on phones, where there is no room for it beside the mark. */}
-        <p className="type-label hidden justify-self-end sm:block">Aachen · Berlin · Cologne</p>
+            filler. One city at a time, changing (CRI-23) — see CityCycle for why that is a
+            cross-fade and not the vertical roll this site used to have. Hidden on phones,
+            where there is no room for it beside the mark. */}
+        <CityCycle className="type-label hidden justify-self-end sm:block" />
       </div>
     </header>
   );

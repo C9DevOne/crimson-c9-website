@@ -5,6 +5,7 @@ import { RiInstagramLine, RiSoundcloudLine, RiYoutubeLine } from "react-icons/ri
 import { PortalCard } from "@/components/events/PortalCard";
 import { CollaborationForm } from "@/components/forms/CollaborationForm";
 import { ElectricHeadline } from "@/components/hero/ElectricHeadline";
+import { ScrollCue } from "@/components/hero/ScrollCue";
 import { SocialBlock } from "@/components/social/SocialBlock";
 import { resolveSocials } from "@/lib/socials";
 
@@ -125,27 +126,27 @@ export default function Page() {
           </p>
 
           <div
-            className="reveal mt-10 flex items-center gap-4 md:mt-16"
+            className="reveal mt-10 md:mt-16"
             style={{ "--reveal-delay": "0.75s" } as React.CSSProperties}
           >
-            <span className="type-label">Scroll</span>
-            <span className="rule w-16 md:w-24" />
+            <ScrollCue targetId="events" />
           </div>
         </div>
       </header>
 
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
         {/* ── Upcoming events ─────────────────────────────────────────────────────
-            The card is the section — no heading above it, because "Bunker Dreams 2" in
-            display type is already the heading, and stacking a label over it said the
-            same thing twice. Event details are props, not baked in: the shop's own rule
-            is that no event name is ever hardcoded, and the second event will prove why.
+            The section has its own heading again (Aaron, CRI-23) — with the card's own
+            layout now putting the date and venue in the corners rather than an eyebrow
+            above the name, there is nothing left inside the card that doubles as a
+            section title. Event details are props, not baked in: the shop's own rule is
+            that no event name is ever hardcoded, and the second event will prove why.
 
             Date is written `15.1` as Aaron asked. The full `Fr 15.01.2027 · Musikbunker
             Aachen` lives on the shop; this is a teaser, and the venue line below carries
             enough to place it. */}
         <section className="pb-24 md:pb-40" aria-labelledby="events">
-          <h2 id="events" className="sr-only">
+          <h2 id="events" className="type-statement mb-12 max-w-3xl md:mb-16">
             Upcoming events
           </h2>
           <PortalCard
